@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>drawing to code tests</title>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.12.0.css">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
+<script>
+// globals are evil. still working to get rid of them
+var global = {
+		command: ""
+};
+</script>
+
+<script type="text/javascript" src="../root/javascript/geometry.js"></script>
+<script type="text/javascript" src="resources/geometryTest.js"></script>
+
+<script type="text/javascript" src="../root/javascript/parseCode.js"></script>
+<script type="text/javascript" src="resources/parseCodeTests.js"></script>
+
+<script type="text/javascript" src="../root/javascript/drawLines.js"></script>
+<script type="text/javascript" src="resources/drawLinesTest.js"></script>
+
+<script type="text/javascript" src="../root/javascript/moveHandle.js"></script>
+<script type="text/javascript" src="resources/moveHandleTests.js"></script>
+
+<script type="text/javascript" src="../root/javascript/editCanvas.js"></script>
+<script type="text/javascript" src="resources/editCanvasTest.js"></script>
+
+</body>
+</html>

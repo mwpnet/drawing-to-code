@@ -1,0 +1,14 @@
+	context.moveTo( 101, 113 );
+	context.lineTo( 246, 78 );
+	context.lineTo( 291, 79 );
+	context.lineTo( 300, 114 );
+	context.lineTo( 293, 156 );
+	context.lineTo( 279, 197 );
+	context.lineTo( 258, 200 );
+	context.bezierCurveTo( 267.4, 199.6, 263.4, 105.6, 254, 106 );
+	context.bezierCurveTo( 250.9, 101.2, 202.9, 132.2, 206, 137 );
+	context.lineTo( 203, 167 );
+	context.lineTo( 201, 224 );
+	context.lineTo( 177, 242 );
+	context.lineTo( 136, 226 );
+	context.lineTo( 94, 196 );

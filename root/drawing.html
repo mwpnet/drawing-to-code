@@ -1,0 +1,105 @@
+<html>
+<title>drawing to canvas code</title>
+<meta charset="utf-8"/>
+
+<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js" ></script>
+ -->
+
+<script type="text/javascript" src="javascript/buttons.js"></script>
+<script type="text/javascript" src="javascript/parseCode.js"></script>
+<script type="text/javascript" src="javascript/editCanvas.js"></script>
+<script type="text/javascript" src="javascript/mouseEvents.js"></script>
+<script type="text/javascript" src="javascript/liveCanvas.js"></script>
+<script type="text/javascript" src="javascript/moveHandle.js"></script>
+<script type="text/javascript" src="javascript/drawLines.js"></script>
+
+<script>
+
+window.onload=function() {
+	init();
+};
+</script>
+
+
+<style>
+body {
+	background: grey;
+}
+
+canvas {
+	background: white;
+}
+
+#buttons {
+	width: 74;
+	display:inline;
+	float:left;
+}
+
+#centerCol {
+	width:45%;
+	display:inline;
+	float:left;
+}
+#rightCol {
+	width:45%;
+	display:inline;
+	float:right;
+}
+
+#errorbox {
+	font-family:monospace;
+	background: #ffbbbb;
+}
+
+#codeArea {
+	border: 1px solid black;
+}
+#precode, #code, #postcode {
+	font-family:monospace;
+	border: none;
+}
+#code{
+	color: #000000;
+	height: 400;
+	width:100%;
+}
+#precode, #postcode {
+	color: #888888;
+}
+</style>
+
+</head>
+<body>
+
+<div id="buttons">
+<canvas id="moveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="moveTo()" onclick="onClickMoveTo()"></canvas>
+<canvas id="lineToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="lineTo()" onclick="onClickLineTo()"></canvas>
+<canvas id="bezierCurveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
+<canvas id="quadraticCurveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="quadraticCurveTo()" onclick="onClickQuadraticCurveTo()"></canvas>
+<canvas id="arcToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arcTo()"></canvas>
+<canvas id="arcButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arc()"></canvas>
+<canvas id="closePathButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="closePath()" onclick="onClickClosePath()"></canvas>
+</div>
+<div id="centerCol">
+<canvas id="editDrawing" width="400" height="400" style="border:1px solid #d3d3d3;">
+Your browser does not support the HTML5 canvas tag.</canvas>
+</div>
+<div id="rightCol">
+<form onsubmit = "return onExecuteCode()">
+<p id="errorBox"></p>
+<div id="codeArea">
+<textarea id="code">
+function draw(context){
+	context.beginPath();
+	context.stroke();
+}
+</textarea>
+</div>
+
+<button id="executeCode">execute code</button>
+</form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,26 @@
+General:
+	draws lines from code in textarea
+	draws line ends and control points
+	
+on click on control handle:
+	draws lines from code in textarea
+	draws line ends and control points
+	get which line end or control point mouse is in
+	find which code line and which args that coresponds to
+	
+on click elsewhere:
+	get relative coords from mouse click
+	add line with selelcted command and new coords
+	draws lines from code in textarea
+	draws line ends and control points
+	
+on drag ( will always be in existing handle or new handle)
+	get mouse coords
+	update coresponding args on coresponding code line
+	draws lines from code in textarea
+	draws line ends and control points
+
+on release
+	draws lines from code in textarea
+	draws line ends and control points
+	
