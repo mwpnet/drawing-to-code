@@ -32,7 +32,7 @@ function buttonSetUp(){
 }
 
 function pathSetup(context){
-	context.lineWidth = 1;
+	context.lineWidth = 2;
 	context.strokeStyle = 'black';
 }
 
@@ -143,15 +143,32 @@ function closePathButton(context){
 	drawLineTo(context, 52, 11);
 	drawLineTo(context, endX, endY);
 
-	drawLinesToConreolePoints(context,startX,startY,endX, endY);
+	drawLinesToConrolePoints(context,startX,startY,endX, endY);
 }
 
 function arcToButton(context){
-	commingSoon(context);
+	context.beginPath();
+	pathSetup(context);
+	
+	context.moveTo( 13, 44 );
+	context.arcTo( 44, 51, 37, 16,10);
+	context.stroke();
+	
+	drawMoveTo(context,13, 44 );
+	drawArcTo(context, 13, 44, 44, 51, 37, 16);
+	//commingSoon(context);
+	
 }
 
 function arcButton(context){
-	commingSoon(context);
+	context.beginPath();
+	pathSetup(context);
+	context.moveTo( 13, 49 );
+	context.arc( 40, 31, 19, 0.4356, 5.1698, false );
+	context.stroke();
+
+	drawMoveTo(context,13, 49 );
+	drawArc(context, 40, 31, 19, 0.4356, 5.1698, false)
 }
 
 function commingSoon(context){

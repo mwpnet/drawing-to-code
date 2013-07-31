@@ -13,3 +13,11 @@ test( "rightAngle test",5, function() {
 
 });
 
+test("distance test",6, function(){
+	equal( distance(0,0,0,1),1,"distance test #1");
+	equal( distance(0,0,1,0),1,"distance test #1");
+	equal( distance(0,1,0,0),1,"distance test #1");
+	equal( distance(1,0,0,0),1,"distance test #1");
+	equal( distance(0,0,3,4),5,"distance test #1");
+	equal( distance(10,12,13,16),5,"distance test #1");
+});

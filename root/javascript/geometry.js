@@ -7,10 +7,11 @@ function rightAngle(x1,y1,x2,y2) {
 	return [ -(y2-y1), (x2-x1)];
 }
 
-function norm(x1,y1,x2,y2){
-	return ( Math.power((x2-x1),2) + Math.power((y2-y1),2) );
+function distance(x1,y1,x2,y2){
+	return Math.sqrt( Math.pow((x2-x1),2) + Math.pow((y2-y1),2) );
 }
 
+/****
 function unitRightAngle(x1,y1,x2,y2){
 	var v  = rightAngle(x1,y1,x2,y2);
 	var n = norm(x1,y1,x2,y2);
@@ -24,7 +25,7 @@ function scaleRightAngle(x1,y1,x2,y2,l){
 	
 	return [ v[0]*(l/n) , v[1]*(l/n)];
 }
-
+***/
 
 // Arc computations and stuff
 
@@ -35,8 +36,10 @@ function angleToXY(angle,x0,y0,r){
 	return [x0+dx,y0+dy];
 }
 
-function xyToAngle(x,y,x0,y0){
-	// for first quadrent
+function xyToAngle(x,y,x0,y0){ // from 0 to 2PI
 	ang = Math.atan2(y-y0,x-x0);
+	if(ang<0){
+		ang=2*Math.PI + ang;
+	}
+	return ang;
 }
-

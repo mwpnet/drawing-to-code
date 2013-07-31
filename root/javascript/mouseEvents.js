@@ -29,6 +29,9 @@ window.cancelRequestAnimFrame = ( function() {
         window.msCancelRequestAnimationFrame        ||
         clearTimeout
 } )();
+
+
+
 ////////////////////////////////////
 // on click on control handle:
 //		draws lines from code in textarea
@@ -48,36 +51,36 @@ function myOnMouseDown(e) {
 	
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
-	drawEditHandles( context, codeLines );
+	var moveInfo = drawEditHandles( context, codeLines );
 
-	////////////
-	if( ! global.mouseInHandle ) {
-		
-		var codeLine = global.lineBeingChangedIndex;
-		var argIndex = global.argsIndex;
-		
+	if( typeof(moveInfo) == 'undefined' ){
 		var x = e.pageX - canvas.offsetLeft;
 		var y = e.pageY - canvas.offsetTop;
 		
-		var newCodeLines = addComandToCode(codeLines,global.xOld,global.yOld,x,y);
+		var newCodeLines = addComandToCode(codeLines,state.xOld,state.yOld,x,y);
 		updateCode(rejoinCode(newCodeLines));
-		global.xOld=x;
-		global.yOld=y;
-		global.mouseInHandle = true;
+		state.xOld=x;
+		state.yOld=y;
 	}
-
+	else {
+			state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
+			state.destArgs = moveInfo.destArgs;
+			state.srcArgs = moveInfo.srcArgs;
+			state.type = moveInfo.type;
+			state.flipped = false;
+	}
 	// 
 	requestAnimFrame( myAnimate);
 	keepAnimating=true;
 }
 
 function myOnMouseUp(e){
-	keepAnimating=false;
+	keepAnimating = false;
 }
 
 function myOnMouseMove(e){
-	global.mouseX = e.pageX - canvas.offsetLeft;
-	global.mouseY = e.pageY - canvas.offsetTop;
+	state.mouseX = e.pageX - canvas.offsetLeft;
+	state.mouseY = e.pageY - canvas.offsetTop;
 }
 
 //get mouse coords
@@ -87,16 +90,17 @@ function myOnMouseMove(e){
 
 function myAnimate(e){
 
+	if( state.command = ""){
+		return;
+	}
 	var code = getCode();
 	var codeLines = parseCode(code);
 
-
-	var newCodeLines = updateCodeLine( codeLines, [global.mouseX,global.mouseY] );
-	
+	var newCodeLines = updateCodeLine( codeLines, [ state.mouseX, state.mouseY ]);
 	var newCode = rejoinCode(newCodeLines);
 	updateCode(newCode);
 	drawCode( newCode );
-
+	
 	drawEditHandles( context, newCodeLines );
 	
 	////////////
@@ -104,7 +108,10 @@ function myAnimate(e){
 		requestAnimFrame( myAnimate);
 	}
 	else {
-		global.mouseInHandle = false;
+		state.destArgs = undefined;
+		state.srcArgs = undefined;
+		state.type = undefined;
+		state.flipped = false;
 	}
 }
 
