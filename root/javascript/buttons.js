@@ -164,7 +164,7 @@ function arcButton(context){
 	context.beginPath();
 	pathSetup(context);
 	context.moveTo( 13, 49 );
-	context.arc( 40, 31, 19, 0.4356, 5.1698, false );
+	context.arc( 40, 31, 19, 0.4356, 5.1698 );
 	context.stroke();
 
 	drawMoveTo(context,13, 49 );

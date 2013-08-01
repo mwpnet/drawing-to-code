@@ -23,6 +23,9 @@ function onClickClosePath(){
 	state.command="closePath";
 }
 
+function onClickArcTo(){
+	state.command="arcTo";
+}
 function onClickArc(){
 	state.command="arc";
 }
@@ -64,13 +67,13 @@ function codeStringLineTo(x1,y1,x2,y2){
 // adds control points at a right angle
 // from a line between the two end points
 function codeStringBezierCurveTo(x1,y1,x2,y2){
-	var rightAngle = getRightAngle(x1,y1,x2,y2);
+	var rAngle = rightAngle(x1,y1,x2,y2);
 	
 	var args = [
-	            x1+rightAngle[0],
-	            y1+rightAngle[1],
-	            x2+rightAngle[0],
-	            y2+rightAngle[1],
+	            x1+rAngle[0],
+	            y1+rAngle[1],
+	            x2+rAngle[0],
+	            y2+rAngle[1],
 	            x2,
 	            y2
 	            ];
@@ -82,16 +85,31 @@ function codeStringBezierCurveTo(x1,y1,x2,y2){
 // adds a control point at a right angle
 // from a line between the two end points
 function codeStringQuadraticCurveTo(x1,y1,x2,y2){
-	var rightAngle = getRightAngle(x1,y1,x2,y2);
+	
+	var rAngle = rightAngle(x1,y1,x2,y2);
 	
 	var args = [
-	            ((x2+x1)/2) +rightAngle[0],
-	            ((y2+y1)/2) +rightAngle[1],
+	            ((x2+x1)/2.0) +rAngle[0],
+	            ((y2+y1)/2.0) +rAngle[1],
 	            x2,
 	            y2
 	            ];
 
 	return "\tcontext.quadraticCurveTo( " + args.join(", ") +" );";
+}
+
+function codeStringArcTo(x1,y1,x2,y2){
+	var c=rightAngle(x1,y1,x2,y2);
+	
+	var args = [
+	            c[0],
+	            c[1],
+	            x2,
+	            y2,
+	            50
+	            ];
+
+	return "\tcontext.arcTo( " + args.join(", ") +" );";
 }
 
 function codeStringArc(x1,y1,x2,y2){
@@ -123,6 +141,9 @@ function makeCodeLine(command,x1,y1,x2,y2){
 	else if(command == "quadraticCurveTo"){
 		codePart = codeStringQuadraticCurveTo(x1,y1,x2,y2);
 	}
+	else if(command == "arcTo"){
+		codePart = codeStringArcTo(x1,y1,x2,y2);
+	}
 	else if(command == "arc"){
 		codePart = codeStringArc(x1,y1,x2,y2);
 	}
@@ -146,6 +167,9 @@ function getArgsToBeChanged(command){
 		return [4,5];
 	}
 	else if(command == "quadraticCurveTo"){
+		return [2,3];
+	}
+	else if(command == "arcTo"){
 		return [2,3];
 	}
 	else if(command == "arc"){
@@ -193,7 +217,8 @@ function getInitalPosToInsertAt( codeLines ){
  * @returns
  */
 function addComandToCode(codeLines,x1,y1,x2,y2){
-	
+	debugger;
+
 	if(state.command == ""){
 		return codeLines;
 	}
