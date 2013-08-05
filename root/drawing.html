@@ -5,13 +5,14 @@
 <!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js" ></script>
  -->
 
+<script type="text/javascript" src="javascript/geometry.js"></script>
 <script type="text/javascript" src="javascript/buttons.js"></script>
 <script type="text/javascript" src="javascript/parseCode.js"></script>
-<script type="text/javascript" src="javascript/editCanvas.js"></script>
+<script type="text/javascript" src="javascript/drawPathHandles.js"></script>
 <script type="text/javascript" src="javascript/mouseEvents.js"></script>
 <script type="text/javascript" src="javascript/liveCanvas.js"></script>
 <script type="text/javascript" src="javascript/moveHandle.js"></script>
-<script type="text/javascript" src="javascript/drawLines.js"></script>
+<script type="text/javascript" src="javascript/addPathCommands.js"></script>
 
 <script>
 
@@ -77,8 +78,8 @@ canvas {
 <canvas id="lineToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="lineTo()" onclick="onClickLineTo()"></canvas>
 <canvas id="bezierCurveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
 <canvas id="quadraticCurveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="quadraticCurveTo()" onclick="onClickQuadraticCurveTo()"></canvas>
-<canvas id="arcToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arcTo()"></canvas>
-<canvas id="arcButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arc()"></canvas>
+<canvas id="arcToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arcTo()" onclick="onClickArcTo()"></canvas>
+<canvas id="arcButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arc()" onclick="onClickArc()"></canvas>
 <canvas id="closePathButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="closePath()" onclick="onClickClosePath()"></canvas>
 </div>
 <div id="centerCol">

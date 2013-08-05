@@ -1,5 +1,5 @@
 
-module("drawLines.js");
+module("addPathCommands.js");
 // getRightAngle
 test( "getRightAngle test",6, function() {
 	
@@ -26,44 +26,41 @@ test( "bulk command line sting tests",5, function() {
 
 test( "makeCodeLine test",6, function() {
 	
-	global.command = "foo";
-	equal( makeCodeLine( 1,2,3,4), "","makeCodeLine - no recognizable command");
+	equal( makeCodeLine( "foo", 1,2,3,4), "","makeCodeLine - no recognizable command");
 
-	global.command = "moveTo";
-	equal( makeCodeLine( 1,2,3,4), "\tcontext.moveTo( 3, 4 );","makeCodeLine - moveTo");
+	equal( makeCodeLine( "moveTo", 1,2,3,4), "\tcontext.moveTo( 3, 4 );","makeCodeLine - moveTo");
 	
-	global.command = "lineTo";
-	equal( codeStringLineTo( 1,2,3,4), "\tcontext.lineTo( 3, 4 );","makeCodeLine - lineTo");
+	equal( makeCodeLine( "lineTo", 1,2,3,4), "\tcontext.lineTo( 3, 4 );","makeCodeLine - lineTo");
 	
-	global.command = "bezierCurveTo";//[-.2,.2]
-	equal( codeStringBezierCurveTo( 1,2,3,4), "\tcontext.bezierCurveTo( 0.8, 2.2, 2.8, 4.2, 3, 4 );","makeCodeLine - bezierCurveTo");
+	//[-.2,.2]
+	equal( makeCodeLine( "bezierCurveTo", 1,2,3,4), "\tcontext.bezierCurveTo( 0.8, 2.2, 2.8, 4.2, 3, 4 );","makeCodeLine - bezierCurveTo");
 	
-	global.command = "quadraticCurveTo";//[-.2,.2]
-	equal( codeStringQuadraticCurveTo( 1,2,3,4), "\tcontext.quadraticCurveTo( 1.8, 3.2, 3, 4 );","makeCodeLine - quadraticCurveTo");
+	//[-.2,.2]
+	equal( makeCodeLine( "quadraticCurveTo",1,2,3,4), "\tcontext.quadraticCurveTo( 1.8, 3.2, 3, 4 );","makeCodeLine - quadraticCurveTo");
 	
-	global.command = "closePath";//[-.2,.2]
-	equal( codeStringClosePath( 1,2,3,4), "\tcontext.closePath();","makeCodeLine - closePath");
+	//[-.2,.2]
+	equal( makeCodeLine( "closePath", 1,2,3,4), "\tcontext.closePath();","makeCodeLine - closePath");
 	
 });
 
 test( "getArgsToBeChanged test",6, function() {
 	
-	global.command = "bar";
+	state.command = "bar";
 	deepEqual( getArgsToBeChanged(), [],"getArgsToBeChanged - no command");
 
-	global.command = "moveTo";
+	state.command = "moveTo";
 	ok( getArgsToBeChanged(), "getArgsToBeChanged - moveTo");
 
-	global.command = "lineTo";
+	state.command = "lineTo";
 	ok( getArgsToBeChanged(), "getArgsToBeChanged - lineTo");
 
-	global.command = "bezierCurveTo";
+	state.command = "bezierCurveTo";
 	ok( getArgsToBeChanged(), "getArgsToBeChanged - bezierCurveTo");
 
-	global.command = "quadraticCurveTo";
+	state.command = "quadraticCurveTo";
 	ok( getArgsToBeChanged(), "getArgsToBeChanged - quadraticCurveTo");
 
-	global.command = "closePath";
+	state.command = "closePath";
 	ok( getArgsToBeChanged(), "getArgsToBeChanged - closePath");
 });
 
@@ -137,7 +134,7 @@ test( "getPosToInsertAt test",8, function() {
 	                 "context.closePath();",
 	                 "context.stroke();"
 	                 ];
-	equal( getPosToInsertAt(codeLines), 7,"getPosToInsertAt - closePath");
+	equal( getPosToInsertAt(codeLines), 8,"getPosToInsertAt - closePath");
 
 	var codeLines = [
 	                 "context.beginPath();",
@@ -156,11 +153,11 @@ test( "addComandToCode test",2, function() {
 	                 "context.stroke();"
 	                 ];
 
-	global.command = "bar";
+	state.command = "bar";
 
 	deepEqual( addComandToCode(codeLines,1,2,3,4), codeLines,"addComandToCode - no recognizable command");
 
-	global.command = "lineTo";
+	state.command = "lineTo";
 	var result = [
 	                 "context.moveTo( 101, 113 );",
 	                 "context.lineTo( 246, 78 );",

@@ -23,12 +23,20 @@ function parseCodeLine(codeLine){
 	var argsPart = codeLine.slice(startParen+1,endParen);
 	var endPart = codeLine.slice(endParen);
 	
-	var getArgs = /\d*(?:\d\.?|\.?\d)\d*/g;
+	var getArgs = /(?:(?:\d*(?:\d\.?|\.?\d)\d*)|(?:\btrue\b)|(?:\bfalse\b))/g;
 	var args = argsPart.match( getArgs );
-	
+
 	if( args){
 		for(var i=0,l=args.length; i<l;i++){
-			args[i] = parseFloat( args[i] );
+			if(args[i] == "true"){
+				args[i] = true;
+			}
+			else if( args[i]=="false"){
+				args[i] = false;
+			}
+			else {
+				args[i] = parseFloat( args[i] );
+			}
 		}
 	}
 	else {
@@ -60,10 +68,5 @@ function rejoinCodeLine (functionPart, args, endPart ){
  * and rejoins them into one string
  */
 function rejoinCode(codeLines){
-	try{
-		return codeLines.join("\n") +"\n";
-	}
-	catch(e){
-		debugger;
-	}
+	return codeLines.join("\n") +"\n";
 }

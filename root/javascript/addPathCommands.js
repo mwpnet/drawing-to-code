@@ -5,22 +5,29 @@
 // mouse callbacks
 
 function onClickMoveTo(){
-	global.command = "moveTo";
+	state.command = "moveTo";
 }
 function onClickLineTo(){
-	global.command="lineTo";
+	state.command="lineTo";
 }
 
 function onClickBezierCurveTo(){
-	global.command="bezierCurveTo";
+	state.command="bezierCurveTo";
 }
 
 function onClickQuadraticCurveTo(){
-	global.command="quadraticCurveTo";
+	state.command="quadraticCurveTo";
 }
 
 function onClickClosePath(){
-	global.command="closePath";
+	state.command="closePath";
+}
+
+function onClickArcTo(){
+	state.command="arcTo";
+}
+function onClickArc(){
+	state.command="arc";
 }
 
 /***********************************
@@ -60,13 +67,13 @@ function codeStringLineTo(x1,y1,x2,y2){
 // adds control points at a right angle
 // from a line between the two end points
 function codeStringBezierCurveTo(x1,y1,x2,y2){
-	var rightAngle = getRightAngle(x1,y1,x2,y2);
+	var rAngle = rightAngle(x1,y1,x2,y2);
 	
 	var args = [
-	            x1+rightAngle[0],
-	            y1+rightAngle[1],
-	            x2+rightAngle[0],
-	            y2+rightAngle[1],
+	            x1+rAngle[0],
+	            y1+rAngle[1],
+	            x2+rAngle[0],
+	            y2+rAngle[1],
 	            x2,
 	            y2
 	            ];
@@ -78,16 +85,35 @@ function codeStringBezierCurveTo(x1,y1,x2,y2){
 // adds a control point at a right angle
 // from a line between the two end points
 function codeStringQuadraticCurveTo(x1,y1,x2,y2){
-	var rightAngle = getRightAngle(x1,y1,x2,y2);
+	
+	var rAngle = rightAngle(x1,y1,x2,y2);
 	
 	var args = [
-	            ((x2+x1)/2) +rightAngle[0],
-	            ((y2+y1)/2) +rightAngle[1],
+	            ((x2+x1)/2.0) +rAngle[0],
+	            ((y2+y1)/2.0) +rAngle[1],
 	            x2,
 	            y2
 	            ];
 
 	return "\tcontext.quadraticCurveTo( " + args.join(", ") +" );";
+}
+
+function codeStringArcTo(x1,y1,x2,y2){
+	var c=rightAngle(x1,y1,x2,y2);
+	
+	var args = [
+	            c[0],
+	            c[1],
+	            x2,
+	            y2,
+	            50
+	            ];
+
+	return "\tcontext.arcTo( " + args.join(", ") +" );";
+}
+
+function codeStringArc(x1,y1,x2,y2){
+	return "\tcontext.arc( " + x2 + ", " + y2 + ", 50, 0, 2.0, false );"; // using 2.0 just to avoid 50 decimal places
 }
 
 // closePath code line
@@ -100,49 +126,62 @@ function codeStringClosePath(x1,y1,x2,y2){
  * last fill or stroke
  */
 
-function makeCodeLine(x1,y1,x2,y2){
+function makeCodeLine(command,x1,y1,x2,y2){
 	
 	var codePart = "";
-	if(global.command == "moveTo"){
+	if(command == "moveTo"){
 		codePart = codeStringMoveTo(x1,y1,x2,y2);
 	}
-	else if(global.command == "lineTo"){
+	else if(command == "lineTo"){
 		codePart = codeStringLineTo(x1,y1,x2,y2);
 	}
-	else if(global.command == "bezierCurveTo"){
+	else if(command == "bezierCurveTo"){
 		codePart = codeStringBezierCurveTo(x1,y1,x2,y2);
 	}
-	else if(global.command == "quadraticCurveTo"){
+	else if(command == "quadraticCurveTo"){
 		codePart = codeStringQuadraticCurveTo(x1,y1,x2,y2);
 	}
-	else if(global.command == "closePath"){
+	else if(command == "arcTo"){
+		codePart = codeStringArcTo(x1,y1,x2,y2);
+	}
+	else if(command == "arc"){
+		codePart = codeStringArc(x1,y1,x2,y2);
+	}
+	else if(command == "closePath"){
 		codePart = codeStringClosePath(x1,y1,x2,y2);
 	}
 
 	return codePart;
 }
 
-function getArgsToBeChanged(){
+function getArgsToBeChanged(command){
 
 	var argIndex;
-	if(global.command == "moveTo"){
+	if(command == "moveTo"){
 		return [0,1];
 	}
-	else if(global.command == "lineTo"){
+	else if(command == "lineTo"){
 		return [0,1];
 	}
-	else if(global.command == "bezierCurveTo"){
+	else if(command == "bezierCurveTo"){
 		return [4,5];
 	}
-	else if(global.command == "quadraticCurveTo"){
+	else if(command == "quadraticCurveTo"){
 		return [2,3];
 	}
-	else if(global.command == "closePath"){
+	else if(command == "arcTo"){
+		return [2,3];
+	}
+	else if(command == "arc"){
+		return [0,1];
+	}
+	else if(command == "closePath"){
 		return [];
 	}
 
 	return [];
 }
+
 
 function getPosToInsertAt( codeLines ){
 	for( var i=codeLines.length-1; i>-1; i-- ){
@@ -166,17 +205,26 @@ function getInitalPosToInsertAt( codeLines ){
 	return -1;
 }
 
-/***********************************
- * inserts code line before the 
- * last fill or stroke
+/*****************************
+ * inserts code line after the last
+ * path command
+ * 
+ * @param codeLines
+ * @param x1 - the prev end point
+ * @param y1
+ * @param x2 - the new end point
+ * @param y2
+ * @returns
  */
-
 function addComandToCode(codeLines,x1,y1,x2,y2){
-	var newCodeLine = makeCodeLine(x1,y1,x2,y2);
-	
-	if(newCodeLine == ""){
+	debugger;
+
+	if(state.command == ""){
 		return codeLines;
 	}
+
+	var newCodeLine = makeCodeLine(state.command,x1,y1,x2,y2);
+	
 	
  	var insertedAt = getPosToInsertAt( codeLines );
  	
@@ -184,11 +232,14 @@ function addComandToCode(codeLines,x1,y1,x2,y2){
 		insertedAt = getInitalPosToInsertAt( codeLines );
 	}
 
- 	global.lineBeingChangedIndex = insertedAt;
-	global.argsIndex = getArgsToBeChanged();
+	state.codeLineBeingReferenced = insertedAt;
+	state.destArgs = getArgsToBeChanged(state.command);
+	state.srcArgs = state.destArgs;
+	state.type = "line"
 
 	codeLines.splice(insertedAt,0,newCodeLine);
 	return codeLines;
 }
+
 
 

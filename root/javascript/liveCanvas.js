@@ -1,15 +1,17 @@
 /////////////////////
-// yes globals are bad
 
-var global = {
-		lineBeingChangedIndex:0,
-		argsIndex:NaN,
+var state = {
+		codeLineBeingReferenced:0,
+		destArgs:undefined,
+		srcArgs:undefined,
+		type:"line",
 		mouseX:0,
 		mouseY:0,
 		mouseInHandle:false,
 		command:"",
 		xOld:0,
-		yOld:0
+		yOld:0,
+		flipped:false
 		};
 
 

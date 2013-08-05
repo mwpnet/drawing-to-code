@@ -10,8 +10,8 @@
 <div id="qunit-fixture"></div>
 <script type="text/javascript" src="http://code.jquery.com/qunit/qunit-1.12.0.js"></script>
 <script>
-// globals are evil. still working to get rid of them
-var global = {
+
+var state = {
 		command: ""
 };
 </script>
@@ -22,13 +22,13 @@ var global = {
 <script type="text/javascript" src="../root/javascript/parseCode.js"></script>
 <script type="text/javascript" src="resources/parseCodeTests.js"></script>
 
-<script type="text/javascript" src="../root/javascript/drawLines.js"></script>
-<script type="text/javascript" src="resources/drawLinesTest.js"></script>
+<script type="text/javascript" src="../root/javascript/addPathCommands.js"></script>
+<script type="text/javascript" src="resources/addPathCommandsTest.js"></script>
 
 <script type="text/javascript" src="../root/javascript/moveHandle.js"></script>
 <script type="text/javascript" src="resources/moveHandleTests.js"></script>
 
-<script type="text/javascript" src="../root/javascript/editCanvas.js"></script>
+<script type="text/javascript" src="../root/javascript/drawPathHandles.js"></script>
 <script type="text/javascript" src="resources/editCanvasTest.js"></script>
 
 </body>
