@@ -379,7 +379,7 @@ function drawEditHandles( context, codeLines){
 		}
 		else if(lineparts[0].match( /\b(?:bezierCurveTo)\b/ )){
 			localMoveInfo = drawBezierCurveTo( context, prevEnd[0],prevEnd[1],args[0], args[1], args[2], args[3], args[4], args[5] );
-			prevEnd = [args[4],ags[5]];
+			prevEnd = [args[4],args[5]];
 		}
 		else if(lineparts[0].match( /\b(?:quadraticCurveTo)\b/ )){
 			localMoveInfo = drawQuadraticCurveTo( context, prevEnd[0],prevEnd[1],args[0], args[1], args[2], args[3] );

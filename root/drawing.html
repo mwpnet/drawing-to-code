@@ -48,6 +48,13 @@ canvas {
 	float:right;
 }
 
+#showHide #showHandls {
+	display: none;
+}
+#showHide #hideHandls {
+	display: block;
+}
+
 #errorbox {
 	font-family:monospace;
 	background: #ffbbbb;
@@ -85,6 +92,10 @@ canvas {
 <div id="centerCol">
 <canvas id="editDrawing" width="400" height="400" style="border:1px solid #d3d3d3;">
 Your browser does not support the HTML5 canvas tag.</canvas>
+<div id="showHide">
+	<button id="showHandls">show control handles</button>
+	<button id="hideHandls">hide control handles</button>
+</div>
 </div>
 <div id="rightCol">
 <form onsubmit = "return onExecuteCode()">
