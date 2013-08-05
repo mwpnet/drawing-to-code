@@ -1,4 +1,18 @@
+///////////////////////////
+function slopeInter(x0,y0,x1,y1){
+	var m = (y1-y0)/(x1-x0);
+	var b = y1-m*x1;
+	
+	return [m,b];
+}
 
+
+function perpendiculerSlope(m,b){
+	var m2=-1/m;
+	
+}
+
+/////////////////////////////////////////
 function rightAngle(x1,y1,x2,y2) {
 	return [ -(y2-y1), (x2-x1)];
 }
@@ -61,5 +75,33 @@ function xyToAngle(x,y,x0,y0){ // from 0 to 2PI
 	if(ang<0){
 		ang=2*Math.PI + ang;
 	}
+	return ang;
+}
+
+/////////////////////
+// all the stuff needed for arcTo
+
+function centerFromLines( x0,y0,x1,y1,x2,y2){
+	
+}
+
+function bisectorOfLines( x0,y0,x1,y1,x2,y2){
+	
+}
+function innerAngle( x0,y0,x1,y1,x2,y2){
+	var v1 = [ x0-x1, y0-y1 ];
+	var v2 = [ x2-x1, y2-y1 ];
+	
+	var d1 = distance(x0,y0,x1,y1);
+	var d2 = distance(x2,y2,x1,y1);
+	
+	if( d1==0 || d2==0){
+		return 0;
+	}
+	
+	var dot = Math.abs(v1[0]*v2[0] + v1[1]*v2[1]);
+	
+	var ang = Math.acos( dot/(d1*d2));
+	
 	return ang;
 }
