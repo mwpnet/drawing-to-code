@@ -324,7 +324,7 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw){
 	else if(mouseInCcw){
 		return {
 			destArgs: [5],
-			srcArgs: [],
+			srcArgs: [5],
 			type:"truefalse"
 		};
 	}

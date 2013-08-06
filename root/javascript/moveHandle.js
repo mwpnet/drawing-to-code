@@ -20,6 +20,7 @@ function updateCodeLine(codeLines,newCoords){
 
 	var lineParts = parseCodeLine(codeLines[lineIndex]);
 	var args = lineParts[1];
+	
 	if( type =="rad"){
 		r=distance(newCoords[0],newCoords[1],args[srcArgs[0]],args[srcArgs[1]]);
 		args[destArgs[0]] = Math.round(r); // should be an integer
@@ -39,12 +40,7 @@ function updateCodeLine(codeLines,newCoords){
 		//r = distancePointToLine(args[srcArgs[0]],args[srcArgs[1]],args[srcArgs[2]],args[srcArgs[3]],newCoords[0],newCoords[1]);
 		//args[destArgs[0]] = Math.round(r);
 	}
-	else if( type == "truefalse"){
-		if(!state.flipped){
-			args[destArgs[0]] = ! args[destArgs[0]];
-		}
-	}
-	else {
+	else if( type == "line"){
 		for( var i=0,l=destArgs.length,m=newCoords.length; i<l && i<m; i++){
 			var co=destArgs[i];
 			args[ destArgs[i] ] = newCoords[ i ];
@@ -55,3 +51,24 @@ function updateCodeLine(codeLines,newCoords){
 	return codeLines;
 }
 	 
+
+function updateCodeLineOnce(codeLines,newCoords){
+	var lineIndex = state.codeLineBeingReferenced;
+	var destArgs = state.destArgs;
+	var srcArgs = state.srcArgs;
+	var type = state.type;
+
+	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
+		return codeLines;
+	}
+
+	var lineParts = parseCodeLine(codeLines[lineIndex]);
+	var args = lineParts[1];
+	
+	if( type == "truefalse"){
+			args[destArgs[0]] = ! args[srcArgs[0]];
+	}
+
+	codeLines[lineIndex] = rejoinCodeLine( lineParts[0], args, lineParts[2]);
+	return codeLines;
+}

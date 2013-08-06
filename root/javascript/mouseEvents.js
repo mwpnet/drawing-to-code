@@ -63,11 +63,15 @@ function myOnMouseDown(e) {
 		state.yOld=y;
 	}
 	else {
-			state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
-			state.destArgs = moveInfo.destArgs;
-			state.srcArgs = moveInfo.srcArgs;
-			state.type = moveInfo.type;
-			state.flipped = false;
+		state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
+		state.destArgs = moveInfo.destArgs;
+		state.srcArgs = moveInfo.srcArgs;
+		state.type = moveInfo.type;
+		state.flipped = false;
+
+		var newCodeLines = updateCodeLineOnce(codeLines,[]);
+		var newCode = rejoinCode(newCodeLines);
+		updateCode(newCode);
 	}
 	// 
 	requestAnimFrame( myAnimate);
