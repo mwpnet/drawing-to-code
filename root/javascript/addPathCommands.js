@@ -205,7 +205,7 @@ function getInitalPosToInsertAt( codeLines ){
  */
 function addComandToCode(codeLines,x1,y1,x2,y2){
 
-	if(state.command == ""){
+	if( typeof(state.command) == 'undefined' || state.command == ""){
 		return codeLines;
 	}
 
