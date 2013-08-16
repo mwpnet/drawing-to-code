@@ -30,19 +30,6 @@ function onClickArc(){
 	state.command="arc";
 }
 
-/***********************************
- * geometric stuff
- */
-
-// given two points x1,y1 and x2,y2
-// it finds the point to make a line 
-// at a right angle to the line
-
-function getRightAngle(x1,y1,x2,y2) {
-	//cheap right angle vector
-	var scale=.1;
-	return [ -scale*(y2-y1), scale*(x2-x1)];
-}
 
 /***********************************
  * construct code lines
@@ -86,11 +73,11 @@ function codeStringBezierCurveTo(x1,y1,x2,y2){
 // from a line between the two end points
 function codeStringQuadraticCurveTo(x1,y1,x2,y2){
 	
-	var rAngle = rightAngle(x1,y1,x2,y2);
+	var rAngle = rightAngleCorner(x1,y1,x2,y2);
 	
 	var args = [
-	            ((x2+x1)/2.0) +rAngle[0],
-	            ((y2+y1)/2.0) +rAngle[1],
+	            rAngle[0],
+	            rAngle[1],
 	            x2,
 	            y2
 	            ];
@@ -99,14 +86,14 @@ function codeStringQuadraticCurveTo(x1,y1,x2,y2){
 }
 
 function codeStringArcTo(x1,y1,x2,y2){
-	var c=rightAngle(x1,y1,x2,y2);
+	var c=rightAngleCorner(x1,y1,x2,y2);
 	
 	var args = [
 	            c[0],
 	            c[1],
 	            x2,
 	            y2,
-	            50
+	            25
 	            ];
 
 	return "\tcontext.arcTo( " + args.join(", ") +" );";
@@ -217,13 +204,12 @@ function getInitalPosToInsertAt( codeLines ){
  * @returns
  */
 function addComandToCode(codeLines,x1,y1,x2,y2){
-	debugger;
 
 	if(state.command == ""){
 		return codeLines;
 	}
 
-	var newCodeLine = makeCodeLine(state.command,x1,y1,x2,y2);
+	var myNewCodeLine = makeCodeLine(state.command,x1,y1,x2,y2);
 	
 	
  	var insertedAt = getPosToInsertAt( codeLines );
@@ -232,13 +218,19 @@ function addComandToCode(codeLines,x1,y1,x2,y2){
 		insertedAt = getInitalPosToInsertAt( codeLines );
 	}
 
-	state.codeLineBeingReferenced = insertedAt;
-	state.destArgs = getArgsToBeChanged(state.command);
-	state.srcArgs = state.destArgs;
-	state.type = "line"
-
-	codeLines.splice(insertedAt,0,newCodeLine);
-	return codeLines;
+	var argsIndex = getArgsToBeChanged(state.command);
+	var moveInfo = {
+			codeLineBeingReferenced: insertedAt,
+			destArgs: argsIndex,
+			srcArgs: argsIndex,
+			type: "line",
+			flipped: false,
+			xOld: x2,
+			yOld: y2,
+			
+			newCodeLine: myNewCodeLine
+	};
+	return moveInfo;
 }
 
 

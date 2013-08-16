@@ -227,7 +227,7 @@ function drawQuadraticCurveTo(context,xold,yold,cx,cy,x,y) {
 }
 
 
-function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y,r) {
+function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y,r,  cx,cy, startAngle, endAngle, ccw, newEndX,newEndY) {
 	drawLinesToConrolePoints(context,xold,yold,c1x,c1y);
 	var mouseInHandle1 = drawControlePointHandle(context,c1x,c1y);
 
@@ -235,11 +235,12 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y,r) {
 	var mouseInHandle2 = drawControlePointHandle(context,c2x,c2y);
 	
 	// radiouse control handle here XXX
-	var center = [100,100];//arcToCenter(xold,yold,c1x,c1y,c2x,c2y,r);
-	var mouseInCircleHandle = drawControlePointHandle(context,center[0],center[1]);
-	drawCircleForArcs(context,center[0],center[1],r, 0, 2*Math.Pi, false);
+	var center = [cx,cy];
+	var mouseInCircleHandle = drawControlePointHandle(context,cx,cy);
+	drawCircleForArcs(context,cx,cy,r,startAngle, endAngle, ccw);
 
-
+	drawPathX(context,newEndX,newEndY);
+	
 	if(mouseInHandle1){
 		return {
 			destArgs: [0,1],
@@ -257,8 +258,8 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y,r) {
 	else if(mouseInCircleHandle){
 		return{
 			destArgs: [4],
-			srcArgs: [0,1,2,3],
-			type:"arcTo"
+			srcArgs: [0,1,2,3,4],
+			type:"rad2"
 		};
 	}
 	
@@ -266,7 +267,7 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y,r) {
 
 }
 
-function drawArc(context, cx,cy,r, startAngle, endAngle, ccw){
+function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY){
 	//arc(x, y, r, startAngle, endAngle, counterClockwise)
 	var extra = 20.0;
 	
@@ -288,6 +289,9 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw){
 	
 	// mapping circle
 	drawCircleForArcs(context,cx,cy,r, startAngle, endAngle, ccw);
+
+	// new end poiont
+	drawPathX(context,newEndX,newEndY);
 
 	// clockwise/counter clockwise handle
 		
@@ -355,7 +359,7 @@ function drawEditHandles( context, codeLines){
 	var moveInfo = undefined;
 	
 	var anyTrue = false;
-	
+
 	for( var i=0, l=codeLines.length; i<l; i++){
 		
 		var localMoveInfo = undefined;
@@ -383,26 +387,31 @@ function drawEditHandles( context, codeLines){
 		}
 		else if(lineparts[0].match( /\b(?:quadraticCurveTo)\b/ )){
 			localMoveInfo = drawQuadraticCurveTo( context, prevEnd[0],prevEnd[1],args[0], args[1], args[2], args[3] );
-			prevEnd = [args[2],ags[3]];
+			prevEnd = [args[2],args[3]];
 		}
 		else if(lineparts[0].match( /\b(?:arcTo)\b/ )){
-			//XXX - need to add prev end point
-			localMoveInfo = drawArcTo( context, prevEnd[0], prevEnd[1], args[0], args[1], args[2], args[3], args[4] );
-			
+			var params = computArcToParameters(prevEnd[0], prevEnd[1], args[0], args[1], args[2], args[3], args[4]);
+			localMoveInfo = drawArcTo( context, prevEnd[0], prevEnd[1], args[0], args[1], args[2], args[3], args[4], params[0], params[1], params[2],params[3], params[4],params[5],params[6]);
+			prevEnd = [params[5],params[6]];
 		}
 		else if(lineparts[0].match( /\b(?:arc)\b/ )){
-			localMoveInfo = drawArc( context, args[0], args[1], args[2], args[3], args[4], args[5] );
 			
 			var centerX = args[0];
 			var centerY = args[1];
 			var r = args[2];
 			var ang = args[4]; // end angle
-			delta = angleToXY(ang,centerX,centerY,r);
-			prevEnd = [ centerX+delta[0], centerY+delta[1] ];
+			var newEnd = angleToXY(ang,centerX,centerY,r);
+
+			localMoveInfo = drawArc( context, args[0], args[1], args[2], args[3], args[4], args[5], newEnd[0], newEnd[1] );
+			
+			prevEnd = [ newEnd[0], newEnd[1] ];
 		}
+		
 		if(typeof localMoveInfo != 'undefined'){
 			moveInfo = localMoveInfo;
 			moveInfo.codeLineBeingReferenced = i;
+			moveInfo.xOld=prevEnd[0];
+			moveInfo.yOld=prevEnd[1];
 		}
 	}
 	

@@ -18,12 +18,12 @@ function parseCodeLine(codeLine){
 	if( startParen <0){
 		return [ codeLine, [], ""];
 	}
-	
+
 	var functionPart = codeLine.slice(0,startParen+1);
 	var argsPart = codeLine.slice(startParen+1,endParen);
 	var endPart = codeLine.slice(endParen);
-	
-	var getArgs = /(?:(?:\d*(?:\d\.?|\.?\d)\d*)|(?:\btrue\b)|(?:\bfalse\b))/g;
+
+	var getArgs = /(?:-?\d*(?:\d\.?|\.?\d)\d*)|(?:\btrue\b)|(?:\bfalse\b)/g;
 	var args = argsPart.match( getArgs );
 
 	if( args){
@@ -61,6 +61,20 @@ function rejoinCodeLine (functionPart, args, endPart ){
 
 	var newLine = functionPart + argsString + endPart;
 	return newLine;
+}
+
+function parseCodeLineAssignment(codeLine){
+	var objStart = codeLine.indexOf(".");
+	var startValue = codeLine.indexOf("=");
+	var endValue = codeLine.indexOf(";");
+	
+	var objPart = codeLine.slice(0,objStart);
+	var propertyPart = codeLine.slice(objStart+1,startValue+1);
+	var valuePart = codeLine.slice(startValue+1,endValue);
+	var restPart = codeLine.slice(endParen);
+	
+	return 
+	
 }
 
 /*

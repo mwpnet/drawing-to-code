@@ -14,7 +14,32 @@ function perpendiculerSlope(m,b){
 
 /////////////////////////////////////////
 function rightAngle(x1,y1,x2,y2) {
-	return [ -(y2-y1), (x2-x1)];
+	// trying to 
+	//(x2-cx)^2 +(y2-cy)^2  +  (cx-x1)^2 + (cy-y1)^2 = (x2-x1)^2 + (y2-y1)^2
+	//x2^2 - 2*x2*cx + cx^2 + y2^2 - 2*y2*cy +cy^2 + cx^2 -2*cx*x1 + x1^2 +cy^2 - 2*cy*y1 + y1^2 = x2^2 -2*x2*x1 + x1^2 +y2^2 -2*y2*y1+y1^2
+	// -2*x2*cx + cx^2  -2*y2*cy +cy^2 + cx^2 -2*cx*x1  +cy^2 - 2*cy*y1 =  -2*x2*x1 -2*y2*y1
+	// -x2*cx + cx^2  -y2*cy +cy^2  -cx*x1  -cy*y1 =  -x2*x1 -y2*y1
+	// cx^2 -x2*cx-cx*x1-x2*x1 + cy^2-y2*cy-cy*y1-y2*y1=0
+	// cx^2 -(x2-x1)*cx-x2*x1 + cy^2-(y2-y1)*cy-y2*y1=0
+	
+
+	//	(x2-cx)^2 +(y2-cy)^2 = (cx-x1)^2 + (cy-y1)^2
+	// x2^2-2*x2*cx+cx^2 + y2^2-2*y2*cy +cy^2 = cx^2-2*cx*x1 +x1^2 + cy^2-2*cy*y1+y1^2
+	// x2^2-2*x2*cx+ + y2^2-2*y2*cy  = -2*cx*x1 +x1^2 -2*cy*y1+y1^2
+	// x2^2-x1^2 -2*(x2-x1)*cx + y2^2-y1^2 -2*(y2-y1)*cy =0
+	
+	return [ (y2-y1)/2.0, (x2-x1)/2.0];
+}
+
+function centerOfLine(x1,y1,x2,y2) {
+	return [ (x1+x2)/2.0, (y1+y2)/2.0];	
+}
+
+function rightAngleCorner(x1,y1,x2,y2) {
+	ce = centerOfLine(x1,y1,x2,y2);
+	ri = rightAngle(x1,y1,x2,y2);
+	
+	return [ ce[0]+ri[0], ce[1]+ri[1]];
 }
 
 function distance(x1,y1,x2,y2){
@@ -72,7 +97,7 @@ function angleToXY(angle,x0,y0,r){
 
 function xyToAngle(x,y,x0,y0){ // from 0 to 2PI
 	var ang = Math.atan2(y-y0,x-x0);
-	if(ang<0){
+	if(ang<0.0){
 		ang=2*Math.PI + ang;
 	}
 	return ang;
@@ -104,4 +129,100 @@ function innerAngle( x0,y0,x1,y1,x2,y2){
 	var ang = Math.acos( dot/(d1*d2));
 	
 	return ang;
+}
+
+
+//////////////////////////////
+// taken directly from
+//    https://hg.mozilla.org/mozilla-central/file/e97819582eed/content/canvas/src/nsCanvasRenderingContext2D.cpp
+// the nsCanvasRenderingContext2D::ArcTo method
+// -XXX - need to figure out licensing
+
+function computArcToParameters(x0,y0,x1,y1,x2,y2,r){
+	var dir = (x2-x1)*(y0-y1) + (y2-y1)*(x1-x0); // ???
+	
+	var a2 = (x0-x1)*(x0-x1) + (y0-y1)*(y0-y1); //distance from p0 to p1
+	var b2 = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2); //distance from p1 to p2
+	var c2 = (x0-x2)*(x0-x2) + (y0-y2)*(y0-y2); //distance from p0 to p2
+	
+	var cosx = (a2+b2-c2)/(2*Math.sqrt(a2*b2)); // the cos of the angle p0-p1-p2
+	var sinx = Math.sqrt(1 - cosx*cosx); // the sin of the angle p0-p1-p2
+	
+	var d = r / ((1 - cosx) / sinx); // ???
+	//var d = r * Math.sqrt(1 + cosx); // if I got my math right
+	
+	var anx = (x1-x0) / Math.sqrt(a2); // unit vector from p1 towards p0
+	var any = (y1-y0) / Math.sqrt(a2); //   ...
+	var bnx = (x1-x2) / Math.sqrt(b2); // unit vector from p1 towards p2
+	var bny = (y1-y2) / Math.sqrt(b2); //   ...
+	
+	var x3 = x1 - anx*d; // vector from p1 towards p0, ending at tangent to circle
+	var y3 = y1 - any*d; //   ...
+	var x4 = x1 - bnx*d; // vector from p1 towards p2, ending at tangent to circle
+	var y4 = y1 - bny*d; //   ...
+	
+	var anticlockwise = (dir < 0);
+	
+	var cx = x3 + any*r*(anticlockwise ? 1 : -1);
+	var cy = y3 - anx*r*(anticlockwise ? 1 : -1);
+	
+	var angle0 = Math.atan2((y3-cy), (x3-cx));
+	var angle1 = Math.atan2((y4-cy), (x4-cx));
+		
+	return [cx,cy,angle0,angle1,anticlockwise,x4,y4]
+}
+
+function computCenterToParameters(cx,cy,x1,y1,x2,y2){
+	//var dir = (x2-x1)*(y0-y1) + (y2-y1)*(x1-x0); // ???
+	
+	//var a2 = (x0-x1)*(x0-x1) + (y0-y1)*(y0-y1); //distance from p0 to p1
+	var b2 = (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2); //distance from p1 to p2
+	//var c2 = (x0-x2)*(x0-x2) + (y0-y2)*(y0-y2); //distance from p0 to p2
+	
+	//var cosx = (a2+b2-c2)/(2*Math.sqrt(a2*b2)); // the cos of the angle p0-p1-p2
+	//var sinx = Math.sqrt(1 - cosx*cosx); // the sin of the angle p0-p1-p2
+	
+	//var d = r / ((1 - cosx) / sinx); // ???
+	//var d = r * Math.sqrt(1 + cosx); // if I got my math right
+	
+	//var anx = (x1-x0) / Math.sqrt(a2); // unit vector from p1 towards p0
+	//var any = (y1-y0) / Math.sqrt(a2); //   ...
+	var bnx = (x1-x2) / Math.sqrt(b2); // unit vector from p1 towards p2
+	var bny = (y1-y2) / Math.sqrt(b2); //   ...
+	
+	//var x3 = x1 - anx*d; // vector from p1 towards p0, ending at tangent to circle
+	//var y3 = y1 - any*d; //   ...
+	var x4 = x1 - bnx*d; // vector from p1 towards p2, ending at tangent to circle
+	var y4 = y1 - bny*d; //   ...
+	
+	//var anticlockwise = (dir < 0);
+	
+	var cx = x4 - bny*r*(anticlockwise ? 1 : -1);
+	var cy = y4 + bnx*r*(anticlockwise ? 1 : -1);
+	
+	// cx-x4 = -bny*r*s;
+	// cy-y4 = bnx*r*s;
+	var dx=(cx-x4)/bny;
+	var dy=(cy-y4)/bnx;
+	
+	var r=Math.sqrt( dx*dx+dy*dy);
+	
+	//var angle0 = Math.atan2((y3-cy), (x3-cx));
+	var angle1 = Math.atan2((y4-cy), (x4-cx));
+		
+	return [r,angle1,x4,y4];
+}
+
+function computRad(xp,yp,x1,y1,x2,y2,cx,cy){
+	var un = distance(cx,cy,x1,y1);
+	var d= distance(xp,yp,x1,y1);
+	
+	var ux = (cx-x1)/un;
+	var uy = (cy-y1)/un;
+	
+	var newcx = x1+d*ux;
+	var newcy = y1+d*uy;
+		
+	var newr = distancePointToLine(x1,y1,x2,y2,newcx,newcy); 
+	return newr;
 }

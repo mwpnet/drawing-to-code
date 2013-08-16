@@ -151,24 +151,37 @@ function arcToButton(context){
 	pathSetup(context);
 	
 	context.moveTo( 13, 44 );
-	context.arcTo( 44, 51, 37, 16,10);
+	context.arcTo( 44, 51, 37, 16,15);
 	context.stroke();
 	
 	drawMoveTo(context,13, 44 );
-	drawArcTo(context, 13, 44, 44, 51, 37, 16);
-	//commingSoon(context);
+
+	var params = computArcToParameters(13, 44, 44, 51, 37, 16, 15);
+	
+	drawArcTo(context,13,44,44,51,37,16,15,  params[0], params[1], params[2],params[3], params[4],params[5],params[6]);
 	
 }
 
 function arcButton(context){
+
+	var centerX = 40;
+	var centerY = 31;
+	var r = 19;
+	var startAng = 0.4356;
+	var endAng = 5.1698; // end angle
+	var delta = angleToXY(endAng,centerX,centerY,r);
+
+	var prevEndX = delta[0];
+	var prevEndY = delta[1];
+	
 	context.beginPath();
 	pathSetup(context);
 	context.moveTo( 13, 49 );
-	context.arc( 40, 31, 19, 0.4356, 5.1698 );
+	context.arc( centerX, centerY, r, startAng, endAng );
 	context.stroke();
 
 	drawMoveTo(context,13, 49 );
-	drawArc(context, 40, 31, 19, 0.4356, 5.1698, false)
+	drawArc(context, centerX, centerY, r, startAng, endAng, false, prevEndX,prevEndY);
 }
 
 function commingSoon(context){

@@ -12,6 +12,9 @@ var state = {
 		xOld:0,
 		yOld:0,
 		flipped:false
+		
+		/////////////////////////////
+		
 		};
 
 

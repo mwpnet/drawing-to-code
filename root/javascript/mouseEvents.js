@@ -57,11 +57,22 @@ function myOnMouseDown(e) {
 		var x = e.pageX - canvas.offsetLeft;
 		var y = e.pageY - canvas.offsetTop;
 		
-		var newCodeLines = addComandToCode(codeLines,state.xOld,state.yOld,x,y);
-		updateCode(rejoinCode(newCodeLines));
-		state.xOld=x;
-		state.yOld=y;
+		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,x,y);
+
+		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine);
+		updateCode(rejoinCode(codeLines));
 	}
+<<<<<<< HEAD
+
+	state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
+	state.destArgs = moveInfo.destArgs;
+	state.srcArgs = moveInfo.srcArgs;
+	state.type = moveInfo.type;
+	state.flipped = false;
+	state.xOld=moveInfo.xOld;
+	state.yOld=moveInfo.yOld;
+
+=======
 	else {
 		state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
 		state.destArgs = moveInfo.destArgs;
@@ -73,6 +84,7 @@ function myOnMouseDown(e) {
 		var newCode = rejoinCode(newCodeLines);
 		updateCode(newCode);
 	}
+>>>>>>> refs/heads/master
 	// 
 	requestAnimFrame( myAnimate);
 	keepAnimating=true;
@@ -94,12 +106,10 @@ function myOnMouseMove(e){
 
 function myAnimate(e){
 
-	if( state.command = ""){
-		return;
-	}
 	var code = getCode();
 	var codeLines = parseCode(code);
-
+	
+	
 	var newCodeLines = updateCodeLine( codeLines, [ state.mouseX, state.mouseY ]);
 	var newCode = rejoinCode(newCodeLines);
 	updateCode(newCode);
