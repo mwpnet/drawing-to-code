@@ -62,6 +62,7 @@ function myOnMouseDown(e) {
 		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine);
 		updateCode(rejoinCode(codeLines));
 	}
+<<<<<<< HEAD
 
 	state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
 	state.destArgs = moveInfo.destArgs;
@@ -71,6 +72,19 @@ function myOnMouseDown(e) {
 	state.xOld=moveInfo.xOld;
 	state.yOld=moveInfo.yOld;
 
+=======
+	else {
+		state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
+		state.destArgs = moveInfo.destArgs;
+		state.srcArgs = moveInfo.srcArgs;
+		state.type = moveInfo.type;
+		state.flipped = false;
+
+		var newCodeLines = updateCodeLineOnce(codeLines,[]);
+		var newCode = rejoinCode(newCodeLines);
+		updateCode(newCode);
+	}
+>>>>>>> refs/heads/master
 	// 
 	requestAnimFrame( myAnimate);
 	keepAnimating=true;

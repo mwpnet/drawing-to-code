@@ -24,6 +24,10 @@ var preCode;
 var codeBlock;
 var postCode;
 
+var showHandles = true;
+var showButton;
+var hideButton;
+
 ////////////////////////////////////
 function init(){
 	
@@ -40,7 +44,32 @@ function init(){
 	canvas.onmousemove = myOnMouseMove;
 
 	onExecuteCode();
+	
+	showButton = document.getElementById('showHandls');
+	showButton.onclick = showControlHandles;
+	hideButton = document.getElementById('hideHandls');
+	hideButton.onclick = hideControlHandles;
 }
+
+function hideControlHandles(e){
+	showButton.style.display = "block";
+	hideButton.style.display = "none";
+	showHandles = false;
+	canvas.onmousedown = undefined;
+	canvas.onmouseup = undefined;
+	canvas.onmousemove = undefined;
+	onExecuteCode();
+}
+function showControlHandles(e){
+	showButton.style.display = "none";
+	hideButton.style.display = "block";
+	showHandles = true;
+	canvas.onmousedown = myOnMouseDown;
+	canvas.onmouseup = myOnMouseUp;
+	canvas.onmousemove = myOnMouseMove;
+	onExecuteCode();
+}
+
 ////////////////////////////////
 ////////////////////////////////
 function getCode(){
@@ -75,8 +104,10 @@ function onExecuteCode(){
     context.strokeStyle = 'red';
 
 	drawCode( code );
-	var codeLines = parseCode(code);
-	drawEditHandles( context, codeLines );
+	if(showHandles){
+		var codeLines = parseCode(code);
+		drawEditHandles( context, codeLines );
+	}
 	return false;
 }
 
