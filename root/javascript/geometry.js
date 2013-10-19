@@ -8,8 +8,7 @@ function slopeInter(x0,y0,x1,y1){
 
 
 function perpendiculerSlope(m,b){
-	var m2=-1/m;
-	
+	return -1.0/m;
 }
 
 /////////////////////////////////////////
@@ -169,7 +168,7 @@ function computArcToParameters(x0,y0,x1,y1,x2,y2,r){
 	var angle0 = Math.atan2((y3-cy), (x3-cx));
 	var angle1 = Math.atan2((y4-cy), (x4-cx));
 		
-	return [cx,cy,angle0,angle1,anticlockwise,x4,y4]
+	return [cx,cy,angle0,angle1,anticlockwise,x4,y4];
 }
 
 function computCenterToParameters(cx,cy,x1,y1,x2,y2){
@@ -213,16 +212,19 @@ function computCenterToParameters(cx,cy,x1,y1,x2,y2){
 	return [r,angle1,x4,y4];
 }
 
-function computRad(xp,yp,x1,y1,x2,y2,cx,cy){
-	var un = distance(cx,cy,x1,y1);
-	var d= distance(xp,yp,x1,y1);
+///////////////////////////////////
+// given three points x0,y0 x1,y1 and x2,y2
+// and a distance d from x1,y1 hwo big a 
+// circle would fit into the wedge.
+//
+function computRad(x0,y0,x1,y1,x2,y2,d){
 	
-	var ux = (cx-x1)/un;
-	var uy = (cy-y1)/un;
+	var lineAng = innerAngle(x0,y0,x1,y1,x2,y2)/2.0;
 	
-	var newcx = x1+d*ux;
-	var newcy = y1+d*uy;
-		
-	var newr = distancePointToLine(x1,y1,x2,y2,newcx,newcy); 
+	var dx = Math.cos(lineAng);
+	var dy = Math.sin(lineAng);
+	
+	var newr = distancePointToLine(x1,y1,x2,y2,dx,dy); 
+	
 	return newr;
 }
