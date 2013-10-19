@@ -1,4 +1,11 @@
+
+
+/******* general geometry stuff ******/
 ///////////////////////////
+// given two points x0,y1 and x1,y1
+// computes the slope and intersection:
+//		y = mx + b
+//
 function slopeInter(x0,y0,x1,y1){
 	var m = (y1-y0)/(x1-x0);
 	var b = y1-m*x1;
@@ -6,35 +13,37 @@ function slopeInter(x0,y0,x1,y1){
 	return [m,b];
 }
 
-
+//XXX
 function perpendiculerSlope(m,b){
 	var m2=-1/m;
 	
 }
 
 /////////////////////////////////////////
+// given two points x1,y1 and x2,y2 will
+// return a points x,y so that the
+// line from x1,y1 to x,y is at a right 
+//angle to line from x1,y1 to x2,y2
+//XXX - cheep right now - should make this some kind of unit length
 function rightAngle(x1,y1,x2,y2) {
-	// trying to 
-	//(x2-cx)^2 +(y2-cy)^2  +  (cx-x1)^2 + (cy-y1)^2 = (x2-x1)^2 + (y2-y1)^2
-	//x2^2 - 2*x2*cx + cx^2 + y2^2 - 2*y2*cy +cy^2 + cx^2 -2*cx*x1 + x1^2 +cy^2 - 2*cy*y1 + y1^2 = x2^2 -2*x2*x1 + x1^2 +y2^2 -2*y2*y1+y1^2
-	// -2*x2*cx + cx^2  -2*y2*cy +cy^2 + cx^2 -2*cx*x1  +cy^2 - 2*cy*y1 =  -2*x2*x1 -2*y2*y1
-	// -x2*cx + cx^2  -y2*cy +cy^2  -cx*x1  -cy*y1 =  -x2*x1 -y2*y1
-	// cx^2 -x2*cx-cx*x1-x2*x1 + cy^2-y2*cy-cy*y1-y2*y1=0
-	// cx^2 -(x2-x1)*cx-x2*x1 + cy^2-(y2-y1)*cy-y2*y1=0
-	
-
-	//	(x2-cx)^2 +(y2-cy)^2 = (cx-x1)^2 + (cy-y1)^2
-	// x2^2-2*x2*cx+cx^2 + y2^2-2*y2*cy +cy^2 = cx^2-2*cx*x1 +x1^2 + cy^2-2*cy*y1+y1^2
-	// x2^2-2*x2*cx+ + y2^2-2*y2*cy  = -2*cx*x1 +x1^2 -2*cy*y1+y1^2
-	// x2^2-x1^2 -2*(x2-x1)*cx + y2^2-y1^2 -2*(y2-y1)*cy =0
-	
 	return [ (y2-y1)/2.0, (x2-x1)/2.0];
 }
 
+/////////////////////////////////////////
+// given two points x1,y1 and x2,y2 will
+// find the x,y that is the mid point on 
+// a line from x1,y1 to x2,y2
+//
 function centerOfLine(x1,y1,x2,y2) {
 	return [ (x1+x2)/2.0, (y1+y2)/2.0];	
 }
 
+/////////////////////////////////////////
+// given two points x1,y1 and x2,y2 will
+// will find the x,y that is centered 
+// between x1,y1 and x2,y2 but off set 
+// from the line between the two
+//
 function rightAngleCorner(x1,y1,x2,y2) {
 	ce = centerOfLine(x1,y1,x2,y2);
 	ri = rightAngle(x1,y1,x2,y2);
@@ -42,10 +51,17 @@ function rightAngleCorner(x1,y1,x2,y2) {
 	return [ ce[0]+ri[0], ce[1]+ri[1]];
 }
 
+/////////////////////////////////////////
+//given two points x1,y1 and x2,y2 will
+// find the distance between the two.
 function distance(x1,y1,x2,y2){
 	return Math.sqrt( Math.pow((x2-x1),2) + Math.pow((y2-y1),2) );
 }
 
+/////////////////////////////////////////
+//given two points x1,y1 and x2,y2 and a 
+// point xp,yp will find the minimal distance 
+// from xp,yp to the line between x1,y1 and x2,y2
 function distancePointToLine(x1,y1,x2,y2,xp,yp){
 	// ax+by+1 = 0
 	
@@ -65,6 +81,7 @@ function distancePointToLine(x1,y1,x2,y2,xp,yp){
 	return d;
 }
 
+/////////////////////////////////////////
 function lenthForRightTriangle( x1,y1,x2,y2){
 	return rightAngle(x1,y1,x2,y2);
 }
@@ -86,8 +103,12 @@ function scaleRightAngle(x1,y1,x2,y2,l){
 }
 ***/
 
-// Arc computations and stuff
+/****** Arc computations and stuff ******/
 
+/////////////////////////////////////////
+// given an angle, will return the point x,y
+// on a circle centered at x0,y0 with radious r
+//
 function angleToXY(angle,x0,y0,r){
 	var dx = r*Math.cos(angle);
 	var dy = r*Math.sin(angle);
@@ -95,24 +116,39 @@ function angleToXY(angle,x0,y0,r){
 	return [x0+dx,y0+dy];
 }
 
+/////////////////////////////////////////
+// given two points x,y and x0,y0 will find 
+// the angle from the horizontal of a line 
+// between the two.
+// note: angle is from 0 to 2*PI
+//
 function xyToAngle(x,y,x0,y0){ // from 0 to 2PI
 	var ang = Math.atan2(y-y0,x-x0);
 	if(ang<0.0){
-		ang=2*Math.PI + ang;
+		ang=2.0*Math.PI + ang;
 	}
 	return ang;
 }
 
-/////////////////////
-// all the stuff needed for arcTo
+/******** all the stuff needed for arcTo ******/
 
+/////////////////////////////////////////
 function centerFromLines( x0,y0,x1,y1,x2,y2){
 	
 }
 
+/////////////////////////////////////////
 function bisectorOfLines( x0,y0,x1,y1,x2,y2){
 	
 }
+
+/////////////////////////////////////////
+// given three points x0,y0 x1,y1 and x2,y2
+// gives the angle between the line from 
+// x0,y0 to x1,y1 and the line from x1,y1 
+// to x2,y2
+// XXX - need to check the floating point accuracy
+//
 function innerAngle( x0,y0,x1,y1,x2,y2){
 	var v1 = [ x0-x1, y0-y1 ];
 	var v2 = [ x2-x1, y2-y1 ];
@@ -133,11 +169,21 @@ function innerAngle( x0,y0,x1,y1,x2,y2){
 
 
 //////////////////////////////
+// given the last end point x0,y0, 
+// and the rest of the arcTo parameters, 
+// gives the parameters necisary to 
+// draw the inset circle, and the 
+// resulting new end point x4,y4.
+// The circle parameters are the center 
+// point cx,cy, start angle, end angles, 
+// and whether to go clockwise or 
+// counter clockwise.
+//
 // taken directly from
 //    https://hg.mozilla.org/mozilla-central/file/e97819582eed/content/canvas/src/nsCanvasRenderingContext2D.cpp
 // the nsCanvasRenderingContext2D::ArcTo method
 // -XXX - need to figure out licensing
-
+//
 function computArcToParameters(x0,y0,x1,y1,x2,y2,r){
 	var dir = (x2-x1)*(y0-y1) + (y2-y1)*(x1-x0); // ???
 	
@@ -172,6 +218,8 @@ function computArcToParameters(x0,y0,x1,y1,x2,y2,r){
 	return [cx,cy,angle0,angle1,anticlockwise,x4,y4]
 }
 
+//////////////////////////////////
+// 
 function computCenterToParameters(cx,cy,x1,y1,x2,y2){
 	//var dir = (x2-x1)*(y0-y1) + (y2-y1)*(x1-x0); // ???
 	
@@ -213,6 +261,7 @@ function computCenterToParameters(cx,cy,x1,y1,x2,y2){
 	return [r,angle1,x4,y4];
 }
 
+//////////////////////////////
 function computRad(xp,yp,x1,y1,x2,y2,cx,cy){
 	var un = distance(cx,cy,x1,y1);
 	var d= distance(xp,yp,x1,y1);
