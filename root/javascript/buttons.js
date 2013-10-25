@@ -28,7 +28,8 @@ function buttonSetUp(){
 	buttonContext = button.getContext('2d');
 	closePathButton(buttonContext);
 
-
+	// set up initial button press
+	onClickMoveTo();
 }
 
 function pathSetup(context){
