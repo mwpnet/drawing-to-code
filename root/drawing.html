@@ -2,8 +2,7 @@
 <title>drawing to canvas code</title>
 <meta charset="utf-8"/>
 
-<!-- <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js" ></script>
- -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js" ></script>
 
 <script type="text/javascript" src="javascript/geometry.js"></script>
 <script type="text/javascript" src="javascript/buttons.js"></script>
@@ -35,6 +34,11 @@ canvas {
 	width: 74;
 	display:inline;
 	float:left;
+}
+#buttons canvas {
+	border-style: outset;
+	border-width:medium;
+	border-color: black;
 }
 
 #centerCol {
@@ -81,13 +85,13 @@ canvas {
 <body>
 
 <div id="buttons">
-<canvas id="moveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="moveTo()" onclick="onClickMoveTo()"></canvas>
-<canvas id="lineToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="lineTo()" onclick="onClickLineTo()"></canvas>
-<canvas id="bezierCurveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
-<canvas id="quadraticCurveToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="quadraticCurveTo()" onclick="onClickQuadraticCurveTo()"></canvas>
-<canvas id="arcToButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arcTo()" onclick="onClickArcTo()"></canvas>
-<canvas id="arcButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="arc()" onclick="onClickArc()"></canvas>
-<canvas id="closePathButton" width="64" height="64" style="border:1px solid #d3d3d3;" title="closePath()" onclick="onClickClosePath()"></canvas>
+<canvas id="moveToButton" width="64" height="64" title="moveTo()" onclick="onClickMoveTo()"></canvas>
+<canvas id="lineToButton" width="64" height="64" title="lineTo()" onclick="onClickLineTo()"></canvas>
+<canvas id="bezierCurveToButton" width="64" height="64" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
+<canvas id="quadraticCurveToButton" width="64" height="64" title="quadraticCurveTo()" onclick="onClickQuadraticCurveTo()"></canvas>
+<canvas id="arcToButton" width="64" height="64" title="arcTo()" onclick="onClickArcTo()"></canvas>
+<canvas id="arcButton" width="64" height="64" title="arc()" onclick="onClickArc()"></canvas>
+<canvas id="closePathButton" width="64" height="64" title="closePath()" onclick="onClickClosePath()"></canvas>
 </div>
 <div id="centerCol">
 <canvas id="editDrawing" width="400" height="400" style="border:1px solid #d3d3d3;">
