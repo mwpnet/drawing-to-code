@@ -143,7 +143,6 @@ function makeCodeLine(command,x1,y1,x2,y2){
 
 function getArgsToBeChanged(command){
 
-	var argIndex;
 	if(command == "moveTo"){
 		return [0,1];
 	}
@@ -203,13 +202,13 @@ function getInitalPosToInsertAt( codeLines ){
  * @param y2
  * @returns
  */
-function addComandToCode(codeLines,x1,y1,x2,y2){
+function addComandToCode(codeLines,x1,y1,x2,y2,info){
 
-	if( typeof(state.command) == 'undefined' || state.command == ""){
+	if( typeof(info.command) == 'undefined' || info.command == ""){
 		return codeLines;
 	}
 
-	var myNewCodeLine = makeCodeLine(state.command,x1,y1,x2,y2);
+	var myNewCodeLine = makeCodeLine(info.command,x1,y1,x2,y2);
 	
 	
  	var insertedAt = getPosToInsertAt( codeLines );
@@ -218,13 +217,12 @@ function addComandToCode(codeLines,x1,y1,x2,y2){
 		insertedAt = getInitalPosToInsertAt( codeLines );
 	}
 
-	var argsIndex = getArgsToBeChanged(state.command);
+	var argsIndex = getArgsToBeChanged(info.command);
 	var moveInfo = {
 			codeLineBeingReferenced: insertedAt,
 			destArgs: argsIndex,
 			srcArgs: argsIndex,
 			type: "line",
-			flipped: false,
 			xOld: x2,
 			yOld: y2,
 			

@@ -4,12 +4,12 @@ module("geometry.js");
 
 test( "rightAngle test",5, function() {
 	
-	deepEqual(rightAngle(0,0,1,0),[0,1], "basic right angle #1");
-	deepEqual(rightAngle(0,0,0,1),[-1,0], "basic right angle #2");
-	deepEqual(rightAngle(0,0,-1,0),[0,-1], "basic right angle #3");
-	deepEqual(rightAngle(0,0,0,-1),[1,0], "basic right angle #4");
+	deepEqual(rightAngle(0,0,1,0),[0,.5], "basic right angle #1");
+	deepEqual(rightAngle(0,0,0,1),[.5,0], "basic right angle #2");
+	deepEqual(rightAngle(0,0,-1,0),[0,-.5], "basic right angle #3");
+	deepEqual(rightAngle(0,0,0,-1),[-.5,0], "basic right angle #4");
 
-	deepEqual(rightAngle(10,20,30,40),[-20,20], "complex right angle #1");
+	deepEqual(rightAngle(10,20,30,40),[10,10], "complex right angle #1");
 
 });
 
@@ -20,6 +20,13 @@ test("distance test",6, function(){
 	equal( distance(1,0,0,0),1,"distance test #1");
 	equal( distance(0,0,3,4),5,"distance test #1");
 	equal( distance(10,12,13,16),5,"distance test #1");
+});
+
+test("distancePointToLine test",4,function(){
+	equal(distancePointToLine(0,0,0,10,5,5),5,"distancePointToLine test #1");
+	equal(distancePointToLine(0,0,10,0,5,5),5,"distancePointToLine test #2");
+	equal(distancePointToLine(100,0,200,0,5,5),5,"distancePointToLine test #3");
+	equal(distancePointToLine(0,0,10,10,5,0).toFixed(10),(5.0*Math.SQRT1_2).toFixed(10),"distancePointToLine test #4");
 });
 
 test("angleToXY",4, function(){
@@ -40,28 +47,45 @@ test("xyToAngle",3, function(){
 	equal( xyToAngle(10,10,10,20).toFixed(4),(3*Math.PI/2).toFixed(4),"270 degrees");
 });
 
+test("absoluteHalfAng",4,function(){
+	equal(absoluteHalfAng(0,10,0,0,10,0),Math.PI/4.0,"absoluteHalfAng test #1");
+	equal(absoluteHalfAng(10,0,0,0,0,10),Math.PI/4.0,"absoluteHalfAng test #2");
+	equal(absoluteHalfAng(50,86.60254037844386,0,0,20,0),Math.PI/6.0,"absoluteHalfAng #3");
+	
+	// from http://en.wikipedia.org/wiki/Right_triangle
+	// for 3:4:5 triangle - cos=3/5 sin=4/5 tan=4/3
+	equal(absoluteHalfAng( 50.0*(3.0/5.0), 50.0*(4.0/5.0),0,0,20,0), Math.atan(4.0/3.0)/2.0,"absoluteHalfAng #4");
+});
+
 test("computArcToParameters",7, function(){
 	//computArcToParameters(x0,y0,x1,y1,x2,y2,r)
 	//[cx,cy,angle0,angle1,anticlockwise,x4,y4]
 	var res = computArcToParameters(10,10,20,10,20,50,5);
-	equal(res[0],15,"right angle part a");
-	equal(res[1],15,"right angle part b");
-	equal(res[2],-Math.PI/2,"right angle part c");
-	equal(res[3],0.0,"right angle part d");
-	equal(res[4],false,"right angle part e");
-	equal(res[5],20,"right angle part f");
-	equal(res[6],15,"right angle part g");
+	equal(res[0],15,"computArcToParameters part a");
+	equal(res[1],15,"computArcToParameters part b");
+	equal(res[2],-Math.PI/2,"computArcToParameters part c");
+	equal(res[3],0.0,"computArcToParameters part d");
+	equal(res[4],false,"computArcToParameters part e");
+	equal(res[5],20,"computArcToParameters part f");
+	equal(res[6],15,"computArcToParameters part g");
 
 	// problem from actual code
-	res = computArcToParameters( 56.89110345937689, 124.74017793222384, -114, -72, 124, 202, 50)
-	deepEqual(res,[],"right angle part g");
+	//res = computArcToParameters( 56.89110345937689, 124.74017793222384, -114, -72, 124, 202, 50)
+	//deepEqual(res,[],"right angle part h");
 });
 
+//absoluteHalfAng
+//distancePointToLine
+
 test("computRad",3, function(){
-	//computRad(xp,yp,x1,y1,cx,cy)
+	//computRad(xp,yp,x1,y1,cx,cy,d)
 	
-	deepEqual(computRad(0,5,0,0,10,0),[5,0],"part 1");
-	deepEqual(computRad(10,25,10,20,20,20),[15,20],"part 2");
-	deepEqual(computRad(15,0,0,0,3,4),[9,12],"part 3");
+	equal(computRad(0,5,0,0,10,0,5).toFixed(10),(5.0 *Math.SQRT1_2).toFixed(10),"part 1");
+	equal(computRad(10,25,10,20,20,20,5).toFixed(10),(5.0 *Math.SQRT1_2).toFixed(10),"part 2");
+	
+	// from http://en.wikipedia.org/wiki/Right_triangle
+	// for 3:4:5 triangle - cos=3/5 sin=4/5 tan=4/3
+	// cos(a/2)^2-sin(a/2)^2=3/5 -> 1-2*sin(a/2)^2 = 3/5 -> 2*sin(a/2)^2 = 2/5 -> sin(a/2)^2=1/5 
+	equal(computRad( 50.0*(3.0/5.0), 50.0*(4.0/5.0),0,0,20,0,5).toFixed(10),(5.0/Math.sqrt(5.0)).toFixed(10),"part 3");
 	
 });

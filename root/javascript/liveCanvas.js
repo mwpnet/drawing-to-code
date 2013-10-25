@@ -11,7 +11,6 @@ var state = {
 		command:"",
 		xOld:0,
 		yOld:0,
-		flipped:false
 		
 		/////////////////////////////
 		

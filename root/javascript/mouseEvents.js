@@ -9,6 +9,9 @@
  */
 
 var keepAnimating = false;
+var mousex = 0;
+var mousey = 0;
+
 
 window.requestAnimFrame = (function(callback) {
 	return	window.requestAnimationFrame || 
@@ -27,7 +30,7 @@ window.cancelRequestAnimFrame = ( function() {
         window.mozCancelRequestAnimationFrame       ||
         window.oCancelRequestAnimationFrame     ||
         window.msCancelRequestAnimationFrame        ||
-        clearTimeout
+        clearTimeout;
 } )();
 
 
@@ -46,18 +49,19 @@ window.cancelRequestAnimFrame = ( function() {
 //		draws line ends and control points
 
 function myOnMouseDown(e) {
+	
+	var mousex = e.pageX - canvas.offsetLeft;
+	var mousey = e.pageY - canvas.offsetTop;
+
 	var code = getCode();
 	var codeLines = parseCode(code);
 	
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
-	var moveInfo = drawEditHandles( context, codeLines );
+	var moveInfo = drawEditHandles( context, codeLines,mousex,mousey );
 
-	if( typeof(moveInfo) == 'undefined' ){
-		var x = e.pageX - canvas.offsetLeft;
-		var y = e.pageY - canvas.offsetTop;
-		
-		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,x,y);
+	if( typeof(moveInfo) == 'undefined' ){ // click not in controle handle
+		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,mousex,mousey,state);
 
 		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine);
 		updateCode(rejoinCode(codeLines));
@@ -67,13 +71,13 @@ function myOnMouseDown(e) {
 	state.destArgs = moveInfo.destArgs;
 	state.srcArgs = moveInfo.srcArgs;
 	state.type = moveInfo.type;
-	state.flipped = false;
 	state.xOld=moveInfo.xOld;
 	state.yOld=moveInfo.yOld;
+	console.debug(state.xOld,state.yOld);
 
 	// 
 	if( moveInfo.type == "truefalse" ){
-		var newCodeLines = updateCodeLineOnce(codeLines,[]);
+		var newCodeLines = updateCodeLineOnce(codeLines,[],state);
 		var newCode = rejoinCode(newCodeLines);
 		updateCode(newCode);
 	}
@@ -87,8 +91,8 @@ function myOnMouseUp(e){
 }
 
 function myOnMouseMove(e){
-	state.mouseX = e.pageX - canvas.offsetLeft;
-	state.mouseY = e.pageY - canvas.offsetTop;
+	mousex = e.pageX - canvas.offsetLeft;
+	mousey = e.pageY - canvas.offsetTop;
 }
 
 //get mouse coords
@@ -102,13 +106,14 @@ function myAnimate(e){
 	var codeLines = parseCode(code);
 	
 	
-	var newCodeLines = updateCodeLine( codeLines, [ state.mouseX, state.mouseY ]);
+	var newCodeLines = updateCodeLine( codeLines, [ mousex, mousey ],state);
 	var newCode = rejoinCode(newCodeLines);
 	updateCode(newCode);
 	drawCode( newCode );
 	
 	drawEditHandles( context, newCodeLines );
-	
+
+
 	////////////
 	if( keepAnimating){
 		requestAnimFrame( myAnimate);
@@ -117,7 +122,6 @@ function myAnimate(e){
 		state.destArgs = undefined;
 		state.srcArgs = undefined;
 		state.type = undefined;
-		state.flipped = false;
 	}
 }
 
