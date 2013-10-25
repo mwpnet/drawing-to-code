@@ -8,11 +8,11 @@
  * @param codeLines
  * @returns codeLines - with the updated line
  */
-function updateCodeLine(codeLines,newCoords){
-	var lineIndex = state.codeLineBeingReferenced;
-	var destArgs = state.destArgs;
-	var srcArgs = state.srcArgs;
-	var type = state.type;
+function updateCodeLine(codeLines,newCoords,info){
+	var lineIndex = info.codeLineBeingReferenced;
+	var destArgs = info.destArgs;
+	var srcArgs = info.srcArgs;
+	var type = info.type;
 
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
 		return codeLines;
@@ -30,14 +30,14 @@ function updateCodeLine(codeLines,newCoords){
 		args[destArgs[0]] = ang.toFixed(4); // don't want 20 decimal palces
 	}
 	else if( type=="rad2"){
-		var params =computCenterToParameters(newCoords[0],newCoords[1],args[srcArgs[0]],args[srcArgs[1]],args[srcArgs[2]],args[srcArgs[3]]);
-		//var r=computRad(newCoords[0],newCoords[1],args[srcArgs[0]],args[srcArgs[1]],args[srcArgs[2]],args[srcArgs[3]],params[0],params[1]);
-
-		//args[destArgs[0]] = Math.round(r); // should be an integer
+		var startpoint = [info.xOld,info.yOld];
+		var d=distance(args[srcArgs[0]],args[srcArgs[1]],newCoords[0],newCoords[1]);
+		
+		var r=computRad( startpoint[0],startpoint[1],args[srcArgs[0]],args[srcArgs[1]],args[srcArgs[2]],args[srcArgs[3]],d);
+		args[destArgs[0]] = r;
 	}
 	else if( type == "line"){
 		for( var i=0,l=destArgs.length,m=newCoords.length; i<l && i<m; i++){
-			var co=destArgs[i];
 			args[ destArgs[i] ] = newCoords[ i ];
 		}
 	}
@@ -47,11 +47,11 @@ function updateCodeLine(codeLines,newCoords){
 }
 	 
 
-function updateCodeLineOnce(codeLines,newCoords){
-	var lineIndex = state.codeLineBeingReferenced;
-	var destArgs = state.destArgs;
-	var srcArgs = state.srcArgs;
-	var type = state.type;
+function updateCodeLineOnce(codeLines,newCoords,info){
+	var lineIndex = info.codeLineBeingReferenced;
+	var destArgs = info.destArgs;
+	var srcArgs = info.srcArgs;
+	var type = info.type;
 
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
 		return codeLines;
