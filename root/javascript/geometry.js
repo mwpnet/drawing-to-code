@@ -15,8 +15,7 @@ function slopeInter(x0,y0,x1,y1){
 
 //XXX
 function perpendiculerSlope(m,b){
-	var m2=-1/m;
-	
+	return -1.0/m;
 }
 
 /////////////////////////////////////////
@@ -63,21 +62,17 @@ function distance(x1,y1,x2,y2){
 // point xp,yp will find the minimal distance 
 // from xp,yp to the line between x1,y1 and x2,y2
 function distancePointToLine(x1,y1,x2,y2,xp,yp){
-	// ax+by+1 = 0
+	// from http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
+	var dx21 = x2-x1;
+	var dy21 = y2-y1;
+	 
+	var dx1p = x1-xp;
+	var dy1p = y1-yp;
 	
-	//[x1,y1;x2,y2][a:b]+[1;1] = [0;0]
-	//[x1,y1;x2,y2][a:b] = [-1;-1]
-	//[a;b] = (1/det)[y2,-y1;-x2,x1][-1;-1]
-	//[a;b] = (1/det)[-(y2-y1);-(-x2+x1)]
+	det = Math.sqrt( dx21*dx21 + dy21*dy21);
 	
-	// from http://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
-
-	var det =x1*y2-x2*y1;
-	var a=-(y2-y1)/det;
-	var b= (x2-x1)/det;
-	
-	var d= Math.abs( a*xp + b*yp + 1 )/Math.sqrt( Math.pow(a,2)+Math.pow(b,2));
-	
+	d = Math.abs( dx21 * dy1p - dx1p * dy21)/det;
+	 
 	return d;
 }
 
@@ -124,12 +119,18 @@ function angleToXY(angle,x0,y0,r){
 //
 function xyToAngle(x,y,x0,y0){ // from 0 to 2PI
 	var ang = Math.atan2(y-y0,x-x0);
+	return normalizeAngle(ang);
+}
+
+function normalizeAngle(ang){
 	if(ang<0.0){
-		ang=2.0*Math.PI + ang;
+		ang += 2*Math.PI;
+	}
+	else if(ang >2*Math.PI){
+		ang -= 2*Math.PI;
 	}
 	return ang;
 }
-
 /******** all the stuff needed for arcTo ******/
 
 /////////////////////////////////////////
@@ -149,7 +150,9 @@ function bisectorOfLines( x0,y0,x1,y1,x2,y2){
 // to x2,y2
 // XXX - need to check the floating point accuracy
 //
+
 function innerAngle( x0,y0,x1,y1,x2,y2){
+	/** -- trying another way
 	var v1 = [ x0-x1, y0-y1 ];
 	var v2 = [ x2-x1, y2-y1 ];
 	
@@ -165,8 +168,28 @@ function innerAngle( x0,y0,x1,y1,x2,y2){
 	var ang = Math.acos( dot/(d1*d2));
 	
 	return ang;
+	**/
+	
+	var a1 = Math.atan2(y0-y1,x0-x1);
+	var a2 = Math.atan2(y2-y1,x2-x1);
+	
+	var ang = a1-a2;
+	
+	if( ang >Math.Pi ){
+		ang = ang - 2*Math.Pi;
+	}
+	return ang;
 }
 
+function absoluteHalfAng( x0,y0,x1,y1,x2,y2){
+	
+	var a1 = Math.atan2(y0-y1,x0-x1);
+	var a2 = Math.atan2(y2-y1,x2-x1);
+
+	var ang = (a1+a2)/2.0;
+
+	return ang;
+}
 
 //////////////////////////////
 // given the last end point x0,y0, 
@@ -214,8 +237,8 @@ function computArcToParameters(x0,y0,x1,y1,x2,y2,r){
 	
 	var angle0 = Math.atan2((y3-cy), (x3-cx));
 	var angle1 = Math.atan2((y4-cy), (x4-cx));
-		
-	return [cx,cy,angle0,angle1,anticlockwise,x4,y4]
+
+	return [cx,cy,angle0,angle1,anticlockwise,x4,y4];
 }
 
 //////////////////////////////////
@@ -261,17 +284,20 @@ function computCenterToParameters(cx,cy,x1,y1,x2,y2){
 	return [r,angle1,x4,y4];
 }
 
-//////////////////////////////
-function computRad(xp,yp,x1,y1,x2,y2,cx,cy){
-	var un = distance(cx,cy,x1,y1);
-	var d= distance(xp,yp,x1,y1);
+///////////////////////////////////
+//given three points x0,y0 x1,y1 and x2,y2
+//and a distance d from x1,y1 hwo big a 
+//circle would fit into the wedge.
+//
+function computRad(x0,y0,x1,y1,x2,y2,d){
+
+	var ang = absoluteHalfAng( x0,y0,x1,y1,x2,y2);
+	console.debug(ang);
+	var dx = d * Math.cos(ang)+x1;
+	var dy = d * Math.sin(ang)+y1;
+	console.debug(dx,dy);
 	
-	var ux = (cx-x1)/un;
-	var uy = (cy-y1)/un;
-	
-	var newcx = x1+d*ux;
-	var newcy = y1+d*uy;
-		
-	var newr = distancePointToLine(x1,y1,x2,y2,newcx,newcy); 
+	var newr = distancePointToLine(x1,y1,x2,y2,dx,dy);
+	console.debug(newr);
 	return newr;
 }

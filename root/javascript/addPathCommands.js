@@ -6,28 +6,87 @@
 
 function onClickMoveTo(){
 	state.command = "moveTo";
+	selectButton("moveToButton");
 }
+
 function onClickLineTo(){
 	state.command="lineTo";
+	selectButton("lineToButton");
 }
 
 function onClickBezierCurveTo(){
 	state.command="bezierCurveTo";
+	selectButton("bezierCurveToButton");
 }
 
 function onClickQuadraticCurveTo(){
 	state.command="quadraticCurveTo";
-}
-
-function onClickClosePath(){
-	state.command="closePath";
+	selectButton("quadraticCurveToButton");
 }
 
 function onClickArcTo(){
 	state.command="arcTo";
+	selectButton("arcToButton");
 }
 function onClickArc(){
 	state.command="arc";
+	selectButton("arcButton");
+}
+
+function onClickClosePath(){
+	state.command="closePath";
+	selectButton("closePathButton");
+}
+
+function selectButton(button){
+	if(button == "moveToButton"){
+		$("#moveToButton").css("border-style","inset");
+	}
+	else {
+		$("#moveToButton").css("border-style","outset");
+	}
+	
+	if(button == "lineToButton"){
+		$("#lineToButton").css("border-style","inset");
+	}
+	else {
+		$("#lineToButton").css("border-style","outset");
+	}
+	
+	if(button == "bezierCurveToButton"){
+		$("#bezierCurveToButton").css("border-style","inset");
+	}
+	else {
+		$("#bezierCurveToButton").css("border-style","outset");
+	}
+	
+	if(button == "quadraticCurveToButton"){
+		$("#quadraticCurveToButton").css("border-style","inset");
+	}
+	else {
+		$("#quadraticCurveToButton").css("border-style","outset");
+	}
+	
+	if(button == "arcToButton"){
+		$("#arcToButton").css("border-style","inset");
+	}
+	else {
+		$("#arcToButton").css("border-style","outset");
+	}
+	
+	if(button == "arcButton"){
+		$("#arcButton").css("border-style","inset");
+	}
+	else {
+		$("#arcButton").css("border-style","outset");
+	}
+	
+	if(button == "closePathButton"){
+		$("#closePathButton").css("border-style","inset");
+	}
+	else {
+		$("#closePathButton").css("border-style","outset");
+	}
 }
 
 
@@ -143,7 +202,6 @@ function makeCodeLine(command,x1,y1,x2,y2){
 
 function getArgsToBeChanged(command){
 
-	var argIndex;
 	if(command == "moveTo"){
 		return [0,1];
 	}
@@ -203,13 +261,13 @@ function getInitalPosToInsertAt( codeLines ){
  * @param y2
  * @returns
  */
-function addComandToCode(codeLines,x1,y1,x2,y2){
+function addComandToCode(codeLines,x1,y1,x2,y2,info){
 
-	if( typeof(state.command) == 'undefined' || state.command == ""){
+	if( typeof(info.command) == 'undefined' || info.command == ""){
 		return codeLines;
 	}
 
-	var myNewCodeLine = makeCodeLine(state.command,x1,y1,x2,y2);
+	var myNewCodeLine = makeCodeLine(info.command,x1,y1,x2,y2);
 	
 	
  	var insertedAt = getPosToInsertAt( codeLines );
@@ -218,13 +276,12 @@ function addComandToCode(codeLines,x1,y1,x2,y2){
 		insertedAt = getInitalPosToInsertAt( codeLines );
 	}
 
-	var argsIndex = getArgsToBeChanged(state.command);
+	var argsIndex = getArgsToBeChanged(info.command);
 	var moveInfo = {
 			codeLineBeingReferenced: insertedAt,
 			destArgs: argsIndex,
 			srcArgs: argsIndex,
 			type: "line",
-			flipped: false,
 			xOld: x2,
 			yOld: y2,
 			
