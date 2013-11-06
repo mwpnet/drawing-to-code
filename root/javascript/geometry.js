@@ -244,12 +244,9 @@ function computCenterToParameters(cx,cy,x1,y1,x2,y2){
 function computRad(x0,y0,x1,y1,x2,y2,d){
 
 	var ang = absoluteHalfAng( x0,y0,x1,y1,x2,y2);
-	console.debug(ang);
 	var dx = d * Math.cos(ang)+x1;
 	var dy = d * Math.sin(ang)+y1;
-	console.debug(dx,dy);
 	
 	var newr = distancePointToLine(x1,y1,x2,y2,dx,dy);
-	console.debug(newr);
 	return newr;
 }

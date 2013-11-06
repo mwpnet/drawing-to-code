@@ -443,7 +443,7 @@ function drawEditHandles( context, codeLines,mousex,mousey){
 
 			localMoveInfo = drawArc( context, args[0], args[1], args[2], args[3], args[4], args[5], endCo[0], endCo[1],mousex,mousey );
 		}
-		console.debug(localMoveInfo.mouseGrabed);
+
 		if( localMoveInfo.mouseGrabed ){
 			moveInfo = localMoveInfo;
 			moveInfo.codeLineBeingReferenced = i;
