@@ -1,13 +1,17 @@
-/////////////////////////////////////////////
-// functions to update code lines
-// based on mouse moves
-/////////////////////////////////////////////
+/**************************************
+ * functions to update code lines based
+ * on mouse position
+**************************************/
 
-/*******************************
- * 
- * @param codeLines
- * @returns codeLines - with the updated line
- */
+///////////////////////////////////////
+// given the array of code lines, 
+// updates the arguments of the code 
+// based on information passed in in 
+// info.
+// meant to be called whenever the 
+// mouse button is pressed and the 
+// mouse moves.
+//
 function updateCodeLine(codeLines,newCoords,info){
 	var lineIndex = info.codeLineBeingReferenced;
 	var destArgs = info.destArgs;
@@ -47,6 +51,15 @@ function updateCodeLine(codeLines,newCoords,info){
 }
 	 
 
+///////////////////////////////////////
+//given the array of code lines, 
+//updates the arguments of the code 
+//based on information passed in in 
+//info.
+// similar to updateCodeLine, but meant
+// to only be called once when the 
+// mouse button is first pressed.
+//
 function updateCodeLineOnce(codeLines,newCoords,info){
 	var lineIndex = info.codeLineBeingReferenced;
 	var destArgs = info.destArgs;

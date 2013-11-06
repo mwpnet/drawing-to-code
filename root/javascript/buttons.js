@@ -1,4 +1,17 @@
+/**************************************
+ * set up the buttons that allow users 
+ * to pick a particuler drawing command
+ */
 
+///////////////////////////////////////
+// gets the canvas corresponding to 
+// each button and fills it in with the
+// corresponding graphic.
+// Note that they all use the the 
+// drawing command to draw the 
+// corresponding button, so they look 
+// exactly like what's drawn
+//
 function buttonSetUp(){
 	var button = document.getElementById("moveToButton");
 	var buttonContext = button.getContext('2d');
@@ -32,18 +45,25 @@ function buttonSetUp(){
 	onClickMoveTo();
 }
 
+///////////////////////////////////////
+// common path properties so all the 
+// buttons have the same look
+//
 function pathSetup(context){
 	context.lineWidth = 2;
 	context.strokeStyle = 'black';
 }
 
-
+///////////////////////////////////////
+// draws the moveTo button 
+//
 function moveToButton(context){
 	var startX = 32;
 	var startY = 32;
 
 	drawMoveTo(context,startX, startY );
 	
+	// mouse image
 	context.beginPath();
 	context.moveTo(32,32);
 	context.lineTo( 32, 48 );
@@ -61,6 +81,9 @@ function moveToButton(context){
 
 }
 
+///////////////////////////////////////
+// draws lilneTo button
+//
 function lineToButton(context){
 	var startX = 13;
 	var startY = 50;
@@ -80,6 +103,9 @@ function lineToButton(context){
 
 }
 
+///////////////////////////////////////
+// draws bezierCurveTo button
+//
 function bezierCurveToButton(context){
 	var startX = 13;
 	var startY = 50;
@@ -103,6 +129,9 @@ function bezierCurveToButton(context){
 
 }
 
+///////////////////////////////////////
+//draws quadraticCurveTo button
+//
 function quadraticCurveToButton(context){
 	var startX = 13;
 	var startY = 50;
@@ -122,6 +151,9 @@ function quadraticCurveToButton(context){
 	drawQuadraticCurveTo(context,startX, startY,c1X, c1Y, endX, endY);
 }
 
+///////////////////////////////////////
+//draws closePath button
+//
 function closePathButton(context){
 	var startX = 16;
 	var startY = 50;
@@ -147,6 +179,9 @@ function closePathButton(context){
 	drawLinesToConrolePoints(context,startX,startY,endX, endY);
 }
 
+///////////////////////////////////////
+//draws arcTo button
+//
 function arcToButton(context){
 	context.beginPath();
 	pathSetup(context);
@@ -163,6 +198,9 @@ function arcToButton(context){
 	
 }
 
+///////////////////////////////////////
+//draws arc button
+//
 function arcButton(context){
 
 	var centerX = 40;
@@ -185,6 +223,12 @@ function arcButton(context){
 	drawArc(context, centerX, centerY, r, startAng, endAng, false, prevEndX,prevEndY);
 }
 
+///////////////////////////////////////
+// draws commingSoon button
+// used for button that hadn't been 
+// implemented yet. Not used not, but 
+// left for future use.
+//
 function commingSoon(context){
 	
 	context.font = 'italic 8pt Calibri';

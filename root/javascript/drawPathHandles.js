@@ -1,5 +1,8 @@
 /********************************************
- * functions to draw path handles
+ * dwraPathHandles.js
+ * 
+ * functions to draw path handles for the 
+ * given code line
  *******************************************/
 
 
@@ -11,9 +14,11 @@
  * drawn
  */
 
+///////////////////////////////////////
 // draw a box at x,y
 // for marking ends of path segments
 // also checks if mouse pointer is in it
+//
 function drawPathBox(context,x,y,mousex,mousey) {
 	var size=10.0;
 	context.save();
@@ -32,9 +37,11 @@ function drawPathBox(context,x,y,mousex,mousey) {
 	return mouseIn;
 }
 
+///////////////////////////////////////
 // draw a circle at x,y
 // for marking control points
 // also checks if mouse pointer is in it
+//
 function drawControlePointHandle( context,cx,cy,mousex,mousey){
 	var size=10.0;
 	context.save();
@@ -49,9 +56,11 @@ function drawControlePointHandle( context,cx,cy,mousex,mousey){
 	return mouseIn;
 }
 
+///////////////////////////////////////
 //draw an X at x,y
 // only used for marking
 //no mouse detection
+//
 function drawPathX( context,x,y){
 	var size=10.0;
 	context.save();
@@ -68,9 +77,11 @@ function drawPathX( context,x,y){
 	return false;
 }
 
+///////////////////////////////////////
 //draw a line from x,y to cx,cy
 // for drawing lines from the end of paths 
 // to control points
+//
 function drawLinesToConrolePoints(context,cx,cy,x,y){
 	context.save();
 	context.beginPath();
@@ -82,6 +93,14 @@ function drawLinesToConrolePoints(context,cx,cy,x,y){
 	context.restore();
 }
 
+///////////////////////////////////////
+// draws part of a circle at x,y with 
+// radius r. It takes the same 
+// arguments as the arc command, but 
+// has the ccw inverted, so it draws 
+// the part of the circle that's not 
+// there.
+//
 function drawCircleForArcs(context,x,y,r,start,end,ccw){
 	context.save();
 	context.beginPath();
@@ -95,6 +114,11 @@ function drawCircleForArcs(context,x,y,r,start,end,ccw){
 	return false;
 }
 
+///////////////////////////////////////
+// draws the handle to reverse the 
+// clock wise/counter clockwise flag, 
+// ie flips ccw
+//
 function drawArcDirection(context,cx,cy,r,ang,ccw,mousex,mousey){
 	
 	var size = 10;
@@ -138,7 +162,13 @@ function drawArcDirection(context,cx,cy,r,ang,ccw,mousex,mousey){
  * is returned.
  */
 
+///////////////////////////////////////
 // draw the handles from moveTo()
+// if the mouse is in a control handle,
+// returns the information needed to 
+// change the the corresponding 
+// arguments.
+//
 function drawMoveTo(context,x,y,mousex,mousey){
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
 
@@ -152,7 +182,13 @@ function drawMoveTo(context,x,y,mousex,mousey){
 	return undefined;
 }
 
+///////////////////////////////////////
 //draw the handles from lineTo()
+//if the mouse is in a control handle,
+//returns the information needed to 
+//change the the corresponding 
+//arguments.
+//
 function drawLineTo(context,x,y,mousex,mousey){
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
 
@@ -166,7 +202,13 @@ function drawLineTo(context,x,y,mousex,mousey){
 	return undefined;
 }
 
+///////////////////////////////////////
 //draw the handles from bezierCurveTo()
+//if the mouse is in a control handle,
+//returns the information needed to 
+//change the the corresponding 
+//arguments.
+//
 function drawBezierCurveTo(context,xold,yold,cx1,cy1,cx2,cy2,x,y,mousex,mousey) {
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
 
@@ -201,7 +243,13 @@ function drawBezierCurveTo(context,xold,yold,cx1,cy1,cx2,cy2,x,y,mousex,mousey) 
 }
 
 
+///////////////////////////////////////
 //draw the handles from quadraticCurveTo()
+//if the mouse is in a control handle,
+//returns the information needed to 
+//change the the corresponding 
+//arguments.
+//
 function drawQuadraticCurveTo(context,xold,yold,cx,cy,x,y,mousex,mousey) {
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
 
@@ -227,6 +275,13 @@ function drawQuadraticCurveTo(context,xold,yold,cx,cy,x,y,mousex,mousey) {
 }
 
 
+///////////////////////////////////////
+//draw the handles from arcTo()
+//if the mouse is in a control handle,
+//returns the information needed to 
+//change the the corresponding 
+//arguments.
+//
 function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	var params = computArcToParameters(xold,yold,c1x,c1y,c2x,c2y,r);
 	//localMoveInfo = drawArcTo( context, prevEnd[0], prevEnd[1], args[0], args[1], args[2], args[3], args[4], params[0], params[1], params[2],params[3], params[4],params[5],params[6],mousex,mousey);
@@ -281,6 +336,13 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 
 }
 
+///////////////////////////////////////
+//draw the handles from arc()
+//if the mouse is in a control handle,
+//returns the information needed to 
+//change the the corresponding 
+//arguments.
+//
 function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mousex,mousey){
 	//arc(x, y, r, startAngle, endAngle, counterClockwise)
 	var extra = 20.0;
@@ -348,24 +410,22 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	}
 	return undefined;
 }
-	
 
-/***********************************
- * 
- * @param context
- * 
- * @param codeLines
- * @returns  - only if mouse is in one of the controle points
- * 			type - what kind of controle point this is:
- * 					line - 
- * 					rad -
- * 					ang -
- * 					truefalse - 
- * 			destArgs: - index of the args to be changed
- * 			srcArgs: - index of the args used to get the new value
- * 			codeLineBeingReferenced: - 
- * }
- ********************************/
+/**************************************
+ * The actual part that parses the code
+ * line and draws the controle handles.
+**************************************/
+
+
+///////////////////////////////////////
+// given a line of code as a string, 
+// draws the coresponding controle 
+// points for the given command.
+// if the mouse is in cone of the 
+// controle points, will return the 
+// information necisary to adjust the 
+// code line accordingly.
+//
 function drawEditHandles( context, codeLines,mousex,mousey){
 	
 	var lineBeingChanged;

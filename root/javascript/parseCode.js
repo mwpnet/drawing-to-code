@@ -1,15 +1,27 @@
-/*
- * parse code into an array of lines
- */
+/**************************************
+ * commands used to parse the given 
+ * code and code lines, and reassemble 
+ * them into new code
+ * 
+ * XXX - this whole file should be 
+ * replace with a real code parser, or 
+ * something else completely.
+ *************************************/
+
+
+///////////////////////////////////////
+// parse code into an array of lines
+//
 function parseCode( code ){
 	var trimedCode = code.replace(/\n$/, ''); 
 	return trimedCode.split(/\n/g);
 }
 
-/*
- * parse a line of code into the function 
- * part, the args, and the trailing rest
- */
+///////////////////////////////////////
+// parse a line of code into the 
+// function part, the args, and the 
+// trailing rest
+//
 function parseCodeLine(codeLine){
 
 	var startParen = codeLine.indexOf("(");
@@ -45,11 +57,12 @@ function parseCodeLine(codeLine){
 	return [ functionPart, args, endPart ];
 }
 
-/*
- * takes the parts of a line from parseCodeLine 
- * and rejoins it into the line again.
- * It should give aproximatly the original line back
- */
+///////////////////////////////////////
+// takes the parts of a line from 
+// parseCodeLine and rejoins it into 
+// the line again. It should give 
+//approximately the original line back
+//
 function rejoinCodeLine (functionPart, args, endPart ){
 	var argsString = "";
 	
@@ -63,6 +76,7 @@ function rejoinCodeLine (functionPart, args, endPart ){
 	return newLine;
 }
 
+///////////////////////////////////////
 function parseCodeLineAssignment(codeLine){
 	var objStart = codeLine.indexOf(".");
 	var startValue = codeLine.indexOf("=");
@@ -77,10 +91,10 @@ function parseCodeLineAssignment(codeLine){
 	
 }
 
-/*
- * takes an array of code lines
- * and rejoins them into one string
- */
+///////////////////////////////////////
+// takes an array of code lines and 
+//rejoins them into one string
+//
 function rejoinCode(codeLines){
 	return codeLines.join("\n") +"\n";
 }

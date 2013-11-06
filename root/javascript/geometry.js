@@ -1,3 +1,15 @@
+/**************************************
+ * geometry.js
+ * 
+ * holds the geometric functions used 
+ * for drawing various parts, 
+ * particularly the control lines and 
+ * handles.
+ * 
+ * Note that not all of these functions
+ * are used. but left for possible 
+ * future use.
+ *************************************/
 
 
 /******* general geometry stuff ******/
@@ -122,6 +134,12 @@ function xyToAngle(x,y,x0,y0){ // from 0 to 2PI
 	return normalizeAngle(ang);
 }
 
+///////////////////////////////////////
+// giv3en an angle ang, will adjust it 
+// so it's between 0 and 2pi
+// XXX - need to improve it to handle 
+// even more angles
+//
 function normalizeAngle(ang){
 	if(ang<0.0){
 		ang += 2*Math.PI;
@@ -181,6 +199,14 @@ function innerAngle( x0,y0,x1,y1,x2,y2){
 	return ang;
 }
 
+///////////////////////////////////////
+// given three points x0,y0 x1,y1 and 
+// x2,y2 finds the angle of a line 
+// that would be equal distant from 
+// each line
+// XXX - need to get a better name for 
+// this function
+//
 function absoluteHalfAng( x0,y0,x1,y1,x2,y2){
 	
 	var a1 = Math.atan2(y0-y1,x0-x1);
@@ -285,12 +311,14 @@ function computCenterToParameters(cx,cy,x1,y1,x2,y2){
 }
 
 ///////////////////////////////////
-//given three points x0,y0 x1,y1 and x2,y2
-//and a distance d from x1,y1 hwo big a 
-//circle would fit into the wedge.
+// given three points x0,y0 x1,y1 and 
+// x2,y2 and a distance d, finds the 
+// radious of the circe whose center is
+// distance d from x1,y1 and touches 
+// bost lines x1,y1-x0,y0 and 
+// x1,y1-x2,y2
 //
 function computRad(x0,y0,x1,y1,x2,y2,d){
-
 	var ang = absoluteHalfAng( x0,y0,x1,y1,x2,y2);
 	console.debug(ang);
 	var dx = d * Math.cos(ang)+x1;
