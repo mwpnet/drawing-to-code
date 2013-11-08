@@ -1,6 +1,6 @@
 /**************************************
  * set up the buttons that allow users 
- * to pick a particuler drawing command
+ * to pick a particular drawing command
  */
 
 ///////////////////////////////////////

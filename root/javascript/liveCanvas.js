@@ -1,5 +1,17 @@
-/////////////////////
+/**************************************
+ * lineCanvas.js
+ * 
+ * this holds the parts that does all 
+ * the basic drawing 
+ */
 
+
+///////////////////////////////////////
+// global used to store information for
+// various functions.
+// XXX -  need to find some way to do 
+// all these things without using a 
+// global like this.
 var state = {
 		codeLineBeingReferenced:0,
 		destArgs:undefined,
@@ -11,12 +23,13 @@ var state = {
 		command:"",
 		xOld:0,
 		yOld:0,
-		
-		/////////////////////////////
-		
 		};
 
-
+///////////////////////////////////////
+// some globals used to hold the 
+// corresponding Dom objects, so the 
+// animation doesn't have to search for
+// them every single frame.
 var canvas;
 var context;
 var preCode;
@@ -27,7 +40,9 @@ var showHandles = true;
 var showButton;
 var hideButton;
 
-////////////////////////////////////
+///////////////////////////////////////
+// initalizes all the various bits and 
+// pieces of all the code.
 function init(){
 	
 	buttonSetUp();
@@ -50,6 +65,10 @@ function init(){
 	hideButton.onclick = hideControlHandles;
 }
 
+///////////////////////////////////////
+// hide the control handles and suspend
+// mouse actions, so only the raw image
+// is shown.
 function hideControlHandles(e){
 	showButton.style.display = "block";
 	hideButton.style.display = "none";
@@ -59,6 +78,10 @@ function hideControlHandles(e){
 	canvas.onmousemove = undefined;
 	onExecuteCode();
 }
+
+///////////////////////////////////////
+// show the control handles and 
+// reactivate mouse actions.
 function showControlHandles(e){
 	showButton.style.display = "none";
 	hideButton.style.display = "block";
@@ -69,18 +92,23 @@ function showControlHandles(e){
 	onExecuteCode();
 }
 
-////////////////////////////////
-////////////////////////////////
+///////////////////////////////////////
+// gets the code from the input box
 function getCode(){
 	return codeBlock.value;
 }
 
+///////////////////////////////////////
+// update the code in the input box
 function updateCode(newCode){
 	if(newCode != null){
 		codeBlock.value = newCode;
 	}
 }
 
+///////////////////////////////////////
+// draws the code given in the input 
+// box. Does some basic error catching
 function drawCode( code ){
 	delete draw;
 
@@ -96,6 +124,9 @@ function drawCode( code ){
 
 }
 
+///////////////////////////////////////
+// clears the canvas and draws all the 
+// various bits.
 function onExecuteCode(){
 	var code = getCode();
 	

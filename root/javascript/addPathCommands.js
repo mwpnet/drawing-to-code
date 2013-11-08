@@ -2,7 +2,9 @@
  * functions to add path code lines
  *******************************************/
 
-// mouse callbacks
+///////////////////////////////////////
+// mouse callbacks for when a button is
+// clicked
 
 function onClickMoveTo(){
 	state.command = "moveTo";
@@ -38,6 +40,10 @@ function onClickClosePath(){
 	selectButton("closePathButton");
 }
 
+///////////////////////////////////////
+// changes the look of the buttons so 
+// one looks pressed and the rest look 
+// unpressed
 function selectButton(button){
 	if(button == "moveToButton"){
 		$("#moveToButton").css("border-style","inset");
@@ -98,17 +104,20 @@ function selectButton(button){
  * pair are the new end point.
  */
 
+///////////////////////////////////////
 // moveTo code line
 function codeStringMoveTo(x1,y1,x2,y2){
 	return "\tcontext.moveTo( " + x2 + ", " + y2 + " );";
 }
 
+///////////////////////////////////////
 // lineTo code line
 function codeStringLineTo(x1,y1,x2,y2){
 	return "\tcontext.lineTo( " + x2 + ", " + y2 + " );";
 }
 
 
+///////////////////////////////////////
 // bezierCurveTo code line
 // adds control points at a right angle
 // from a line between the two end points
@@ -127,6 +136,7 @@ function codeStringBezierCurveTo(x1,y1,x2,y2){
 	return "\tcontext.bezierCurveTo( " + args.join(", ") +" );";
 }
 
+///////////////////////////////////////
 // quadraticCurveTo code line
 // adds a control point at a right angle
 // from a line between the two end points
@@ -144,6 +154,13 @@ function codeStringQuadraticCurveTo(x1,y1,x2,y2){
 	return "\tcontext.quadraticCurveTo( " + args.join(", ") +" );";
 }
 
+///////////////////////////////////////
+// arcTo code line
+// The new end point is used as the 
+// second control point. The first 
+// control point is computed to make a 
+// right angle, and centered above the 
+// mid point of the two given points.
 function codeStringArcTo(x1,y1,x2,y2){
 	var c=rightAngleCorner(x1,y1,x2,y2);
 	
@@ -158,20 +175,25 @@ function codeStringArcTo(x1,y1,x2,y2){
 	return "\tcontext.arcTo( " + args.join(", ") +" );";
 }
 
+///////////////////////////////////////
+// arc command line
+// the new end point is used as the 
+// center of the arc. it is given an 
+// arbitrary radius, start angle and 
+// end angle.
 function codeStringArc(x1,y1,x2,y2){
 	return "\tcontext.arc( " + x2 + ", " + y2 + ", 50, 0, 2.0, false );"; // using 2.0 just to avoid 50 decimal places
 }
 
+///////////////////////////////////////
 // closePath code line
 function codeStringClosePath(x1,y1,x2,y2){
 	return "\tcontext.closePath();";
 }
 
-/***********************************
- * inserts code line before the 
- * last fill or stroke
- */
-
+///////////////////////////////////////
+//inserts code line before the last 
+// fill or stroke
 function makeCodeLine(command,x1,y1,x2,y2){
 	
 	var codePart = "";
@@ -200,6 +222,10 @@ function makeCodeLine(command,x1,y1,x2,y2){
 	return codePart;
 }
 
+///////////////////////////////////////
+// this returns the arguments that are 
+// changed when you add an path, but 
+// drag it around before releasing it.
 function getArgsToBeChanged(command){
 
 	if(command == "moveTo"){
@@ -227,7 +253,9 @@ function getArgsToBeChanged(command){
 	return [];
 }
 
-
+///////////////////////////////////////
+// finds the line number of the last 
+// path command 
 function getPosToInsertAt( codeLines ){
 	for( var i=codeLines.length-1; i>-1; i-- ){
 		var pos = codeLines[i].search( /(?:context\.(?:beginPath|moveTo|lineTo|bezierCurveTo|quadraticCurveTo|arc|arcTo|closePath)\b)|(?:\}\b)/);
@@ -239,6 +267,10 @@ function getPosToInsertAt( codeLines ){
 	return -1;
 }
 
+///////////////////////////////////////
+// finds the first beginPath command to
+// add new commands after. Used if no 
+// path commands are found.
 function getInitalPosToInsertAt( codeLines ){
 	for( var i=0,l=codeLines.length; i<l; i++ ){
 		var pos = codeLines[i].search( /context\.beginPath\b/);
@@ -250,17 +282,11 @@ function getInitalPosToInsertAt( codeLines ){
 	return -1;
 }
 
-/*****************************
- * inserts code line after the last
- * path command
- * 
- * @param codeLines
- * @param x1 - the prev end point
- * @param y1
- * @param x2 - the new end point
- * @param y2
- * @returns
- */
+///////////////////////////////////////
+// takes the code lines, old and new 
+// end points, and the command selected
+// and returns the information needed 
+// to update the code.
 function addComandToCode(codeLines,x1,y1,x2,y2,info){
 
 	if( typeof(info.command) == 'undefined' || info.command == ""){

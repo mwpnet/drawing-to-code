@@ -1,18 +1,23 @@
-
-/*
- * can be:
- * 		MoveTo
- * 		LineTo
- * 		BezierCurveTo
- * 		QuadraticCurveTo
- * 		ClosePath
+/**************************************
+ * mouseEvents.js
+ * 
+ * all mouse events on the canvas are 
+ * handled here.
  */
 
+
+///////////////////////////////////////
+// the globals needed to hold some info
+// between animation events.
 var keepAnimating = false;
 var mousex = 0;
 var mousey = 0;
 
-
+///////////////////////////////////////
+// kludge used because different 
+// browsers have different 
+// implementation of the 
+// requestAnimationFrame method
 window.requestAnimFrame = (function(callback) {
 	return	window.requestAnimationFrame || 
 			window.webkitRequestAnimationFrame || 
@@ -86,20 +91,25 @@ function myOnMouseDown(e) {
 	keepAnimating=true;
 }
 
+///////////////////////////////////////
+// stop animating when mouse released
 function myOnMouseUp(e){
 	keepAnimating = false;
 }
 
+///////////////////////////////////////
+// update mouse position relative to 
+// the canvas when mouse is moved.
 function myOnMouseMove(e){
 	mousex = e.pageX - canvas.offsetLeft;
 	mousey = e.pageY - canvas.offsetTop;
 }
 
-//get mouse coords
-//update coresponding args on coresponding code line
-//draws lines from code in textarea
-//draws line ends and control points
-
+///////////////////////////////////////
+// does the actual animation
+// updates the coresponding code line, 
+// redraws the code, and checks to see 
+// if it should keep animating.
 function myAnimate(e){
 
 	var code = getCode();
