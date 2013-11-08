@@ -101,12 +101,30 @@ canvas {
 #precode,#postcode {
 	color: #888888;
 }
+
+#headerText {
+	background: #dddddd;
+	width: 90%;
+	margin-left: 5%;
+}
 </style>
 
 </head>
 <body>
-<div id="buttons">
+<div id="headerText">
+<h1>Drawing to Code</h1>
+<p>Basic vector drawing program, that give you back the javascript code needed to recreate the image drawn.
+It's designed so that you can paste code in from elsewhere and edit it here.</p>
+<p>There are some caveats when using this program:</p>
+	<ul>
+	<li>First and foremost this is still <i><b>alpha code</b></i>. So expect things to break.</li>
+	<li>The code parsing that the program uses is <i>very primitive</i> and can be easily confused and break.</li>
+	<li>Since the drawing part manipulates the arguments of the code itself, the path methods can only have literal numerical values. No variables.</li>
+	<li>Currently the program does not handle transformations properly. It turns out this is exceptionally complicated, and will have to wait until the next version.</li>
+	</ul>
+</div>
 
+<div id="buttons">
 <canvas id="moveToButton" width="64" height="64" title="moveTo()" onclick="onClickMoveTo()"></canvas>
 <canvas id="lineToButton" width="64" height="64" title="lineTo()" onclick="onClickLineTo()"></canvas>
 <canvas id="bezierCurveToButton" width="64" height="64" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
