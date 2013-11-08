@@ -96,7 +96,6 @@ function myOnMouseDown(e) {
 	state.type = moveInfo.type;
 	state.xOld=moveInfo.xOld;
 	state.yOld=moveInfo.yOld;
-	console.debug(state.xOld,state.yOld);
 
 	// 
 	if( moveInfo.type == "truefalse" ){

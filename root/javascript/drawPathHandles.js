@@ -33,16 +33,25 @@
  */
 
 ///////////////////////////////////////
+// the details of how the control 
+// handles are drawn
+
+var controlHandleParams = {
+		size: 10,
+		color:"red",
+		lineWidth: 1
+};
+
 // draw a box at x,y
 // for marking ends of path segments
 // also checks if mouse pointer is in it
 //
 function drawPathBox(context,x,y,mousex,mousey) {
-	var size=10.0;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-    context.lineWidth = 1;
-    context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
     context.moveTo(x-size/2.0, y-size/2.0);
     context.lineTo(x-size/2.0, y+size/2.0);
     context.lineTo(x+size/2.0, y+size/2.0);
@@ -61,11 +70,11 @@ function drawPathBox(context,x,y,mousex,mousey) {
 // also checks if mouse pointer is in it
 //
 function drawControlePointHandle( context,cx,cy,mousex,mousey){
-	var size=10.0;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-	context.lineWidth = 1;
-	context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.moveTo(cx+size/2.0,cy);
 	context.arc(cx, cy, size/2.0, 0, 2.0 * Math.PI, false);
 	var mouseIn = context.isPointInPath(mousex,mousey);
@@ -80,11 +89,11 @@ function drawControlePointHandle( context,cx,cy,mousex,mousey){
 //no mouse detection
 //
 function drawPathX( context,x,y){
-	var size=10.0;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-	context.lineWidth = 1;
-	context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.moveTo(x-size/2.0, y-size/2.0);
 	context.lineTo(x+size/2.0, y+size/2.0);
 	context.moveTo(x-size/2.0, y+size/2.0);
@@ -103,8 +112,8 @@ function drawPathX( context,x,y){
 function drawLinesToConrolePoints(context,cx,cy,x,y){
 	context.save();
 	context.beginPath();
-    context.lineWidth = 1;
-    context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.moveTo(x,y);
 	context.lineTo(cx,cy);
 	context.stroke();
@@ -122,8 +131,8 @@ function drawLinesToConrolePoints(context,cx,cy,x,y){
 function drawCircleForArcs(context,x,y,r,start,end,ccw){
 	context.save();
 	context.beginPath();
-    context.lineWidth = 1;
-    context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.arc(x, y, r, start,start, !ccw);
 	context.arc(x, y, r, start,end, !ccw);
 	context.stroke();
@@ -138,12 +147,11 @@ function drawCircleForArcs(context,x,y,r,start,end,ccw){
 // ie flips ccw
 //
 function drawArcDirection(context,cx,cy,r,ang,ccw,mousex,mousey){
-	
-	var size = 10;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-	context.lineWidth = 1;
-	context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 
 	var arcLenth = 2*size/r;
 	var arrowLength = size/r; // radians
@@ -190,14 +198,12 @@ function drawArcDirection(context,cx,cy,r,ang,ccw,mousex,mousey){
 function drawMoveTo(context,x,y,mousex,mousey){
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
 
-	if(mouseInBox){
-		return {
-			destArgs: [0,1],
-			srcArgs: [0,1],
-			type: "line"
-		};
-	}
-	return undefined;
+	return {
+		mouseGrabed: mouseInBox,
+		destArgs: [0,1],
+		srcArgs: [0,1],
+		type: "line"
+	};
 }
 
 ///////////////////////////////////////
@@ -210,14 +216,12 @@ function drawMoveTo(context,x,y,mousex,mousey){
 function drawLineTo(context,x,y,mousex,mousey){
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
 
-	if(mouseInBox){
-		return {
-			destArgs: [0,1],
-			srcArgs: [0,1],
-			type:"line"
-		};
-	}
-	return undefined;
+	return {
+		mouseGrabed: mouseInBox,
+		destArgs: [0,1],
+		srcArgs: [0,1],
+		type:"line"
+	};
 }
 
 ///////////////////////////////////////
@@ -238,6 +242,7 @@ function drawBezierCurveTo(context,xold,yold,cx1,cy1,cx2,cy2,x,y,mousex,mousey) 
 	
 	if(mouseInBox){
 		return {
+			mouseGrabed: true,
 			destArgs: [4,5],
 			srcArgs: [4,5],
 			type:"line"
@@ -245,6 +250,7 @@ function drawBezierCurveTo(context,xold,yold,cx1,cy1,cx2,cy2,x,y,mousex,mousey) 
 	}
 	else if(mouseInHandle1){
 		return {
+			mouseGrabed: true,
 			destArgs: [0,1],
 			srcArgs: [0,1],
 			type:"line"
@@ -252,12 +258,16 @@ function drawBezierCurveTo(context,xold,yold,cx1,cy1,cx2,cy2,x,y,mousex,mousey) 
 	}
 	else if(mouseInHandle2){
 		return {
+			mouseGrabed: true,
 			destArgs: [2,3],
 			srcArgs: [2,3],
 			type:"line"
 		};
 	}
-	return undefined;
+
+	return {
+		mouseGrabed: false
+	};
 }
 
 
@@ -277,6 +287,7 @@ function drawQuadraticCurveTo(context,xold,yold,cx,cy,x,y,mousex,mousey) {
 	
 	if(mouseInBox){
 		return {
+			mouseGrabed: true,
 			destArgs: [2,3],
 			srcArgs: [2,3],
 			type:"line"
@@ -284,12 +295,15 @@ function drawQuadraticCurveTo(context,xold,yold,cx,cy,x,y,mousex,mousey) {
 	}
 	else if(mouseInHandle){
 		return {
+			mouseGrabed: true,
 			destArgs: [0,1],
 			srcArgs: [0,1],
 			type:"line"
 		};
 	}
-	return undefined;
+	return {
+		mouseGrabed: false,
+	};
 }
 
 
@@ -327,6 +341,7 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	
 	if(mouseInHandle1){
 		return {
+			mouseGrabed: true,
 			destArgs: [0,1],
 			srcArgs: [0,1],
 			type:"line",
@@ -335,6 +350,7 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	}
 	else if(mouseInHandle2){
 		return {
+			mouseGrabed: true,
 			destArgs: [2,3],
 			srcArgs: [2,3],
 			type:"line",
@@ -343,6 +359,7 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	}
 	else if(mouseInCircleHandle){
 		return{
+			mouseGrabed: true,
 			destArgs: [4],
 			srcArgs: [0,1,2,3,4],
 			type:"rad2",
@@ -350,7 +367,10 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 		};
 	}
 	
-	return undefined;
+	return{
+		mouseGrabed: false,
+		newEnd: [newEndX,newEndY]
+	};
 
 }
 
@@ -393,6 +413,7 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	
 	if(mouseInCenter){
 		return {
+			mouseGrabed: true,
 			destArgs: [0,1],
 			srcArgs: [0,1],
 			type:"line"
@@ -400,6 +421,7 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	}
 	else if(mouseInRad){
 		return {
+			mouseGrabed: true,
 			destArgs: [2],
 			srcArgs: [0,1],
 			type:"rad"
@@ -407,6 +429,7 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	}
 	else if(mouseInStart){
 		return {
+			mouseGrabed: true,
 			destArgs: [3],
 			srcArgs: [0,1],
 			type:"ang"
@@ -414,6 +437,7 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	}
 	else if(mouseInEnd){
 		return {
+			mouseGrabed: true,
 			destArgs: [4],
 			srcArgs: [0,1],
 			type:"ang"
@@ -421,12 +445,15 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	}
 	else if(mouseInCcw){
 		return {
+			mouseGrabed: true,
 			destArgs: [5],
 			srcArgs: [5],
 			type:"truefalse"
 		};
 	}
-	return undefined;
+	return {
+		mouseGrabed: false,
+	};
 }
 
 /**************************************
@@ -455,7 +482,7 @@ function drawEditHandles( context, codeLines,mousex,mousey){
 
 	for( var i=0, l=codeLines.length; i<l; i++){
 		
-		var localMoveInfo = undefined;
+		var localMoveInfo = { mouseGrabed: false };
 
 		var lineparts = parseCodeLine(codeLines[i]);
 		if( lineparts == null){
@@ -489,9 +516,7 @@ function drawEditHandles( context, codeLines,mousex,mousey){
 		else if(lineparts[0].match( /\b(?:arcTo)\b/ )){
 			startCo = endCo;
 			localMoveInfo = drawArcTo( context, startCo[0], startCo[1], args[0], args[1], args[2], args[3], args[4], mousex,mousey);
-			if(typeof localMoveInfo != 'undefined'){
-				endCo = localMoveInfo.newEnd;
-			}
+			endCo = localMoveInfo.newEnd;
 		}
 		else if(lineparts[0].match( /\b(?:arc)\b/ )){
 			
@@ -503,10 +528,9 @@ function drawEditHandles( context, codeLines,mousex,mousey){
 			var endCo = angleToXY(ang,centerX,centerY,r);
 
 			localMoveInfo = drawArc( context, args[0], args[1], args[2], args[3], args[4], args[5], endCo[0], endCo[1],mousex,mousey );
-			
 		}
-		
-		if(typeof localMoveInfo != 'undefined'){
+
+		if( localMoveInfo.mouseGrabed ){
 			moveInfo = localMoveInfo;
 			moveInfo.codeLineBeingReferenced = i;
 			moveInfo.xOld=startCo[0];
