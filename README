@@ -15,4 +15,28 @@
 /**    You should have received a copy of the GNU General Public License		**/
 /**    along with drawing-to-code.  If not, see <http://www.gnu.org/licenses/>.	**/
 
+Drawing to Code
 
+Basic vector drawing program, that give you back the javascript code needed to 
+recreate the image drawn. It's designed so that you can paste code in from 
+elsewhere and edit it here.
+
+There are some caveats when using this program:
+
+    First and foremost this is still alpha code. So expect things to break.
+    The code parsing that the program uses is very primitive and can be easily 
+    	confused and break.
+    Since the drawing part manipulates the arguments of the code itself, the 
+    	path methods can only have literal numerical values. No variables.
+    Currently the program does not handle transformations properly. It turns 
+    	out this is exceptionally complicated, and will have to wait until the 
+    	next version.
+
+
+
+-- TODO --
+
+-Change the code parsing part to something that actually parses code, instead of strings.
+-Handle transformations.
+-Make the html drawing page look nicer.
+-Get a better name for the project.
