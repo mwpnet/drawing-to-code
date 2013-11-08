@@ -11,15 +11,24 @@
  * drawn
  */
 
+// the details of how the control 
+// handles are drawn
+
+var controlHandleParams = {
+		size: 10,
+		color:"red",
+		lineWidth: 1
+}
+
 // draw a box at x,y
 // for marking ends of path segments
 // also checks if mouse pointer is in it
 function drawPathBox(context,x,y,mousex,mousey) {
-	var size=10.0;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-    context.lineWidth = 1;
-    context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
     context.moveTo(x-size/2.0, y-size/2.0);
     context.lineTo(x-size/2.0, y+size/2.0);
     context.lineTo(x+size/2.0, y+size/2.0);
@@ -36,11 +45,11 @@ function drawPathBox(context,x,y,mousex,mousey) {
 // for marking control points
 // also checks if mouse pointer is in it
 function drawControlePointHandle( context,cx,cy,mousex,mousey){
-	var size=10.0;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-	context.lineWidth = 1;
-	context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.moveTo(cx+size/2.0,cy);
 	context.arc(cx, cy, size/2.0, 0, 2.0 * Math.PI, false);
 	var mouseIn = context.isPointInPath(mousex,mousey);
@@ -53,11 +62,11 @@ function drawControlePointHandle( context,cx,cy,mousex,mousey){
 // only used for marking
 //no mouse detection
 function drawPathX( context,x,y){
-	var size=10.0;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-	context.lineWidth = 1;
-	context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.moveTo(x-size/2.0, y-size/2.0);
 	context.lineTo(x+size/2.0, y+size/2.0);
 	context.moveTo(x-size/2.0, y+size/2.0);
@@ -74,8 +83,8 @@ function drawPathX( context,x,y){
 function drawLinesToConrolePoints(context,cx,cy,x,y){
 	context.save();
 	context.beginPath();
-    context.lineWidth = 1;
-    context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.moveTo(x,y);
 	context.lineTo(cx,cy);
 	context.stroke();
@@ -85,8 +94,8 @@ function drawLinesToConrolePoints(context,cx,cy,x,y){
 function drawCircleForArcs(context,x,y,r,start,end,ccw){
 	context.save();
 	context.beginPath();
-    context.lineWidth = 1;
-    context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 	context.arc(x, y, r, start,start, !ccw);
 	context.arc(x, y, r, start,end, !ccw);
 	context.stroke();
@@ -96,12 +105,11 @@ function drawCircleForArcs(context,x,y,r,start,end,ccw){
 }
 
 function drawArcDirection(context,cx,cy,r,ang,ccw,mousex,mousey){
-	
-	var size = 10;
+	var size=controlHandleParams.size;
 	context.save();
 	context.beginPath();
-	context.lineWidth = 1;
-	context.strokeStyle = 'red';
+    context.lineWidth = controlHandleParams.lineWidth;
+    context.strokeStyle = controlHandleParams.color;
 
 	var arcLenth = 2*size/r;
 	var arrowLength = size/r; // radians
