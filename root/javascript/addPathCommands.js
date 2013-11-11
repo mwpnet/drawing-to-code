@@ -291,7 +291,7 @@ function getPosToInsertAt( codeLines ){
 // add new commands after. Used if no 
 // path commands are found.
 function getInitalPosToInsertAt( codeLines ){
-	for( var i=0,l=codeLines.length; i<l; i++ ){
+	for( var i=codeLines.length-1; i>-1; i-- ){
 		var pos = codeLines[i].search( /context\.beginPath\b/);
 		if( pos > -1 ){
 			return i+1;
