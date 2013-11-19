@@ -36,16 +36,16 @@
 // the details of how the control 
 // handles are drawn
 
-var controleHandleContext = {
+var mockContext = {
 		
 	context: undefined,
 	callCount: 0,
 	
 	mousex: 0,
-	mousey:0,
+	mousey: 0,
 	
-	translatedMousex:0,
-	translatedMousex:0,
+	translatedMousex: 0,
+	translatedMousex: 0,
 	
 	controlHandleParams: {
 			size: 10,
@@ -60,6 +60,40 @@ var controleHandleContext = {
 	newEnd: [],
 	xold: 0,
 	yold: 0,
+	
+	
+	contextState: {
+			transformMatrix: [1,0,0,1,0,0],
+			clipRegion: [], //???
+
+			strokeStyle: "", 
+			fillStyle: "", 
+			globalAlpha: "", 
+			lineWidth: "", 
+			lineCap: "", 
+			lineJoin: "", 
+			miterLimit: "", 
+			lineDashOffset: "", 
+			shadowOffsetX: "", 
+			shadowOffsetY: "", 
+			shadowBlur: "", 
+			shadowColor: "", 
+			globalCompositeOperation: "", 
+			font: "", 
+			textAlign: "", 
+			textBaseline: "", 
+			direction: "", 
+			imageSmoothingEnabled: "",
+	    	
+			dashList: []
+	},
+
+	currentState: {},
+	
+	stateStack: [],
+	
+	
+	/*********************************/
 	
 	
 	// draw a box at x,y
@@ -212,9 +246,17 @@ var controleHandleContext = {
 	
 	
 	//2 The canvas state
-	save: function(){} , // Pushes the current state onto the stack.
-	restore: function(){}, // Pops the top state on the stack, restoring the context to that state.
-	
+	save: function(){	// Pushes the current state onto the stack.
+		this.stateStack.push(this.currentState);
+		this.currentState = new contextState;//XXX
+	},
+	restore: function(){	// Pops the top state on the stack, restoring the context to that state.
+		var poppedState = this.stateStack.push();
+		if( poppedState != undefined){
+			this.currentState = poppedState;
+		}
+	},
+
 	//3 DrawingStyle objects
 	// not relevant here
 
@@ -227,7 +269,7 @@ var controleHandleContext = {
 	lineJoin: "",	// Returns the current line join style.
 					// Can be set, to change the line join style.
 					// The possible line join styles are bevel, round, and miter. Other values are ignored.
-	miterLimit:0,	// Returns the current miter limit ratio.
+	miterLimit: 0,	// Returns the current miter limit ratio.
 					// Can be set, to change the miter limit ratio. Values that are not finite values greater than zero are ignored.
 	setLineDash: function(segments){},	// Sets the current line dash pattern (as used when stroking). The argument is a list of distances for which to alternately have the line on and the line off.
 	getLineDash: function(){},			// Returns a copy of the current line dash pattern. The array returned will always have an even number of entries (i.e. the pattern is normalized).
@@ -235,14 +277,14 @@ var controleHandleContext = {
 						// Can be set, to change the phase offset. Values that are not finite values are ignored.
 
 	// 5 Text styles
-	font:"",	// Returns the current font settings.
-				// Can be set, to change the font. The syntax is the same as for the CSS 'font' property; values that cannot be parsed as CSS font values are ignored.
+	font: "",	// Returns the current font settings.
+				// Can be set, to change the font. The syntax is the same as for the CSS 'font' property, values that cannot be parsed as CSS font values are ignored.
 				// Relative keywords and lengths are computed relative to the font of the canvas element.
 	textAlign: "",	// Returns the current text alignment settings.
 					// Can be set, to change the alignment. The possible values are start, end, left, right, and center. Other values are ignored. The default is start.
 	textBaseline: 0,	// Returns the current baseline alignment settings.
 						// Can be set, to change the baseline alignment. The possible values and their meanings are given below. Other values are ignored. The default is alphabetic.
-	direction:"", 	// Returns the current directionality.
+	direction: "", 	// Returns the current directionality.
 					// Can be set, to change the directionality. The possible values and their meanings are given below. Other values are ignored. The default is inherit.
 
 	//6 Building paths
@@ -506,6 +548,9 @@ var controleHandleContext = {
 	setTransform: function(a, b, c, d, e, f){},	// Changes the transformation matrix to the matrix given by the arguments as described below.
 	resetTransform: function(){}, // Changes the transformation matrix to the identity transform.
 
+	//9 Image sources for 2D rendering contexts
+	// nothing relevant here
+	
 	//10 Fill and stroke styles
 	fillStyle: "",	// Returns the current style used for filling shapes.
 					// Can be set, to change the fill style.
@@ -564,11 +609,11 @@ var controleHandleContext = {
 												// Throws an IndexSizeError exception if the either of the width or height arguments are zero.
 												//The data will be returned at the same resolution as the canvas bitmap.
 	putImageData: function(imagedata, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight ){},	// Paints the data from the given ImageData object onto the bitmap. If a dirty rectangle is provided, only the pixels from that rectangle are painted.
-																							// The globalAlpha and globalCompositeOperation attributes, as well as the shadow attributes, are ignored for the purposes of this method call; pixels in the canvas are replaced wholesale, with no composition, alpha blending, no shadows, etc.
+																							// The globalAlpha and globalCompositeOperation attributes, as well as the shadow attributes, are ignored for the purposes of this method call, pixels in the canvas are replaced wholesale, with no composition, alpha blending, no shadows, etc.
 																							// Throws a NotSupportedError exception if any of the arguments are not finite.
 																							// Each pixel in the image data is mapped to one coordinate space unit on the bitmap, regardless of the value of the resolution attribute.
 	putImageDataHD: function(imagedata, dx, dy, dirtyX, dirtyY, dirtyWidth, dirtyHeight ){},	// Paints the data from the given ImageData object onto the bitmap, at the bitmap's native pixel density (regardless of the value of the ImageData object's resolution attribute). If a dirty rectangle is provided, only the pixels from that rectangle are painted.
-																								// The globalAlpha and globalCompositeOperation attributes, as well as the shadow attributes, are ignored for the purposes of this method call; pixels in the canvas are replaced wholesale, with no composition, alpha blending, no shadows, etc.
+																								// The globalAlpha and globalCompositeOperation attributes, as well as the shadow attributes, are ignored for the purposes of this method call, pixels in the canvas are replaced wholesale, with no composition, alpha blending, no shadows, etc.
 																								// Throws a NotSupportedError exception if any of the arguments are not finite.
 
 	//17 Compositing
@@ -585,9 +630,9 @@ var controleHandleContext = {
 	shadowColor: "",	// Returns the current shadow color.
 						// Can be set, to change the shadow color. Values that cannot be parsed as CSS colors are ignored.
 	shadowOffsetX: 0,
-	shadowOffsetY:0,	// Returns the current shadow offset.
+	shadowOffsetY: 0,	// Returns the current shadow offset.
 						// Can be set, to change the shadow offset. Values that are not finite numbers are ignored.
-	shadowBlur:0,	// Returns the current level of blur applied to shadows.
+	shadowBlur: 0	// Returns the current level of blur applied to shadows.
 					// Can be set, to change the blur level. Values that are not finite numbers greater than or equal to zero are ignored.
 
 

@@ -344,3 +344,39 @@ function computRad(x0,y0,x1,y1,x2,y2,d){
 	var newr = distancePointToLine(x1,y1,x2,y2,dx,dy);
 	return newr;
 }
+
+///////////////////////////////////////
+function transformPoint(trans,x,y){
+	var newX = trans[0]*x + trans[2]*y + trans[4];
+	var newY = trans[1]*x + trans[3]*y + trans[5];
+	return [newX,newY];
+}
+
+function invTansformPoint(trans,x,y){
+	//     | a c e |         | d  -c cf-de |
+	// inv | b d f | = 1/det | -b a  be-af |
+	//     | 0 0 1 |         | 0  0  ad-bc |
+	
+	
+	var a = trans[0];
+	var b = trans[1];
+	var c = trans[2];
+	var d = trans[3];
+	var e = trans[4];
+	var f = trans[5];
+
+	var det = a*d-b*c;
+	
+	var anew = d/det;
+	var bnew = -b/det;
+	var cnew = -c/det;
+	var dnew = a/det;
+	var enew = (c*f - d*e)/det;
+	var fnew = (b*e - a*f)/det;
+	
+	var xnew = anew * x + cnew * y + enew;
+	var ynew = bnew * x + dnew * y + fnew;
+	
+	return [xnew, ynew];
+}
+
