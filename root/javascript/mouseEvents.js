@@ -77,17 +77,27 @@ function myOnMouseDown(e) {
 	var mousey = e.pageY - canvas.offsetTop;
 
 	var code = getCode();
-	var codeLines = parseCode(code);
+
+	try {
+		codeTree = esprima.parse(code, options);
+	} catch (e) {
+		str = e.name + ': ' + e.message;
+		document.getElementById('errorBox').innerHTML = err.message;
+		keepAnimating=false;
+		return;
+	}
+
+    var codeLines = parseCode(code);
 	
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
-	var moveInfo = drawEditHandles( context, codeLines,mousex,mousey );
+	var moveInfo = drawEditHandles( context, codeTree,mousex,mousey ); 
 
 	if( typeof(moveInfo) == 'undefined' ){ // click not in controle handle
-		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,mousex,mousey,state);
+		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,mousex,mousey,state); //XXX
 
-		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine);
-		updateCode(rejoinCode(codeLines));
+		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine); //XXX
+		updateCode(rejoinCode(codeLines)); //XXXX
 	}
 
 	state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
@@ -99,7 +109,7 @@ function myOnMouseDown(e) {
 
 	// 
 	if( moveInfo.type == "truefalse" ){
-		var newCodeLines = updateCodeLineOnce(codeLines,[],state);
+		var newCodeLines = updateCodeLineOnce(codeLines,[],state); //XXX
 		var newCode = rejoinCode(newCodeLines);
 		updateCode(newCode);
 	}
@@ -130,15 +140,25 @@ function myOnMouseMove(e){
 function myAnimate(e){
 
 	var code = getCode();
+
+	try {
+		codeTree = esprima.parse(code, options);
+	} catch (e) {
+		str = e.name + ': ' + e.message;
+		document.getElementById('errorBox').innerHTML = err.message;
+		keepAnimating=false;
+		return;
+	}
+
 	var codeLines = parseCode(code);
 	
 	
-	var newCodeLines = updateCodeLine( codeLines, [ mousex, mousey ],state);
-	var newCode = rejoinCode(newCodeLines);
+	var newCodeLines = updateCodeLine( codeLines, [ mousex, mousey ],state); //XXX
+	var newCode = rejoinCode(newCodeLines); //XXX
 	updateCode(newCode);
 	drawCode( newCode );
 	
-	drawEditHandles( context, newCodeLines );
+	drawEditHandles( context, newCodeTree );
 
 
 	////////////

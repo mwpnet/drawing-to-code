@@ -655,7 +655,7 @@ var mockContext = {
 // information necisary to adjust the 
 // code line accordingly.
 //
-function drawEditHandles( context, codeLines,mousex,mousey){
+function drawEditHandles( context, Tree,mousex,mousey){
 	
 	var startCo = [0,0];
 	var endCo = [0,0];
