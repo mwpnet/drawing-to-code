@@ -77,17 +77,29 @@ function myOnMouseDown(e) {
 	var mousey = e.pageY - canvas.offsetTop;
 
 	var code = getCode();
+
+	var codeTree;
+    try {
+    	codeTree = esprima.parse(code, options);
+    } catch (e) {
+        str = e.name + ': ' + e.message;
+		document.getElementById('errorBox').innerHTML = str;
+		keepAnimating=false;
+		return;
+   }
+
+	
 	var codeLines = parseCode(code);
 	
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
-	var moveInfo = drawEditHandles( context, codeLines,mousex,mousey );
+	var moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 
 	if( typeof(moveInfo) == 'undefined' ){ // click not in controle handle
-		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,mousex,mousey,state);
+		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,mousex,mousey,state); //XXX
 
-		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine);
-		updateCode(rejoinCode(codeLines));
+		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine); //XXX
+		updateCode(rejoinCode(codeLines)); //XXX
 	}
 
 	state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
@@ -96,11 +108,11 @@ function myOnMouseDown(e) {
 	state.type = moveInfo.type;
 	state.xOld=moveInfo.xOld;
 	state.yOld=moveInfo.yOld;
+	state.arguments = moveInfo.arguments;
 
 	// 
 	if( moveInfo.type == "truefalse" ){
-		var newCodeLines = updateCodeLineOnce(codeLines,[],state);
-		var newCode = rejoinCode(newCodeLines);
+		var newCode = updateCodeLineOnce(code,[],state);
 		updateCode(newCode);
 	}
 	
@@ -130,16 +142,22 @@ function myOnMouseMove(e){
 function myAnimate(e){
 
 	var code = getCode();
-	var codeLines = parseCode(code);
-	
-	
-	var newCodeLines = updateCodeLine( codeLines, [ mousex, mousey ],state);
-	var newCode = rejoinCode(newCodeLines);
+
+	var codeTree;
+	try {
+		codeTree = esprima.parse(code, options);
+	} catch (e) {
+		str = e.name + ': ' + e.message;
+		document.getElementById('errorBox').innerHTML = str;
+		keepAnimating=false;
+		return;
+	}
+
+	var newCode = updateCodeLine( code, [ mousex, mousey ],state);
 	updateCode(newCode);
 	drawCode( newCode );
 	
-	drawEditHandles( context, newCodeLines );
-
+	drawEditHandles( context, newCodeLines, mousex,mousey);
 
 	////////////
 	if( keepAnimating){

@@ -471,73 +471,73 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 // information necisary to adjust the 
 // code line accordingly.
 //
-function drawEditHandles( context, codeLines,mousex,mousey){
+function drawEditHandles( context, codeTree,mousex,mousey){
 	
-	var lineBeingChanged;
+	var moveInfo = { mouseGrabed: false };
+    estraverse.traverse(codeTree, {
+        enter: function(node){
+        	drawEditHandlesCallback(context, node,mousex,mousey,moveInfo);
+        }
+    });
+    
+    return moveInfo;
+}
+    
+    
+function drawEditHandlesCallback( context, node,mousex,mousey,moveInfo){
+		
 	var startCo = [0,0];
 	var endCo = [0,0];
 	var moveInfo = undefined;
-	
-	var anyTrue = false;
-
-	for( var i=0, l=codeLines.length; i<l; i++){
 		
+    if( node.type === esprima.Syntax.CallExpression && codeTree.callee.object.name == "context"){
+    	
 		var localMoveInfo = { mouseGrabed: false };
-
-		var lineparts = parseCodeLine(codeLines[i]);
-		if( lineparts == null){
-			continue;
-		}
-		var args = lineparts[1];
-		if( args == null){
-			continue;
-		}
+   	
+		var name = codeTree.callee.property.name;
 		
-		if( lineparts[0].match( /\b(?:moveTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawMoveTo( context, args[0], args[1],mousex,mousey );
-			endCo = args;
+		var args = codetree.arguments;
+
+		startCo = endCo; // the last end coords become the new start coords
+
+		
+		if( name == "moveTo"){
+			localMoveInfo = drawMoveTo( context, args[0].value, args[1].value,mousex,mousey );
+			endCo = [ args[0].value,args[1].value ];
 		}
-		else if(lineparts[0].match( /\b(?:lineTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawLineTo( context, args[0], args[1],mousex,mousey );
-			endCo = args;
+		else if( name ==  "lineTo"){
+			localMoveInfo = drawLineTo( context, args[0].value, args[1].value,mousex,mousey );
+			endCo = [ args[0].value,args[1].value ];
 		}
-		else if(lineparts[0].match( /\b(?:bezierCurveTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawBezierCurveTo( context, startCo[0],startCo[1],args[0], args[1], args[2], args[3], args[4], args[5],mousex,mousey );
-			endCo = [args[4],args[5]];
+		else if( name ==  "bezierCurveTo"){
+			localMoveInfo = drawBezierCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value,mousex,mousey );
+			endCo = [args[4].value,args[5].value];
 		}
-		else if(lineparts[0].match( /\b(?:quadraticCurveTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawQuadraticCurveTo( context, startCo[0],startCo[1],args[0], args[1], args[2], args[3],mousex,mousey );
-			endCo = [args[2],args[3]];
+		else if( name == "quadraticCurveTo"){
+			localMoveInfo = drawQuadraticCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value,mousex,mousey );
+			endCo = [args[2].value,args[3].value];
 		}
-		else if(lineparts[0].match( /\b(?:arcTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawArcTo( context, startCo[0], startCo[1], args[0], args[1], args[2], args[3], args[4], mousex,mousey);
+		else if( name == "arcTo"){
+			localMoveInfo = drawArcTo( context, startCo[0], startCo[1], args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, mousex,mousey);
 			endCo = localMoveInfo.newEnd;
 		}
-		else if(lineparts[0].match( /\b(?:arc)\b/ )){
-			
-			startCo = endCo;
-			var centerX = args[0];
-			var centerY = args[1];
-			var r = args[2];
-			var ang = args[4]; // end angle
+		else if( name == "arc"){
+			var centerX = args[0].value;
+			var centerY = args[1].value;
+			var r = args[2].value;
+			var ang = args[4].value; // end angle
 			var endCo = angleToXY(ang,centerX,centerY,r);
 
-			localMoveInfo = drawArc( context, args[0], args[1], args[2], args[3], args[4], args[5], endCo[0], endCo[1],mousex,mousey );
+			localMoveInfo = drawArc( context, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value, endCo[0], endCo[1],mousex,mousey );
 		}
-
+		
 		if( localMoveInfo.mouseGrabed ){
 			moveInfo = localMoveInfo;
 			moveInfo.codeLineBeingReferenced = i;
 			moveInfo.xOld=startCo[0];
 			moveInfo.yOld=startCo[1];
+			moveInfo.arguments = codeTree.callee.arguments;
 		}
 	}
-	
-	return moveInfo;
-	
+    return;
 }

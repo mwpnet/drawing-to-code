@@ -31,42 +31,62 @@
 // mouse button is pressed and the 
 // mouse moves.
 //
-function updateCodeLine(codeLines,newCoords,info){
+function updateCodeLine(code,newCoords,info){
 	var lineIndex = info.codeLineBeingReferenced;
 	var destArgs = info.destArgs;
 	var srcArgs = info.srcArgs;
 	var type = info.type;
-
+	var args = info.arguments;
+	
+	var newcode=code;
+	
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
-		return codeLines;
+		return newCode;
 	}
 
 	var lineParts = parseCodeLine(codeLines[lineIndex]);
 	var args = lineParts[1];
 	
 	if( type =="rad"){
-		r=distance(newCoords[0],newCoords[1],args[srcArgs[0]],args[srcArgs[1]]);
-		args[destArgs[0]] = Math.round(r); // should be an integer
+		r=distance(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value); 
+		r=Math.round(r);// should be an integer
+		var start = args[destArgs[0]].range[0];
+		var end = args[destArgs[0]].range[1];
+		
+		newcode = code.substring(0,start) . r.toString . code.substring(end);
 	}
 	else if( type =="ang"){
-		ang = xyToAngle(newCoords[0],newCoords[1],args[srcArgs[0]],args[srcArgs[1]]);
-		args[destArgs[0]] = ang.toFixed(4); // don't want 20 decimal palces
+		ang = xyToAngle(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value);
+		ang = ang.toFixed(4); // don't want 20 decimal places
+
+		var start = args[destArgs[0]].range[0];
+		var end = args[destArgs[0]].range[1];
+		
+		newcode = code.substring(0,start) . ang.toString . code.substring(end);
 	}
 	else if( type=="rad2"){
 		var startpoint = [info.xOld,info.yOld];
-		var d=distance(args[srcArgs[0]],args[srcArgs[1]],newCoords[0],newCoords[1]);
+		var d=distance(args[srcArgs[0]].value,args[srcArgs[1]].value,newCoords[0],newCoords[1]);
 		
-		var r=computRad( startpoint[0],startpoint[1],args[srcArgs[0]],args[srcArgs[1]],args[srcArgs[2]],args[srcArgs[3]],d);
-		args[destArgs[0]] = r;
+		var r=computRad( startpoint[0],startpoint[1],args[srcArgs[0]].value,args[srcArgs[1]].value,args[srcArgs[2]].value,args[srcArgs[3]].value,d);
+
+		r=Math.round(r);// should be an integer
+		var start = args[destArgs[0]].range[0];
+		var end = args[destArgs[0]].range[1];
+		
+		newcode = code.substring(0,start) . r.toString . code.substring(end);
 	}
 	else if( type == "line"){
-		for( var i=0,l=destArgs.length,m=newCoords.length; i<l && i<m; i++){
-			args[ destArgs[i] ] = newCoords[ i ];
+		for( var i=destArgs.length-1; i>=0; i--){
+			
+			var start = args[destArgs[i]].range[0];
+			var end = args[destArgs[i]].range[1];
+			
+			newcode = code.substring(0,start) . newCoords[ i ].toString . code.substring(end);
 		}
 	}
 
-	codeLines[lineIndex] = rejoinCodeLine( lineParts[0], args, lineParts[2]);
-	return codeLines;
+	return newCode;
 }
 	 
 
@@ -79,23 +99,26 @@ function updateCodeLine(codeLines,newCoords,info){
 // to only be called once when the 
 // mouse button is first pressed.
 //
-function updateCodeLineOnce(codeLines,newCoords,info){
+function updateCodeLineOnce(code,newCoords,info){
 	var lineIndex = info.codeLineBeingReferenced;
 	var destArgs = info.destArgs;
 	var srcArgs = info.srcArgs;
 	var type = info.type;
+	var args = info.arguments;
+	
 
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
-		return codeLines;
+		return code;
 	}
 
-	var lineParts = parseCodeLine(codeLines[lineIndex]);
-	var args = lineParts[1];
-	
+	var newcode = code;
 	if( type == "truefalse"){
-			args[destArgs[0]] = ! args[srcArgs[0]];
+		var start = args[destArgs[0]].range[0];
+		var end = args[destArgs[0]].range[1];
+		
+		var newval = ! args[srcArgs[0]].value;
+		
+		newcode = code.substring(0,start) . newval.toString . code.substring(end);
 	}
-
-	codeLines[lineIndex] = rejoinCodeLine( lineParts[0], args, lineParts[2]);
-	return codeLines;
+	return newcode;
 }
