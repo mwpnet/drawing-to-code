@@ -490,7 +490,7 @@ function drawEditHandlesCallback( context, node,mousex,mousey,moveInfo){
 	var endCo = [0,0];
 	var moveInfo = undefined;
 		
-    if( node.type === esprima.Syntax.CallExpression && codeTree.callee.object.name == "context"){
+    if( node.type === esprima.Syntax.CallExpression && node.callee.object.name == "context"){
     	
 		var localMoveInfo = { mouseGrabed: false };
    	

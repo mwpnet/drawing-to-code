@@ -77,7 +77,8 @@ function updateCodeLine(code,newCoords,info){
 		newcode = code.substring(0,start) . r.toString . code.substring(end);
 	}
 	else if( type == "line"){
-		for( var i=destArgs.length-1; i>=0; i--){
+		// need to do it in reverse so range doesn't get out of sync with string
+		for( var i=destArgs.length-1; i>=0; i--){ 
 			
 			var start = args[destArgs[i]].range[0];
 			var end = args[destArgs[i]].range[1];

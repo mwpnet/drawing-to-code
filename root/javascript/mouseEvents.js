@@ -96,10 +96,8 @@ function myOnMouseDown(e) {
 	var moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 
 	if( typeof(moveInfo) == 'undefined' ){ // click not in controle handle
-		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,mousex,mousey,state); //XXX
-
-		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine); //XXX
-		updateCode(rejoinCode(codeLines)); //XXX
+		moveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state);
+		updateCode( moveInfo.newCode );
 	}
 
 	state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
@@ -143,9 +141,12 @@ function myAnimate(e){
 
 	var code = getCode();
 
-	var codeTree;
+	var newCode = updateCodeLine( code, [ mousex, mousey ],state);
+	updateCode(newCode);
+	drawCode( newCode );
+	
 	try {
-		codeTree = esprima.parse(code, options);
+		var codeTree = esprima.parse(code, options);
 	} catch (e) {
 		str = e.name + ': ' + e.message;
 		document.getElementById('errorBox').innerHTML = str;
@@ -153,11 +154,7 @@ function myAnimate(e){
 		return;
 	}
 
-	var newCode = updateCodeLine( code, [ mousex, mousey ],state);
-	updateCode(newCode);
-	drawCode( newCode );
-	
-	drawEditHandles( context, newCodeLines, mousex,mousey);
+	drawEditHandles( context, codeTree, mousex,mousey);
 
 	////////////
 	if( keepAnimating){

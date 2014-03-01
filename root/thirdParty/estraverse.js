@@ -159,7 +159,7 @@
         while (worklist.length) {
             node = worklist.pop();
             nodeType = node.type;
-
+debugger;
             if (node === marker) {
                 node = leavelist.pop();
                 if (visitor.leave) {
@@ -233,7 +233,7 @@
 
         while (worklist.length) {
             tuple = worklist.pop();
-
+debugger;
             if (tuple === marker) {
                 tuple = leavelist.pop();
                 ret = undefined;

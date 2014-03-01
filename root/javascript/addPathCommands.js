@@ -123,6 +123,7 @@ function selectButton(button){
  * pair are the new end point.
  */
 
+
 ///////////////////////////////////////
 // moveTo code line
 function codeStringMoveTo(x1,y1,x2,y2){
@@ -275,30 +276,13 @@ function getArgsToBeChanged(command){
 ///////////////////////////////////////
 // finds the line number of the last 
 // path command 
-function getPosToInsertAt( codeLines ){
-	for( var i=codeLines.length-1; i>-1; i-- ){
-		var pos = codeLines[i].search( /(?:context\.(?:beginPath|moveTo|lineTo|bezierCurveTo|quadraticCurveTo|arc|arcTo|closePath)\b)|(?:\}\b)/);
-		if( pos > -1 ){
-			return i+1;
-		}
+function getPosToInsertAt( node,mousex,mousey,info ){
+	
+	// we loop through until we don't find any more commands
+    if( node.type === esprima.Syntax.CallExpression && node.callee.object.name == "context" && node.callee.property.name != "closePath" ){
+    	info.position = node.range[1]; // that end of the statement.
 	}
 
-	return -1;
-}
-
-///////////////////////////////////////
-// finds the first beginPath command to
-// add new commands after. Used if no 
-// path commands are found.
-function getInitalPosToInsertAt( codeLines ){
-	for( var i=codeLines.length-1; i>-1; i-- ){
-		var pos = codeLines[i].search( /context\.beginPath\b/);
-		if( pos > -1 ){
-			return i+1;
-		}
-	}
-
-	return -1;
 }
 
 ///////////////////////////////////////
@@ -306,21 +290,29 @@ function getInitalPosToInsertAt( codeLines ){
 // end points, and the command selected
 // and returns the information needed 
 // to update the code.
-function addComandToCode(codeLines,x1,y1,x2,y2,info){
+function addComandToCode(codeTree,code,x1,y1,x2,y2,info){
 
 	if( typeof(info.command) == 'undefined' || info.command == ""){
-		return codeLines;
+		return codeTree;
 	}
 
 	var myNewCodeLine = makeCodeLine(info.command,x1,y1,x2,y2);
 	
+	//var insertedAt = getPosToInsertAt( codeLines );
+ 	//
+	//if(insertedAt <0){
+	//	insertedAt = getInitalPosToInsertAt( codeLines );
+	//}
 	
- 	var insertedAt = getPosToInsertAt( codeLines );
- 	
-	if(insertedAt <0){
-		insertedAt = getInitalPosToInsertAt( codeLines );
-	}
-
+	var moveInfo = { mouseGrabed: true };
+	
+    estraverse.traverse(codeTree, {
+        enter: function(node){
+        	getPosToInsertAt(node,mousex,mousey,info);
+        }
+    });
+    
+	var newcode = code.substring(0,info.position) + "\n" + myNewCodeLine + "\n" + code.substring(info.position);
 	var argsIndex = getArgsToBeChanged(info.command);
 	var moveInfo = {
 			codeLineBeingReferenced: insertedAt,
@@ -330,7 +322,7 @@ function addComandToCode(codeLines,x1,y1,x2,y2,info){
 			xOld: x2,
 			yOld: y2,
 			
-			newCodeLine: myNewCodeLine
+			newCode: newcode
 	};
 	return moveInfo;
 }
