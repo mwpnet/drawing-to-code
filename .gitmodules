@@ -1,0 +1,12 @@
+[submodule "root/acorn-master"]
+	path = root/acorn-master
+	url = https://github.com/marijnh/acorn.git
+[submodule "root/UglifyJS-master"]
+	path = root/UglifyJS-master
+	url = https://github.com/mishoo/UglifyJS2.git
+[submodule "root/esprima-master"]
+	path = root/esprima-master
+	url = https://github.com/ariya/esprima.git
+[submodule "root/JSLint-master"]
+	path = root/JSLint-master
+	url = https://github.com/douglascrockford/JSLint.git
