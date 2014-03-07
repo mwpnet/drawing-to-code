@@ -165,18 +165,24 @@ function draw(context){
 	</div>
 
 <!--  line properties -->
-Line Width <input id="lineWidthInput" type="text">
-<canvas id="lineWidthDisplay" width=200 height=50 title="line width"></canvas>
-Line Cap
-<div>none</div>
-<canvas id="lineCapButt" width=75 height=50 title="line cap butt" onclick="redrawLineCapButt()"></canvas>
-<canvas id="lineCapRound" width=75 height=50 title="line cap round" onclick="redrawLineCapRound()"></canvas>
-<canvas id="lineCapsquare" width=75 height=50 title="line cap square" onclick="redrawLineCapsquare()"></canvas>
-Line Join
-<div>none</div>
-<canvas id="lineJoinBevel" width=75 height=50 title="line cap bevel" onclick="redrawLineJoinBevel()"></canvas>
-<canvas id="lineJoinRound" width=75 height=50 title="line cap round" onclick="redrawLineJoinRound()"></canvas>
-<canvas id="lineJoinMiter" width=75 height=50 title="line cap miter" onclick="redrawLineJoinMiter()"></canvas>
-<input id="miterLimitInput" rtype="text">
+<table>
+<tr><th>Line Width</th><td><input id="lineWidthInput" type="text"></td>
+<td colspan=3><canvas id="lineWidthDisplay" width=200 height=50 title="line width"></canvas></td></tr>
+<tr><th>Line Cap</th>
+<td><div id="lineCapNone" width=75 height=50 onclick="clearLineStyleLine('cap')">none</div></td>
+<td><canvas id="lineCapButt" width=75 height=50 title="line cap butt" onclick="generalLineStyleCode('cap','butt')"></canvas></td>
+<td><canvas id="lineCapRound" width=75 height=50 title="line cap round" onclick="generalLineStyleCode('cap','round')"></canvas></td>
+<td><canvas id="lineCapsquare" width=75 height=50 title="line cap square" onclick="generalLineStyleCode('cap','square')"></canvas></td>
+</tr>
+<tr><th>Line Join</th>
+<td><div id="lineJoinNone" width=75 height=50 onclick="clearLineStyleLine('join')">none</div></td>
+<td><canvas id="lineJoinBevel" width=75 height=50 title="line cap bevel" onclick="generalLineStyleCode('join','bevel')"></canvas></td>
+<td><canvas id="lineJoinRound" width=75 height=50 title="line cap round" onclick="generalLineStyleCode('join','round')"></canvas></td>
+<td><canvas id="lineJoinMiter" width=75 height=50 title="line cap miter" onclick="generalLineStyleCode('join','miter')"></canvas></td>
+</tr>
+<tr><td colspan=4></td><td><input id="miterLimitInput" type="text" value=10 onchange="changeMiterLimit()"></td></tr>
+</table>
+
+
 </body>
 </html>
