@@ -2,7 +2,7 @@ var lineInfo = {};
 
 
 function initLineProp() {
-	//lineWidthElement = document.getElementById('lineWidthDisplay');
+	lineInfo.lineWidthElement = document.getElementById('lineWidthDisplay');
 	lineInfo.lineCapNoneElement = document.getElementById('lineCapNone');
 	lineInfo.lineCapButtElement = document.getElementById('lineCapButt');
 	lineInfo.lineCapRoundElement = document.getElementById('lineCapRound');
@@ -12,7 +12,7 @@ function initLineProp() {
 	lineInfo.lineJoinRoundElement = document.getElementById('lineJoinRound');
 	lineInfo.lineJoinMiterElement = document.getElementById('lineJoinMiter');
 
-	//lineInfo.lineWidthCanvas = lineInfo.lineWidthElement.getContext('2d');
+	lineInfo.lineWidthCanvas = lineInfo.lineWidthElement.getContext('2d');
 	//lineInfo.lineCapNoneCanvas = lineInfo.lineCapNoneElement.getContext('2d');
 	lineInfo.lineCapButtCanvas = lineInfo.lineCapButtElement.getContext('2d');
 	lineInfo.lineCapRoundCanvas = lineInfo.lineCapRoundElement.getContext('2d');
@@ -22,25 +22,25 @@ function initLineProp() {
 	lineInfo.lineJoinRoundCanvas = lineInfo.lineJoinRoundElement.getContext('2d');
 	lineInfo.lineJoinMiterCanvas = lineInfo.lineJoinMiterElement.getContext('2d');
 	
-	//lineinfo.lineWidthInput = document.getElementById('lineWidthInput');
+	lineInfo.lineWidthInput = document.getElementById('lineWidthInput');
 	lineInfo.lineMiterLimit = document.getElementById('miterLimitInput');
 
-
-
-	drawLineCap(lineInfo.lineCapButtCanvas,"butt",10);
-	drawLineCap(lineInfo.lineCapRoundCanvas,"round",10);
-	drawLineCap(lineInfo.lineCapsquareCanvas,"square",10);
+	var width = 15; //XXX
+	drawLineCap(lineInfo.lineCapButtCanvas,"butt",width);
+	drawLineCap(lineInfo.lineCapRoundCanvas,"round",width);
+	drawLineCap(lineInfo.lineCapsquareCanvas,"square",width);
 	
-	drawLineJoin(lineInfo.lineJoinBevelCanvas,"bevel",10);
-	drawLineJoin(lineInfo.lineJoinRoundCanvas,"round",10);
-	drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",10);
+	drawLineJoin(lineInfo.lineJoinBevelCanvas,"bevel",width);
+	drawLineJoin(lineInfo.lineJoinRoundCanvas,"round",width);
+	drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",width);
 }
 
 function drawLineThickness(width){
+	lineInfo.lineWidthCanvas.clearRect(0, 0, lineInfo.lineWidthElement.width, lineInfo.lineWidthElement.height);
 	lineInfo.lineWidthCanvas.beginPath();
 
 	lineInfo.lineWidthCanvas.moveTo(0,25);
-	lineInfo.lineWidthCanvas.LineTo(200,25);
+	lineInfo.lineWidthCanvas.lineTo(200,25);
 	lineInfo.lineWidthCanvas.lineWidth=width;
 	lineInfo.lineWidthCanvas.strokeStyle="black";
 	lineInfo.lineWidthCanvas.stroke();
@@ -87,6 +87,49 @@ function drawLineJoin(canvas,type,width,limit){
 	canvas.strokeStyle="red";
 	canvas.stroke();
 }
+
+function changeLineWidth(){
+	var width = lineInfo.lineWidthInput.value;
+	
+	var code = getCode();
+	var codeLines = parseCode(code);
+	var newCodeLines=updateLineWidth(codeLines,width);
+
+	var newCode = rejoinCode(newCodeLines);
+
+	updateCode(newCode);
+	drawCode( newCode );
+	
+	drawEditHandles( context, newCodeLines );
+	drawLineThickness(width);
+}
+
+function getLineWidth(codeLines){
+	var re = /^(\s*context\.lineWidth\s*=\s*\"?)([a-zA-Z0-9]+)(\"?\s*;\s*)$/;
+
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		return arr[2];
+	}
+}
+
+function updateLineWidth(codeLines,width){
+	var re = /^(\s*context\.lineWidth\s*=\s*\"?)([a-zA-Z0-9]+)(\"?\s*;\s*)$/;
+	
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		codeLines[pos] = arr[1]+width+arr[3];
+		return codeLines;
+	}
+		
+	var pos = getInitalPosToInsertAt( codeLines );
+	codeLines.splice(pos,0,"\tcontext.lineWidth = "+width+";");
+
+	return codeLines;
+}
+
 
 
 function generalLineStyleCode(type,value){
@@ -148,6 +191,7 @@ function changeMiterLimit(){
 	
 	drawEditHandles( context, newCodeLines );
 	
+	
 	drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",10,limit);
 
 }
@@ -173,17 +217,14 @@ function changeMiterLimit(){
 function updateLineCap( codeLines, newVal ){
 	var re = /^(\s*context\.lineCap\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
 	
-	for( var i=codeLines.length-1; i>-1; i-- ){
-		if( re.test(codeLines[i])){
-			arr = re.exec(codeLines[i]);
-			codeLines[i] = arr[1]+newVal+arr[3];
-			return codeLines;
-			
-		}
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		codeLines[pos] = arr[1]+newVal+arr[3];
+		return codeLines;
 	}
-
-	var pos = getInitalPosToInsertAt( codeLines );
-	codeLines.splice(pos,0,"\tcontext.lineCap = \""+newVal+"\";");
+		
+	codeLines.splice(-pos,0,"\tcontext.lineCap = \""+newVal+"\";");
 
 	return codeLines;
 }
@@ -194,17 +235,14 @@ function updateLineCap( codeLines, newVal ){
 function updateLineJoin( codeLines, newVal){
 	var re = /^(\s*context\.lineJoin\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
 	
-	for( var i=codeLines.length-1; i>-1; i-- ){
-		if( re.test(codeLines[i])){
-			arr = re.exec(codeLines[i]);
-			codeLines[i] = arr[1]+newVal+arr[3];
-			return codeLines;
-			
-		}
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		codeLines[pos] = arr[1]+newVal+arr[3];
+		return codeLines;
 	}
 
-	var pos = getInitalPosToInsertAt( codeLines );
-	codeLines.splice(pos,0,"\tcontext.lineJoin = \""+newVal+"\";");
+	codeLines.splice(-pos,0,"\tcontext.lineJoin = \""+newVal+"\";");
 
 	return codeLines;
 }
@@ -216,11 +254,9 @@ function updateLineJoin( codeLines, newVal){
 function clearLineCap( codeLines){
 	var re = /^(\s*context\.lineCap\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
 	
-	for( var i=codeLines.length-1; i>-1; i-- ){
-		if( re.test(codeLines[i])){
-			codeLines.splice(i,1);
-			break;
-		}
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		codeLines.splice(pos,1);
 	}
 	return codeLines;
 }
@@ -228,11 +264,9 @@ function clearLineCap( codeLines){
 function clearLineJoin( codeLines){
 	var re = /^(\s*context\.lineJoin\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
 	
-	for( var i=codeLines.length-1; i>-1; i-- ){
-		if( re.test(codeLines[i])){
-			codeLines.splice(i,1);
-			break;
-		}
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		codeLines.splice(pos,1);
 	}
 	return codeLines;
 }
@@ -243,27 +277,33 @@ function clearLineJoin( codeLines){
 function updateMiterLimit( codeLines, newVal){
 	var re = /^(\s*context\.miterLimit\s*=\s*\"?)([0-9]+)(\"?\s*;\s*)$/;
 	
-	for( var i=codeLines.length-1; i>-1; i-- ){
-		if( re.test(codeLines[i])){
-			arr = re.exec(codeLines[i]);
-			codeLines[i] = arr[1]+newVal+arr[3];
-			return codeLines;
-			
-		}
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		codeLines[pos] = arr[1]+newVal+arr[3];
+		return codeLines;
 	}
 
-	var pos = getInitalPosToInsertAt( codeLines );
-	codeLines.splice(pos,0,"\tcontext.miterLimit = "+newVal+";");
+	codeLines.splice(-pos,0,"\tcontext.miterLimit = "+newVal+";");
 
 	return codeLines;
 }
 
 
+
+
 ///////////////////////////////////////
-//finds the first beginPath command to
-//add new commands after. Used if no 
-//path commands are found.
 //
-//function getInitalPosToInsertAt( codeLines ){
+function codeSearch( codeLines, re){
+	var basePos = getInitalPosToInsertAt( codeLines );
+
+	for( var i=codeLines.length-1; i>=basePos; i-- ){
+		if( re.test(codeLines[i])){
+			return i;
+		}
+	}
+	return -basePos;
+}
+
 
 
