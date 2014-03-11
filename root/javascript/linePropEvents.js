@@ -33,6 +33,13 @@ function initLineProp() {
 	drawLineJoin(lineInfo.lineJoinBevelCanvas,"bevel",width);
 	drawLineJoin(lineInfo.lineJoinRoundCanvas,"round",width);
 	drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",width);
+	
+	var code = getCode();
+	var codeLines = parseCode(code);
+	var lineWidth = getLineWidth(codeLines);
+	drawLineThickness(lineWidth);
+	lineInfo.lineWidthInput.value=lineWidth;
+	
 }
 
 function drawLineThickness(width){
@@ -95,6 +102,28 @@ function changeLineWidth(){
 	var codeLines = parseCode(code);
 	var newCodeLines=updateLineWidth(codeLines,width);
 
+	var newCode = rejoinCode(newCodeLines);
+
+	updateCode(newCode);
+	drawCode( newCode );
+	
+	drawEditHandles( context, newCodeLines );
+	drawLineThickness(width);
+}
+
+function incDecWidth(incDec){
+	console.debug(typeof incDec);
+	var code = getCode();
+	var codeLines = parseCode(code);
+	
+	var width = parseInt( lineInfo.lineWidthInput.value );
+	var newWidth = width + incDec;
+	if(newWidth<1){
+		newWidth=1;
+	}
+	lineInfo.lineWidthInput.value = newWidth;
+
+	var newCodeLines=updateLineWidth(codeLines,newWidth);
 	var newCode = rejoinCode(newCodeLines);
 
 	updateCode(newCode);
@@ -190,10 +219,29 @@ function changeMiterLimit(){
 	drawCode( newCode );
 	
 	drawEditHandles( context, newCodeLines );
-	
-	
-	drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",10,limit);
+	//drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",10,limit);
 
+}
+
+function incDecMiter(incDec){
+	var code = getCode();
+	var codeLines = parseCode(code);
+	
+	var limit = parseInt( lineInfo.lineMiterLimit.value );
+	var newlimit = limit + incDec;
+	if(newlimit<1){
+		newlimit=1;
+	}
+	lineInfo.lineMiterLimit.value = newlimit;
+
+	var newCodeLines=updateMiterLimit(codeLines,newlimit);
+	var newCode = rejoinCode(newCodeLines);
+
+	updateCode(newCode);
+	drawCode( newCode );
+	
+	drawEditHandles( context, newCodeLines );
+	drawLineThickness(width);
 }
 
 ///////////////////////////////////////
