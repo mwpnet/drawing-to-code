@@ -1,7 +1,10 @@
 
+
+var colorBarXrefArray = ["#ff0000","#00ff00","#0000ff"];
+
 // object to handle a color bar. Currently only handles red, green, and blue bars.
 
-function colorBar (elementId,color){
+function colorBar (elementId,colorIndex,updateColorFunction){
 	var that = this;
 	
 	var canvas = document.getElementById(elementId);
@@ -17,7 +20,7 @@ function colorBar (elementId,color){
 
 	var grad = context.createLinearGradient(0,height/2, width, height/2);
 	grad.addColorStop(0,"#000000");
-	grad.addColorStop(1,color);
+	grad.addColorStop(1,colorBarXrefArray[colorIndex]);
 	
 	this.draw = function (){
 		context.beginPath();
@@ -37,6 +40,8 @@ function colorBar (elementId,color){
 		intensityX = e.pageX - that.canvas.offsetLeft;
 		
 		this.colorHex = xTocolorHex(intensityX);
+		updateColorFunction(color,this.colorHex);
+		
 		animate = true;
 		requestAnimFrame( that.draw());
 	};
@@ -46,9 +51,10 @@ function colorBar (elementId,color){
 	};
 	
 	this.myMouseMove = function(e){
-		intensityX = e.pageX - that.canvas.offsetLeft;
 		if(animate){
+			intensityX = e.pageX - that.canvas.offsetLeft;
 			this.colorHex = xTocolorHex(intensityX);
+			updateColorFunction(colorIndex,that.colorHex);
 			requestAnimFrame( that.draw());
 		}
 	};
