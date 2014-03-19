@@ -76,24 +76,34 @@ function pathSetup(context){
 // draws the moveTo button 
 //
 function moveToButton(context){
-	var startX = 32;
+	var startX = 52;
 	var startY = 32;
 
-	drawMoveTo(context,startX, startY );
-	
-	// mouse image
+
 	context.beginPath();
-	context.moveTo(32,32);
-	context.lineTo( 32, 48 );
-	context.lineTo( 36, 41 );
-	context.lineTo( 40, 40 );
+	context.moveTo( 8, 64 );
+	context.lineTo( 16, 43 );
+	context.lineWidth = 2;
+	context.strokeStyle = "black";
+	context.stroke();
+	drawMoveTo(context, 16, 43 );
+
+	drawMoveTo(context, 44, 34 );
+	// mouse image
+	// triangle part
+	context.beginPath();
+	context.moveTo(42,32);
+	context.lineTo( 42, 48 );
+	context.lineTo( 46, 41 );
+	context.lineTo( 50, 40 );
 	context.closePath();
 	context.fillStyle = "black";
 	context.fill();
-
+	//tail part
 	context.beginPath();
-	context.moveTo( 34,34 );
-	context.lineTo( 32 + 6, 32 + 18 );
+	context.moveTo( 44,34 );
+	context.lineTo( 42 + 6, 32 + 18 );
+	context.strokeStyle = "black";
 	context.lineWidth=2;
 	context.stroke();
 
