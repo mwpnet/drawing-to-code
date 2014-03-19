@@ -22,7 +22,11 @@ function colorBar (elementId,colorIndex,updateColorFunction){
 	grad.addColorStop(0,"#000000");
 	grad.addColorStop(1,colorBarXrefArray[colorIndex]);
 	
-	this.draw = function (){
+	this.draw = function(){
+		
+	};
+	
+	this.drawBars = function (){
 		context.beginPath();
 		context.fillRect(0,0,width,height);
 		context.fillStyle = grad;
@@ -43,7 +47,8 @@ function colorBar (elementId,colorIndex,updateColorFunction){
 		updateColorFunction(color,this.colorHex);
 		
 		animate = true;
-		requestAnimFrame( that.draw());
+		requestAnimFrame( that.draw);
+		requestAnimFrame( updateStrokeStyle);
 	};
 
 	this.myMouseUp = function (e){
@@ -55,7 +60,8 @@ function colorBar (elementId,colorIndex,updateColorFunction){
 			intensityX = e.pageX - that.canvas.offsetLeft;
 			this.colorHex = xTocolorHex(intensityX);
 			updateColorFunction(colorIndex,that.colorHex);
-			requestAnimFrame( that.draw());
+			requestAnimFrame( that.draw);
+			requestAnimFrame( updateStrokeStyle);
 		}
 	};
 	

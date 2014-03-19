@@ -55,7 +55,7 @@ function updateStrokeStyle(colorIndex,colorHex){
 
 }
 
-function updateLineCap( codeLines, newVal ){
+function udateStrokeStyleCodeLine( codeLines, newVal ){
 	var re = /^(\s*context\.strokeStyle\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
 	
 	var pos = codeSearch( codeLines, re);
