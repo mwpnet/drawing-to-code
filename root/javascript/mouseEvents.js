@@ -78,7 +78,9 @@ function myOnMouseDown(e) {
 
 	var code = getCode();
 
-	var codeTree;
+	var codeTree = acorn.parse( code);
+
+    /**  -- put in the try/catch later
     try {
     	codeTree = esprima.parse(code, options);
     } catch (e) {
@@ -87,31 +89,49 @@ function myOnMouseDown(e) {
 		keepAnimating=false;
 		return;
    }
-
-	
-	var codeLines = parseCode(code);
+     **/
 	
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
+	drawCode( code );
 	var moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
+			
+	if( ! moveInfo.mouseGrabed ){ // click not in controle handle
+		var newMoveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state.command);
 
-	if( typeof(moveInfo) == 'undefined' ){ // click not in controle handle
-		moveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state);
-		updateCode( moveInfo.newCode );
+		updateCode( newMoveInfo.newCode );
+
+		code = newMoveInfo.newCode;
+		codeTree = acorn.parse( code);
+
+		context.clearRect(0, 0, canvas.width, canvas.height);
+
+		drawCode( code );
+		moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 	}
 
-	state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
+
 	state.destArgs = moveInfo.destArgs;
 	state.srcArgs = moveInfo.srcArgs;
 	state.type = moveInfo.type;
 	state.xOld=moveInfo.xOld;
 	state.yOld=moveInfo.yOld;
 	state.arguments = moveInfo.arguments;
+	state.code = code;
+	state.codeTree = codeTree;
 
-	// 
-	if( moveInfo.type == "truefalse" ){
+	if( moveInfo.mouseGrabed && moveInfo.type == "truefalse" ){
 		var newCode = updateCodeLineOnce(code,[],state);
 		updateCode(newCode);
+		code = newCode;
+		codeTree = acorn.parse( code);
+
+		context.clearRect(0, 0, canvas.width, canvas.height);
+
+		drawCode( code );
+		moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
+		keepAnimating=false;
+		return;
 	}
 	
 	requestAnimFrame( myAnimate);
@@ -140,22 +160,38 @@ function myOnMouseMove(e){
 function myAnimate(e){
 
 	var code = getCode();
+	var codeTree = acorn.parse( code);
+
+	state.code = code;
+	state.codeTree = codeTree;
+	//var code = state.code;
+	//var codeTree = state.codeTree;
 
 	var newCode = updateCodeLine( code, [ mousex, mousey ],state);
+
 	updateCode(newCode);
-	drawCode( newCode );
+
+	code = getCode();
+	codeTree = acorn.parse( code);
+	//code = newCode;
+	//state.code = code;
+	//codeTree = acorn.parse( code);
+	//state.codeTree = codeTree;
 	
-	try {
-		var codeTree = esprima.parse(code, options);
-	} catch (e) {
-		str = e.name + ': ' + e.message;
-		document.getElementById('errorBox').innerHTML = str;
-		keepAnimating=false;
-		return;
-	}
+	drawCode( code );
+	
+	var moveInfo = drawEditHandles( context, codeTree, mousex,mousey);
 
-	drawEditHandles( context, codeTree, mousex,mousey);
+	//state.destArgs = moveInfo.destArgs;
+	//state.srcArgs = moveInfo.srcArgs;
+	//state.type = moveInfo.type;
+	//state.xOld=moveInfo.xOld;
+	//state.yOld=moveInfo.yOld;
+	//state.arguments = moveInfo.arguments;
+	state.code = code;
+	state.codeTree = codeTree;
 
+	
 	////////////
 	if( keepAnimating){
 		requestAnimFrame( myAnimate);

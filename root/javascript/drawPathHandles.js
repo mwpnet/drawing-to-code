@@ -456,10 +456,12 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	};
 }
 
+
 /**************************************
  * The actual part that parses the code
  * line and draws the controle handles.
 **************************************/
+
 
 
 ///////////////////////////////////////
@@ -471,35 +473,60 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 // information necisary to adjust the 
 // code line accordingly.
 //
+
 function drawEditHandles( context, codeTree,mousex,mousey){
 	
-	var moveInfo = { mouseGrabed: false };
-    estraverse.traverse(codeTree, {
-        enter: function(node){
-        	drawEditHandlesCallback(context, node,mousex,mousey,moveInfo);
-        }
-    });
-    
+	var moveInfo = { 
+			mouseGrabed: false,
+			mouseX: mousex,
+			mouseY: mousey,
+			context: context,
+			xOld:0,
+			yOld:0
+			};
+
+	acorn.walk.simple( codeTree, {
+		Expression: drawEditHandlesCallback
+		},undefined,moveInfo);
+
+	
     return moveInfo;
 }
     
-    
-function drawEditHandlesCallback( context, node,mousex,mousey,moveInfo){
+/**
+ * 
+ * @param node 
+ * @param moveInfo
+ * 		{
+ * 			mouseX: ???,
+ * 			mouseY: ???
+ * 		}
+ * 
+ * returns nothing
+ * 
+ * posibly updates moveInfo
+ * 		+ mouseGrabed - if mouse is in controle handle
+		+ xOld - for this path sement the beginning coords
+		+ yOld 
+		+ arguments  - node array with the arguments
+
+ * 
+ */
+function drawEditHandlesCallback( node, moveInfo){
+
+	var startCo = [ moveInfo.xOld, moveInfo.yOld ];
+	var endCo=[0,0];
+	var mousex = moveInfo.mouseX;
+	var mousey = moveInfo.mouseY;
+	var context = moveInfo.context;
 		
-	var startCo = [0,0];
-	var endCo = [0,0];
-	var moveInfo = undefined;
-		
-    if( node.type === esprima.Syntax.CallExpression && node.callee.object.name == "context"){
+    if( node.type == "CallExpression" && node.callee.object.name == "context" ){
     	
 		var localMoveInfo = { mouseGrabed: false };
    	
-		var name = codeTree.callee.property.name;
+		var name = node.callee.property.name;
 		
-		var args = codetree.arguments;
-
-		startCo = endCo; // the last end coords become the new start coords
-
+		var args = node.arguments;
 		
 		if( name == "moveTo"){
 			localMoveInfo = drawMoveTo( context, args[0].value, args[1].value,mousex,mousey );
@@ -512,6 +539,8 @@ function drawEditHandlesCallback( context, node,mousex,mousey,moveInfo){
 		else if( name ==  "bezierCurveTo"){
 			localMoveInfo = drawBezierCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value,mousex,mousey );
 			endCo = [args[4].value,args[5].value];
+			console.debug("aaa",endCo);
+
 		}
 		else if( name == "quadraticCurveTo"){
 			localMoveInfo = drawQuadraticCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value,mousex,mousey );
@@ -526,18 +555,24 @@ function drawEditHandlesCallback( context, node,mousex,mousey,moveInfo){
 			var centerY = args[1].value;
 			var r = args[2].value;
 			var ang = args[4].value; // end angle
-			var endCo = angleToXY(ang,centerX,centerY,r);
+			endCo = angleToXY(ang,centerX,centerY,r);
 
 			localMoveInfo = drawArc( context, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value, endCo[0], endCo[1],mousex,mousey );
 		}
 		
 		if( localMoveInfo.mouseGrabed ){
-			moveInfo = localMoveInfo;
-			moveInfo.codeLineBeingReferenced = i;
-			moveInfo.xOld=startCo[0];
-			moveInfo.yOld=startCo[1];
-			moveInfo.arguments = codeTree.callee.arguments;
+			moveInfo.mouseGrabed = true;
+			//moveInfo.xOld=startCo[0];
+			//moveInfo.yOld=startCo[1];
+			moveInfo.destArgs = localMoveInfo.destArgs;
+			moveInfo.srcArgs = localMoveInfo.srcArgs;
+			moveInfo.arguments = node.arguments;
+			moveInfo.type = localMoveInfo.type;
 		}
+		
+		moveInfo.xOld=endCo[0];
+		moveInfo.yOld=endCo[1];
+
 	}
     return;
 }

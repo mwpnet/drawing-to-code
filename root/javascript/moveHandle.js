@@ -22,6 +22,21 @@
  * on mouse position
 **************************************/
 
+
+/**
+ * 
+ * @param code - the original code string
+ * @param newCoords - an array with the new x,y coords
+ * @param info
+			destArgs - array of index on arguments to be change
+			srcArgs - array of index on arguments that values are taken from for computations
+			type - which type of change is to be made
+			arguments - node array with the original arguments
+			xOld - coord of start of this path segment
+			yOld
+ * @returns
+ */
+
 ///////////////////////////////////////
 // given the array of code lines, 
 // updates the arguments of the code 
@@ -32,37 +47,34 @@
 // mouse moves.
 //
 function updateCodeLine(code,newCoords,info){
-	var lineIndex = info.codeLineBeingReferenced;
+
 	var destArgs = info.destArgs;
 	var srcArgs = info.srcArgs;
 	var type = info.type;
 	var args = info.arguments;
 	
-	var newcode=code;
+	var newCode=code;
 	
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
 		return newCode;
 	}
 
-	var lineParts = parseCodeLine(codeLines[lineIndex]);
-	var args = lineParts[1];
-	
 	if( type =="rad"){
 		r=distance(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value); 
 		r=Math.round(r);// should be an integer
-		var start = args[destArgs[0]].range[0];
-		var end = args[destArgs[0]].range[1];
+		var start = args[destArgs[0]].start;
+		var end = args[destArgs[0]].end;
 		
-		newcode = code.substring(0,start) . r.toString . code.substring(end);
+		newCode = code.substring(0,start) + r.toString() + code.substring(end);
 	}
 	else if( type =="ang"){
 		ang = xyToAngle(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value);
 		ang = ang.toFixed(4); // don't want 20 decimal places
 
-		var start = args[destArgs[0]].range[0];
-		var end = args[destArgs[0]].range[1];
+		var start = args[destArgs[0]].start;
+		var end = args[destArgs[0]].end;
 		
-		newcode = code.substring(0,start) . ang.toString . code.substring(end);
+		newCode = code.substring(0,start) + ang.toString() + code.substring(end);
 	}
 	else if( type=="rad2"){
 		var startpoint = [info.xOld,info.yOld];
@@ -71,19 +83,19 @@ function updateCodeLine(code,newCoords,info){
 		var r=computRad( startpoint[0],startpoint[1],args[srcArgs[0]].value,args[srcArgs[1]].value,args[srcArgs[2]].value,args[srcArgs[3]].value,d);
 
 		r=Math.round(r);// should be an integer
-		var start = args[destArgs[0]].range[0];
-		var end = args[destArgs[0]].range[1];
+		var start = args[destArgs[0]].start;
+		var end = args[destArgs[0]].end;
 		
-		newcode = code.substring(0,start) . r.toString . code.substring(end);
+		newCode = code.substring(0,start) + r.toString() + code.substring(end);
 	}
 	else if( type == "line"){
 		// need to do it in reverse so range doesn't get out of sync with string
 		for( var i=destArgs.length-1; i>=0; i--){ 
 			
-			var start = args[destArgs[i]].range[0];
-			var end = args[destArgs[i]].range[1];
-			
-			newcode = code.substring(0,start) . newCoords[ i ].toString . code.substring(end);
+			var start = args[destArgs[i]].start;
+			var end = args[destArgs[i]].end;
+			newCode = code.substring(0,start) + newCoords[ i ].toString() + code.substring(end);
+
 		}
 	}
 
@@ -91,6 +103,19 @@ function updateCodeLine(code,newCoords,info){
 }
 	 
 
+/**
+ * 
+ * @param code
+ * @param newCoords
+ * @param info
+			destArgs - array of index on arguments to be change
+			srcArgs - array of index on arguments that values are taken from for computations
+			type - which type of change is to be made
+			arguments - node array with the original arguments
+
+ * @returns
+ * 		code string with the new args 
+ */
 ///////////////////////////////////////
 //given the array of code lines, 
 //updates the arguments of the code 
@@ -100,8 +125,9 @@ function updateCodeLine(code,newCoords,info){
 // to only be called once when the 
 // mouse button is first pressed.
 //
+
+
 function updateCodeLineOnce(code,newCoords,info){
-	var lineIndex = info.codeLineBeingReferenced;
 	var destArgs = info.destArgs;
 	var srcArgs = info.srcArgs;
 	var type = info.type;
@@ -112,14 +138,12 @@ function updateCodeLineOnce(code,newCoords,info){
 		return code;
 	}
 
-	var newcode = code;
+	var newCode = code;
 	if( type == "truefalse"){
-		var start = args[destArgs[0]].range[0];
-		var end = args[destArgs[0]].range[1];
-		
+		var start = args[destArgs[0]].start;
+		var end = args[destArgs[0]].end;
 		var newval = ! args[srcArgs[0]].value;
-		
-		newcode = code.substring(0,start) . newval.toString . code.substring(end);
+		newCode = code.substring(0,start) + newval.toString() + code.substring(end);
 	}
-	return newcode;
+	return newCode;
 }

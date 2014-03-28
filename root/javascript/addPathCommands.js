@@ -276,46 +276,99 @@ function getArgsToBeChanged(command){
 ///////////////////////////////////////
 // finds the line number of the last 
 // path command 
-function getPosToInsertAt( node,mousex,mousey,info ){
+function getPosToInsertAt( codeTree ){
 	
-	// we loop through until we don't find any more commands
-    if( node.type === esprima.Syntax.CallExpression && node.callee.object.name == "context" && node.callee.property.name != "closePath" ){
-    	info.position = node.range[1]; // that end of the statement.
-	}
+	var position = { 
+			lastPathCmd:-1,
+			lastStroke:-1,
+			lastFill:-1
+			};
 
+	acorn.walk.simple( codeTree, {
+		Expression: getPosToInsertAtCallBack
+		},undefined,position);
+
+	var insertAt = 0;
+	
+	if( position.lastStroke < 0 && position.lastFill <0){
+		insertAt = position.lastPathCmd;
+	}
+	if(  position.lastStroke >= 0 && position.lastFill <0){
+		insertAt = position.lastStroke;
+	}
+	if( position.lastStroke < 0 && position.lastFill >=0){
+		insertAt = position.lastFill;
+	}
+	if( position.lastStroke >= 0 && position.lastFill >=0){
+		if( position.lastStroke < position.lastFill){
+			insertAt = position.lastStroke;
+		}
+		else {
+			insertAt = position.lastFill;			
+		}
+	}	
+	
+	return insertAt;
 }
 
+function getPosToInsertAtCallBack(node, position){
+		
+	//find last path command and use that to insert after,
+	// unless it's a closePath command, in which case it is inserted before it.
+	
+	//XXX need to fix this so it handles semicolons and whitespace properly
+	if( node.type == "CallExpression"){
+		if( node.callee.object.name == "context" ){
+			position.lastPathCmd = node.end+1;
+		}
+		if( node.callee.property.name == "stroke"){
+			position.lastStroke = node.start;
+		}
+		else if( node.callee.property.name == "fill"){
+			position.lastFill = node.start;
+		}
+	}
+}
+
+/**
+ * 
+ * @param codeTree
+ * @param code
+ * @param x1 - start coords of this path segment
+ * @param y1 - 
+ * @param x2 - end coords of this path segment
+ * @param y2
+ * @param command
+ 			command - the path command to be added
+ * @returns
+			destArgs
+			srcArgs
+			type
+			xOld
+			yOld
+			
+			newCode
+* 			
+ */
 ///////////////////////////////////////
 // takes the code lines, old and new 
 // end points, and the command selected
 // and returns the information needed 
 // to update the code.
-function addComandToCode(codeTree,code,x1,y1,x2,y2,info){
+function addComandToCode(codeTree,code,x1,y1,x2,y2,command){
 
-	if( typeof(info.command) == 'undefined' || info.command == ""){
-		return codeTree;
+	if( typeof(command) == 'undefined' || command == ""){
+		return {};
 	}
 
-	var myNewCodeLine = makeCodeLine(info.command,x1,y1,x2,y2);
+	var myNewCodeLine = makeCodeLine(command,x1,y1,x2,y2);
 	
-	//var insertedAt = getPosToInsertAt( codeLines );
- 	//
-	//if(insertedAt <0){
-	//	insertedAt = getInitalPosToInsertAt( codeLines );
-	//}
-	
-	var moveInfo = { mouseGrabed: true };
-	
-    estraverse.traverse(codeTree, {
-        enter: function(node){
-        	getPosToInsertAt(node,mousex,mousey,info);
-        }
-    });
+    var insertAt = getPosToInsertAt(codeTree);
     
-	var newcode = code.substring(0,info.position) + "\n" + myNewCodeLine + "\n" + code.substring(info.position);
-	var argsIndex = getArgsToBeChanged(info.command);
+    
+	var newcode = code.substring(0,insertAt) + "\n" + myNewCodeLine + "\n" + code.substring(insertAt);
+	var argsIndex = getArgsToBeChanged(command);
 	var moveInfo = {
-			codeLineBeingReferenced: insertedAt,
 			destArgs: argsIndex,
 			srcArgs: argsIndex,
 			type: "line",
