@@ -83,6 +83,8 @@ function init(){
 	showButton.onclick = showControlHandles;
 	hideButton = document.getElementById('hideHandls');
 	hideButton.onclick = hideControlHandles;
+	
+	initLineProp();
 }
 
 ///////////////////////////////////////
