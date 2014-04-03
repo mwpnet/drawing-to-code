@@ -53,10 +53,8 @@ function updateCodeLine(code,newCoords,info){
 	var type = info.type;
 	var args = info.arguments;
 	
-	var newCode=code;
-	
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
-		return newCode;
+		return code;
 	}
 
 	if( type =="rad"){
@@ -65,7 +63,7 @@ function updateCodeLine(code,newCoords,info){
 		var start = args[destArgs[0]].start;
 		var end = args[destArgs[0]].end;
 		
-		newCode = code.substring(0,start) + r.toString() + code.substring(end);
+		code = code.substring(0,start) + r.toString() + code.substring(end);
 	}
 	else if( type =="ang"){
 		ang = xyToAngle(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value);
@@ -74,7 +72,7 @@ function updateCodeLine(code,newCoords,info){
 		var start = args[destArgs[0]].start;
 		var end = args[destArgs[0]].end;
 		
-		newCode = code.substring(0,start) + ang.toString() + code.substring(end);
+		code = code.substring(0,start) + ang.toString() + code.substring(end);
 	}
 	else if( type=="rad2"){
 		var startpoint = [info.xOld,info.yOld];
@@ -86,20 +84,21 @@ function updateCodeLine(code,newCoords,info){
 		var start = args[destArgs[0]].start;
 		var end = args[destArgs[0]].end;
 		
-		newCode = code.substring(0,start) + r.toString() + code.substring(end);
+		code = code.substring(0,start) + r.toString() + code.substring(end);
 	}
 	else if( type == "line"){
 		// need to do it in reverse so range doesn't get out of sync with string
 		for( var i=destArgs.length-1; i>=0; i--){ 
-			
 			var start = args[destArgs[i]].start;
 			var end = args[destArgs[i]].end;
-			newCode = code.substring(0,start) + newCoords[ i ].toString() + code.substring(end);
-
+			console.debug(code);
+			code = code.substring(0,start) + newCoords[ i ].toString() + code.substring(end);
+			console.debug(args[destArgs[i]].start,args[destArgs[i]].end);
+			document.getElementById('errorBox').innerHTML = args[destArgs[0]].start+","+args[destArgs[0]].end+"\n";
 		}
 	}
 
-	return newCode;
+	return code;
 }
 	 
 

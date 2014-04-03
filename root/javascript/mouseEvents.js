@@ -159,38 +159,14 @@ function myOnMouseMove(e){
 // if it should keep animating.
 function myAnimate(e){
 
-	var code = getCode();
-	var codeTree = acorn.parse( code);
-
-	state.code = code;
-	state.codeTree = codeTree;
-	//var code = state.code;
-	//var codeTree = state.codeTree;
-
-	var newCode = updateCodeLine( code, [ mousex, mousey ],state);
+	var newCode = updateCodeLine( state.code, [ mousex, mousey ],state);
 
 	updateCode(newCode);
-
-	code = getCode();
-	codeTree = acorn.parse( code);
-	//code = newCode;
-	//state.code = code;
-	//codeTree = acorn.parse( code);
-	//state.codeTree = codeTree;
+	var newcodeTree = acorn.parse( newCode);
 	
-	drawCode( code );
+	drawCode( newCode );
 	
-	var moveInfo = drawEditHandles( context, codeTree, mousex,mousey);
-
-	//state.destArgs = moveInfo.destArgs;
-	//state.srcArgs = moveInfo.srcArgs;
-	//state.type = moveInfo.type;
-	//state.xOld=moveInfo.xOld;
-	//state.yOld=moveInfo.yOld;
-	//state.arguments = moveInfo.arguments;
-	state.code = code;
-	state.codeTree = codeTree;
-
+	drawEditHandles( context, newcodeTree, mousex,mousey);
 	
 	////////////
 	if( keepAnimating){

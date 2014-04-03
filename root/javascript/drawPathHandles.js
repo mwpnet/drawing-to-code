@@ -520,13 +520,18 @@ function drawEditHandlesCallback( node, moveInfo){
 	var mousey = moveInfo.mouseY;
 	var context = moveInfo.context;
 		
-    if( node.type == "CallExpression" && node.callee.object.name == "context" ){
+    if( node.type == "CallExpression" && node.callee.object.name == "context" && typeof(node.arguments) != "undefined" ){
     	
 		var localMoveInfo = { mouseGrabed: false };
    	
 		var name = node.callee.property.name;
 		
 		var args = node.arguments;
+		for(var i=0; i<args.length;i++){
+			if(args[i].type != "Literal"){
+				return;
+			}
+		}
 		
 		if( name == "moveTo"){
 			localMoveInfo = drawMoveTo( context, args[0].value, args[1].value,mousex,mousey );
