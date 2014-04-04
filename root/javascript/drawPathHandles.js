@@ -544,8 +544,6 @@ function drawEditHandlesCallback( node, moveInfo){
 		else if( name ==  "bezierCurveTo"){
 			localMoveInfo = drawBezierCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value,mousex,mousey );
 			endCo = [args[4].value,args[5].value];
-			console.debug("aaa",endCo);
-
 		}
 		else if( name == "quadraticCurveTo"){
 			localMoveInfo = drawQuadraticCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value,mousex,mousey );

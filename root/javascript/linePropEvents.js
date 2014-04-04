@@ -192,7 +192,6 @@ function generalLineStyleCode(type,value,quote){ // type = lineCap, lineJoin, li
 	var codeTree = acorn.parse( code);
 
 	var position = codeSearch( code, codeTree, type);
-	console.debug(position);
 
 	var newCode = code;
 	if( position.start >=0 ){
@@ -213,7 +212,6 @@ function clearLineStyleLine(type){
 
 	var code = getCode();
 	var newCode = code;
-	console.debug(code);
 
 	var codeTree = acorn.parse( code);
 
@@ -280,7 +278,6 @@ function codeExpressionCallback(node, position){
 	
 	//XXX need to fix this so it handles semicolons and whitespace properly
 	if( node.type == "CallExpression"){
-		console.debug(node.callee);
 		if( node.callee.object.name == "context" && node.callee.property.name != "closePath"){
 			position.lastPathCmd = node.end+1;
 		}
