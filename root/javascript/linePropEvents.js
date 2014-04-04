@@ -4,7 +4,6 @@ var lineInfo = {};
 // button stuff
 
 function initLineProp() {
-	lineInfo.lineWidthElement = document.getElementById('lineWidthDisplay');
 	lineInfo.lineCapNoneElement = document.getElementById('lineCapNone');
 	lineInfo.lineCapButtElement = document.getElementById('lineCapButt');
 	lineInfo.lineCapRoundElement = document.getElementById('lineCapRound');
@@ -14,7 +13,6 @@ function initLineProp() {
 	lineInfo.lineJoinRoundElement = document.getElementById('lineJoinRound');
 	lineInfo.lineJoinMiterElement = document.getElementById('lineJoinMiter');
 
-	lineInfo.lineWidthCanvas = lineInfo.lineWidthElement.getContext('2d');
 	//lineInfo.lineCapNoneCanvas = lineInfo.lineCapNoneElement.getContext('2d');
 	lineInfo.lineCapButtCanvas = lineInfo.lineCapButtElement.getContext('2d');
 	lineInfo.lineCapRoundCanvas = lineInfo.lineCapRoundElement.getContext('2d');
@@ -37,23 +35,11 @@ function initLineProp() {
 	drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",width);
 	
 	var lineWidth = getLineWidth();
-	drawLineThickness(lineWidth);
 	lineInfo.lineWidthInput.value=lineWidth;
 	
 	var miterLimit = getMiterLimit();
 	lineInfo.lineMiterLimit.value=miterLimit;
 	
-}
-
-function drawLineThickness(width){
-	lineInfo.lineWidthCanvas.clearRect(0, 0, lineInfo.lineWidthElement.width, lineInfo.lineWidthElement.height);
-	lineInfo.lineWidthCanvas.beginPath();
-
-	lineInfo.lineWidthCanvas.moveTo(0,25);
-	lineInfo.lineWidthCanvas.lineTo(200,25);
-	lineInfo.lineWidthCanvas.lineWidth=width;
-	lineInfo.lineWidthCanvas.strokeStyle="black";
-	lineInfo.lineWidthCanvas.stroke();
 }
 
 function drawLineCap(canvas,type,width){
@@ -106,7 +92,6 @@ function changeLineWidth(){
 	var width = lineInfo.lineWidthInput.value;
 
 	generalLineStyleCode("lineWidth",width,false);
-	drawLineThickness(width);
 }
 
 function incDecWidth(incDec){
@@ -119,7 +104,6 @@ function incDecWidth(incDec){
 	lineInfo.lineWidthInput.value = newWidth;
 
 	generalLineStyleCode("lineWidth",newWidth,false);
-	drawLineThickness(width);
 }
 
 function getLineWidth(){
@@ -145,7 +129,6 @@ function changeMiterLimit(){
 	var width = lineInfo.lineMiterLimit.value;
 
 	generalLineStyleCode("miterLimit",width,false);
-	drawLineThickness(width);
 }
 
 function incDecMiter(incDec){
@@ -158,7 +141,6 @@ function incDecMiter(incDec){
 	lineInfo.lineMiterLimit.value = newWidth;
 
 	generalLineStyleCode("miterLimit",newWidth,false);
-	drawLineThickness(width);
 }
 
 function getMiterLimit(){
