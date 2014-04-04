@@ -91,9 +91,7 @@ function updateCodeLine(code,newCoords,info){
 		for( var i=destArgs.length-1; i>=0; i--){ 
 			var start = args[destArgs[i]].start;
 			var end = args[destArgs[i]].end;
-			console.debug(code);
 			code = code.substring(0,start) + newCoords[ i ].toString() + code.substring(end);
-			console.debug(args[destArgs[i]].start,args[destArgs[i]].end);
 			document.getElementById('errorBox').innerHTML = args[destArgs[0]].start+","+args[destArgs[0]].end+"\n";
 		}
 	}
