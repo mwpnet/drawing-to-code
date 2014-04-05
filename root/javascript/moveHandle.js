@@ -75,14 +75,17 @@ function updateCodeLine(code,newCoords,info){
 		code = code.substring(0,start) + ang.toString() + code.substring(end);
 	}
 	else if( type=="rad2"){
+		//destArgs: [4],
+		//srcArgs: [0,1,2,3,4],
 		var startpoint = [info.xOld,info.yOld];
-		var d=distance(args[srcArgs[0]].value,args[srcArgs[1]].value,newCoords[0],newCoords[1]);
-		
-		var r=computRad( startpoint[0],startpoint[1],args[srcArgs[0]].value,args[srcArgs[1]].value,args[srcArgs[2]].value,args[srcArgs[3]].value,d);
+		var d=distance(args[0].value,args[1].value,newCoords[0],newCoords[1]);
+		var r=computRad( startpoint[0],startpoint[1],args[0].value,args[1].value,args[2].value,args[3].value,d);
 
 		r=Math.round(r);// should be an integer
-		var start = args[destArgs[0]].start;
-		var end = args[destArgs[0]].end;
+		console.debug(newCoords[0],newCoords[1],args[0].value,args[1].value,args[2].value,args[3].value,args[4].value,d,r);
+
+		var start = args[4].start;
+		var end = args[4].end;
 		
 		code = code.substring(0,start) + r.toString() + code.substring(end);
 	}
