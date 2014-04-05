@@ -32,6 +32,7 @@
 <script type="text/javascript" src="javascript/moveHandle.js"></script>
 <script type="text/javascript" src="javascript/addPathCommands.js"></script>
 <script type="text/javascript" src="javascript/linePropEvents.js"></script>
+<script type="text/javascript" src="javascript/fillStroke.js"></script>
 
 <script src="thirdParty/acorn.js"></script>
 
@@ -138,6 +139,8 @@ It's designed so that you can paste code in from elsewhere and edit it here.</p>
 </div>
 
 <div id="buttons">
+<div id="beginPathButtons"><button id="beginPathButton" onclick="addBeginPath()">BeginPath</button>
+</div>
 <canvas id="moveToButton" width="64" height="64" title="moveTo()" onclick="onClickMoveTo()"></canvas>
 <canvas id="lineToButton" width="64" height="64" title="lineTo()" onclick="onClickLineTo()"></canvas>
 <canvas id="bezierCurveToButton" width="64" height="64" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
@@ -145,6 +148,9 @@ It's designed so that you can paste code in from elsewhere and edit it here.</p>
 <canvas id="arcToButton" width="64" height="64" title="arcTo()" onclick="onClickArcTo()"></canvas>
 <canvas id="arcButton" width="64" height="64" title="arc()" onclick="onClickArc()"></canvas>
 <canvas id="closePathButton" width="64" height="64" title="closePath()" onclick="onClickClosePath()"></canvas>
+<div id="fillStrokeButtons">
+<input type="checkbox" id="addFill" onclick="onClickFill()">fill()<input type="checkbox" id="addStroke" onclick="onClickStroke()">stroke()</button>
+</div>
 </div>
 <div id="centerCol">
 <canvas id="editDrawing" width="400" height="400" style="border:1px solid #d3d3d3;">

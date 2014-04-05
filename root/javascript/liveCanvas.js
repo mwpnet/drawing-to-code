@@ -85,6 +85,7 @@ function init(){
 	hideButton.onclick = hideControlHandles;
 	
 	initLineProp();
+	initFillStrokeProp();
 }
 
 ///////////////////////////////////////
