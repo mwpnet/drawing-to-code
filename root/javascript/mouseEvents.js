@@ -110,12 +110,13 @@ function myOnMouseDown(e) {
 		moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 	}
 
-
 	state.destArgs = moveInfo.destArgs;
 	state.srcArgs = moveInfo.srcArgs;
 	state.type = moveInfo.type;
 	state.xOld=moveInfo.xOld;
 	state.yOld=moveInfo.yOld;
+	state.xOldMove=moveInfo.xOldMove;
+	state.yOldMove=moveInfo.yOldMove;
 	state.arguments = moveInfo.arguments;
 	state.code = code;
 	state.codeTree = codeTree;

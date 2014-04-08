@@ -197,7 +197,6 @@ function drawArcDirection(context,cx,cy,r,ang,ccw,mousex,mousey){
 //
 function drawMoveTo(context,x,y,mousex,mousey){
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
-
 	return {
 		mouseGrabed: mouseInBox,
 		destArgs: [0,1],
@@ -316,7 +315,6 @@ function drawQuadraticCurveTo(context,xold,yold,cx,cy,x,y,mousex,mousey) {
 //
 function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	var params = computArcToParameters(xold,yold,c1x,c1y,c2x,c2y,r);
-	//localMoveInfo = drawArcTo( context, prevEnd[0], prevEnd[1], args[0], args[1], args[2], args[3], args[4], params[0], params[1], params[2],params[3], params[4],params[5],params[6],mousex,mousey);
 
 	var cx = params[0];
 	var cy = params[1]; 
@@ -326,7 +324,6 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	var newEndX = params[5];
 	var newEndY = params[6];
 
-	
 	drawLinesToConrolePoints(context,xold,yold,c1x,c1y);
 	var mouseInHandle1 = drawControlePointHandle(context,c1x,c1y,mousex,mousey);
 
@@ -475,7 +472,6 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 //
 
 function drawEditHandles( context, codeTree,mousex,mousey){
-	
 	var moveInfo = { 
 			mouseGrabed: false,
 			mouseX: mousex,
@@ -489,7 +485,6 @@ function drawEditHandles( context, codeTree,mousex,mousey){
 		Expression: drawEditHandlesCallback
 		},undefined,moveInfo);
 
-	
     return moveInfo;
 }
     
@@ -514,7 +509,7 @@ function drawEditHandles( context, codeTree,mousex,mousey){
  */
 function drawEditHandlesCallback( node, moveInfo){
 
-	var startCo = [ moveInfo.xOld, moveInfo.yOld ];
+	var startCo = [0,0];
 	var endCo=[0,0];
 	var mousex = moveInfo.mouseX;
 	var mousey = moveInfo.mouseY;
@@ -534,26 +529,32 @@ function drawEditHandlesCallback( node, moveInfo){
 		}
 		
 		if( name == "moveTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
 			localMoveInfo = drawMoveTo( context, args[0].value, args[1].value,mousex,mousey );
 			endCo = [ args[0].value,args[1].value ];
 		}
 		else if( name ==  "lineTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
 			localMoveInfo = drawLineTo( context, args[0].value, args[1].value,mousex,mousey );
 			endCo = [ args[0].value,args[1].value ];
 		}
 		else if( name ==  "bezierCurveTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
 			localMoveInfo = drawBezierCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value,mousex,mousey );
 			endCo = [args[4].value,args[5].value];
 		}
 		else if( name == "quadraticCurveTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
 			localMoveInfo = drawQuadraticCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value,mousex,mousey );
 			endCo = [args[2].value,args[3].value];
 		}
 		else if( name == "arcTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
 			localMoveInfo = drawArcTo( context, startCo[0], startCo[1], args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, mousex,mousey);
 			endCo = localMoveInfo.newEnd;
 		}
 		else if( name == "arc"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
 			var centerX = args[0].value;
 			var centerY = args[1].value;
 			var r = args[2].value;
@@ -563,19 +564,19 @@ function drawEditHandlesCallback( node, moveInfo){
 			localMoveInfo = drawArc( context, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value, endCo[0], endCo[1],mousex,mousey );
 		}
 		
+		moveInfo.xOld=endCo[0];
+		moveInfo.yOld=endCo[1];
+
 		if( localMoveInfo.mouseGrabed ){
 			moveInfo.mouseGrabed = true;
-			//moveInfo.xOld=startCo[0];
-			//moveInfo.yOld=startCo[1];
+			moveInfo.xOldMove=startCo[0];
+			moveInfo.yOldMove=startCo[1];
 			moveInfo.destArgs = localMoveInfo.destArgs;
 			moveInfo.srcArgs = localMoveInfo.srcArgs;
 			moveInfo.arguments = node.arguments;
 			moveInfo.type = localMoveInfo.type;
+			
 		}
-		
-		moveInfo.xOld=endCo[0];
-		moveInfo.yOld=endCo[1];
-
 	}
     return;
 }

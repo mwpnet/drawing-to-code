@@ -52,7 +52,7 @@ function updateCodeLine(code,newCoords,info){
 	var srcArgs = info.srcArgs;
 	var type = info.type;
 	var args = info.arguments;
-	
+
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
 		return code;
 	}
@@ -75,13 +75,13 @@ function updateCodeLine(code,newCoords,info){
 		code = code.substring(0,start) + ang.toString() + code.substring(end);
 	}
 	else if( type=="rad2"){
-		var x0 = info.xOld;
-		var y0 = info.yOld;
+		var x0 = info.xOldMove;
+		var y0 = info.yOldMove;
 		var x1 = args[0].value;
 		var y1 = args[1].value;
 		var x2 = args[2].value;
 		var y2 = args[3].value;
-		
+
 		//destArgs: [4],
 		//srcArgs: [0,1,2,3,4],
 		var startpoint = [info.xOld,info.yOld];
@@ -89,7 +89,6 @@ function updateCodeLine(code,newCoords,info){
 		var r=computRad( x0,y0,x1,y1,x2,y2,d);
 
 		r=Math.round(r);// should be an integer
-		console.debug(args[4]);
 
 		var start = args[4].start;
 		var end = args[4].end;
