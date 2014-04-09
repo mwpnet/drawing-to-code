@@ -27,92 +27,130 @@
  *************************************/
 
 
+
+
+
 ///////////////////////////////////////
-// parse code into an array of lines
+// find the last two drawing elements
 //
-function parseCode( code ){
-	var trimedCode = code.replace(/\n$/, ''); 
-	return trimedCode.split(/\n/g);
+// used to find where in the code new code lines should be added.
+function findLastTwoDrawItems(codeTree){
+	var pair = {
+			last:{},
+			second:{}
+	};
+
+	acorn.walk.simple( codeTree, {
+		Expression: findLastTwoDrawItemsCallBack
+		},undefined,pair);
+
+	return pair;
 }
 
-///////////////////////////////////////
-// parse a line of code into the 
-// function part, the args, and the 
-// trailing rest
-//
-function parseCodeLine(codeLine){
-
-	var startParen = codeLine.indexOf("(");
-	var endParen = codeLine.indexOf(")");
-	
-	if( startParen <0){
-		return [ codeLine, [], ""];
-	}
-
-	var functionPart = codeLine.slice(0,startParen+1);
-	var argsPart = codeLine.slice(startParen+1,endParen);
-	var endPart = codeLine.slice(endParen);
-
-	var getArgs = /(?:-?\d*(?:\d\.?|\.?\d)\d*)|(?:\btrue\b)|(?:\bfalse\b)/g;
-	var args = argsPart.match( getArgs );
-
-	if( args){
-		for(var i=0,l=args.length; i<l;i++){
-			if(args[i] == "true"){
-				args[i] = true;
-			}
-			else if( args[i]=="false"){
-				args[i] = false;
-			}
-			else {
-				args[i] = parseFloat( args[i] );
+function findLastTwoDrawItemsCallBack(node, pair){
+		
+	if( node.type == "CallExpression"){
+		if( node.callee.object.name == "context" ){
+			if( node.callee.property.name == "stroke" || 
+					node.callee.property.name == "fill" || 
+					node.callee.property.name == "strokeText" || 
+					node.callee.property.name == "fillText" || 
+					node.callee.property.name == "strokeRect" || 
+					node.callee.property.name == "fillRect" || 
+					node.callee.property.name == "clearRect" ){
+				pair.second = pair.last;
+				pair.last = node;
 			}
 		}
 	}
-	else {
-		args = [];
-	}
-	return [ functionPart, args, endPart ];
 }
 
-///////////////////////////////////////
-// takes the parts of a line from 
-// parseCodeLine and rejoins it into 
-// the line again. It should give 
-//approximately the original line back
+
+/////////////////////////////////////////
+// finds the last node before the last drawing item
 //
-function rejoinCodeLine (functionPart, args, endPart ){
-	var argsString = "";
+// used to find the position to add more code lines
+function findLastNonDrawItem(codeTree,pair){
+
+	var line = {
+			pair:pair,
+			startLooking: false,
+			
+			node:undefined
+	};
+
+	acorn.walk.simple( codeTree, {
+		Expression: getPosToInsertAtCallBack
+		},undefined,line);
+
+	return pair;
+}
+
+function codeSearchCallback(node, property){
 	
-	if(args.length==0){
-		return functionPart + endPart;
+	if( line.startLooking || node == line.pair.second){
+		line.startLooking=true;
+		
+		if( node == line.pair.last){
+			line.startLooking=false;
+			return;
+		}
+		
+		if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" ){
+			if( node.left.object.name == "context"){
+				line.node=node;
+			}
+		}
+		if( node.type == "CallExpression"){
+			if( node.callee.object.name == "context" ){
+				line.node=node;
+			}
+		}
+
 	}
-
-	argsString = " "+args.join(", ", args)+" ";
-
-	var newLine = functionPart + argsString + endPart;
-	return newLine;
 }
 
-///////////////////////////////////////
-function parseCodeLineAssignment(codeLine){
-	var objStart = codeLine.indexOf(".");
-	var startValue = codeLine.indexOf("=");
-	var endValue = codeLine.indexOf(";");
-	
-	var objPart = codeLine.slice(0,objStart);
-	var propertyPart = codeLine.slice(objStart+1,startValue+1);
-	var valuePart = codeLine.slice(startValue+1,endValue);
-	var restPart = codeLine.slice(endParen);
-	
-	return 
-	
-}
-
-///////////////////////////////////////
-// takes an array of code lines and 
-//rejoins them into one string
+///////////////////////////////////
+// finds the property after the second to last draw item
 //
-function rejoinCode(codeLines){
-	return codeLines.join("\n") +"\n";
+// used to find property to be edited
+function codeSearch( codeTree, name, pair){
+	
+	var property = { 
+			identifier: name, // the identifier we're looking for
+			pair:pair,
+			startLooking:false,
+			
+			start:-1, // the start and end of the value to be replaced
+			end:-1,
+			lineStart:-1,  // the start and end of the line for this identifier
+			lineEnd:-1,     // used when deleating a line
+			node:undefined
+			};
+
+	acorn.walk.simple( codeTree, {
+		AssignmentExpression: codeSearchCallback
+		},undefined,property);
+
+	return property;
+}
+
+function codeSearchCallback(node, property){
+	
+	if( property.startLooking || node == property.pair.second){
+		property.startLooking=true;
+		
+		if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" ){
+			if( node.left.object.name == "context" && node.left.property.name == property.name){
+				if(node.right.type == "Literal"){
+					property.node = node;
+					property.start = node.right.start;
+					property.end = node.right.end;
+					
+					property.lineStart = node.start;
+					property.lineEnd = node.end;
+				}
+			}
+		}
+	}
 }
