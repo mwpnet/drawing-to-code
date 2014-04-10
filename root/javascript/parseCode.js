@@ -20,24 +20,38 @@
  * commands used to parse the given 
  * code and code lines, and reassemble 
  * them into new code
- * 
- * XXX - this whole file should be 
- * replace with a real code parser, or 
- * something else completely.
  *************************************/
 
 
 
+function findStructure(codeTree){
+	var structure={
+			last:undefined,
+			second:undefined,
+			lastDraw:undefined
+	};
 
+	acorn.walk.simple( codeTree, {
+		Expression: findLastTwoDrawItemsCallBack
+		},undefined,structure);
 
+	return structure;
+}
+
+/*********************************************
+ * ***************************
+ * 
+ */
 ///////////////////////////////////////
 // find the last two drawing elements
 //
 // used to find where in the code new code lines should be added.
 function findLastTwoDrawItems(codeTree){
 	var pair = {
-			last:{},
-			second:{}
+			last:undefined,
+			second:undefined,
+			finishing:false,
+			finished:false
 	};
 
 	acorn.walk.simple( codeTree, {
@@ -70,12 +84,9 @@ function findLastTwoDrawItemsCallBack(node, pair){
 // finds the last node before the last drawing item
 //
 // used to find the position to add more code lines
-function findLastNonDrawItem(codeTree,pair){
+function findLastNonDrawItem(codeTree){
 
 	var line = {
-			pair:pair,
-			startLooking: false,
-			
 			node:undefined
 	};
 
@@ -83,38 +94,38 @@ function findLastNonDrawItem(codeTree,pair){
 		Expression: getPosToInsertAtCallBack
 		},undefined,line);
 
-	return pair;
+	return line.node;
 }
 
-function codeSearchCallback(node, property){
-	
-	if( line.startLooking || node == line.pair.second){
-		line.startLooking=true;
-		
-		if( node == line.pair.last){
-			line.startLooking=false;
-			return;
-		}
-		
-		if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" ){
-			if( node.left.object.name == "context"){
-				line.node=node;
-			}
-		}
-		if( node.type == "CallExpression"){
-			if( node.callee.object.name == "context" ){
-				line.node=node;
-			}
-		}
+function findLastNonDrawItemCallback(node, line){
 
+	if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" ){
+		if( node.left.object.name == "context"){
+			line.node=node;
+		}
 	}
+	if( node.type == "CallExpression"){
+		if( node.callee.object.name == "context" ){
+			if( node.callee.property.name != "stroke" && 
+					node.callee.property.name != "fill" && 
+					node.callee.property.name != "strokeText" && 
+					node.callee.property.name != "fillText"&&
+					node.callee.property.name != "strokeRect" && 
+					node.callee.property.name != "fillRect" &&
+					node.callee.property.name != "clearRect" ){
+				line.node=node;
+			}
+		}
+	}
+
 }
+
 
 ///////////////////////////////////
 // finds the property after the second to last draw item
 //
 // used to find property to be edited
-function codeSearch( codeTree, name, pair){
+function findProperty( codeTree, name, pair){
 	
 	var property = { 
 			identifier: name, // the identifier we're looking for
@@ -135,7 +146,7 @@ function codeSearch( codeTree, name, pair){
 	return property;
 }
 
-function codeSearchCallback(node, property){
+function findPropertyCallback(node, property){
 	
 	if( property.startLooking || node == property.pair.second){
 		property.startLooking=true;

@@ -1,0 +1,65 @@
+this is an outline of how I organize the various canvas properties and methods
+The various tool selection parts are going to be based on this.
+Note that I'm leaving out many canvas properties and methods, just so I can organize this better.
+
+looking through these parts leads to a nice organizational properties:
+-- drawing elements are a kind of "marker"
+-- all styles between drawing elements can be reorder arbitrarily, as long as they stay between those elements
+-- paths must be kept in order, can be mixed with styles (also text, and rectangles, but I'm ignoring that for simplicity)
+
+
+	There are tree categories of styles
+	
+		color/gradient/shadow style (color+ for short)
+			fillStyle
+			strokeStyle
+		
+			createLinearGradient()
+			createPattern()
+			createRadialGradient()
+			addColorStop()
+			
+			shadowColor
+			shadowBlur
+			shadowOffsetX
+			shadowOffsetY
+			
+		line styles
+			lineCap
+			lineJoin
+			lineWidth
+			miterLimit
+			
+		text style
+			font
+			textAlign
+			textBaseline
+	
+	There is one category of path parts
+		parts
+			beginPath()
+			moveTo()
+			closePath()
+			lineTo()
+			clip()
+			quadraticCurveTo()
+			bezierCurveTo()
+			arc()
+			arcTo()
+			rect()
+	
+	There are three categories of drawing elements
+		rectangles
+			fillRect() - affected by color+
+			strokeRect() - affected by color+ and line style
+			clearRect() - none
+	
+		paths
+			fill() - affected by color+  and paths
+			stroke() - affected by color+, line style, and paths
+			
+		text
+			fillText() - affected by color+, and text style
+			strokeText() - affected by color+,  line style and text style
+
+			

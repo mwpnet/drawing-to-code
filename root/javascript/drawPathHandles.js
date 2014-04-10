@@ -471,14 +471,20 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 // code line accordingly.
 //
 
-function drawEditHandles( context, codeTree,mousex,mousey){
+function drawEditHandles( context, codeTree,mousex,mousey){ //XXX
+	
+	var pair = findLastTwoDrawItems(codeTree);
+	console.debug(pair.second.start,pair.second.end,pair.last.start,pair.last.end);
 	var moveInfo = { 
 			mouseGrabed: false,
 			mouseX: mousex,
 			mouseY: mousey,
 			context: context,
 			xOld:0,
-			yOld:0
+			yOld:0,
+			
+			lastpair: pair,
+			startDrawing: false
 			};
 
 	acorn.walk.simple( codeTree, {
@@ -509,6 +515,16 @@ function drawEditHandles( context, codeTree,mousex,mousey){
  */
 function drawEditHandlesCallback( node, moveInfo){
 
+	if( !moveInfo.startDrawing && node != moveInfo.lastpair.second){
+		return;
+	}
+	moveInfo.startDrawing = true;
+	
+	if( node == moveInfo.lastpair.last){
+		moveInfo.startDrawing = false;
+		return;
+	}
+	
 	var startCo = [0,0];
 	var endCo=[0,0];
 	var mousex = moveInfo.mouseX;

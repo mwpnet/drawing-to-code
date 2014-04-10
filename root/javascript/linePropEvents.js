@@ -213,7 +213,7 @@ function clearLineStyleLine(type){
 
 ///////////////////////////////////////
 //
-function codeSearch( code, codeTree, identifier){
+function codeSearch( code, codeTree, identifier){ //XXX
 	
 	var position = { 
 			lastPathCmd:-1, // the end of the last path command

@@ -276,7 +276,7 @@ function getArgsToBeChanged(command){
 ///////////////////////////////////////
 // finds the line number of the last 
 // path command 
-function getPosToInsertAt( codeTree ){
+function getPosToInsertAt( codeTree ){//XXX
 	
 	var position = { 
 			lastPathCmd:-1,
