@@ -1,0 +1,3 @@
+[submodule "root/CodeMirror-master"]
+	path = root/CodeMirror-master
+	url = https://github.com/marijnh/CodeMirror.git
