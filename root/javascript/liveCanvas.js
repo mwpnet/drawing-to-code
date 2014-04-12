@@ -58,6 +58,9 @@ var showHandles = true;
 var showButton;
 var hideButton;
 
+var editor;
+var delay;
+
 ///////////////////////////////////////
 // initalizes all the various bits and 
 // pieces of all the code.
@@ -75,12 +78,22 @@ function init(){
 	canvas.onmouseup = myOnMouseUp;
 	canvas.onmousemove = myOnMouseMove;
 
+    editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: 'text/javascript'
+      });
+    editor.on("change", function() {
+        clearTimeout(delay);
+        delay = setTimeout(onExecuteCode, 500);
+      });
+
 	onExecuteCode();
 	
 	showButton = document.getElementById('showHandls');
 	showButton.onclick = showControlHandles;
 	hideButton = document.getElementById('hideHandls');
 	hideButton.onclick = hideControlHandles;
+	
+	
 }
 
 ///////////////////////////////////////
@@ -113,14 +126,14 @@ function showControlHandles(e){
 ///////////////////////////////////////
 // gets the code from the input box
 function getCode(){
-	return codeBlock.value;
+	return editor.getValue();
 }
 
 ///////////////////////////////////////
 // update the code in the input box
 function updateCode(newCode){
 	if(newCode != null){
-		codeBlock.value = newCode;
+		editor.setValue(newCode);
 	}
 }
 
@@ -133,12 +146,12 @@ function drawCode( code ){
 	document.getElementById('errorBox').innerHTML = "";
 	try {
 		eval( code );
-        context.clearRect(0, 0, canvas.width, canvas.height);
-		draw(context);
 	}
 	catch(err){
 		document.getElementById('errorBox').innerHTML = err.message;
 	}
+    context.clearRect(0, 0, canvas.width, canvas.height);
+	draw(context);
 
 }
 
@@ -159,4 +172,11 @@ function onExecuteCode(){
 	return false;
 }
 
+function codeAnimate(){
+	var code = getCode();
+	var codeLines = parseCode(code);
+	
+	drawEditHandles( context, codeLines );
 
+
+}

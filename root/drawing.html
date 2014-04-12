@@ -32,6 +32,14 @@
 <script type="text/javascript" src="javascript/moveHandle.js"></script>
 <script type="text/javascript" src="javascript/addPathCommands.js"></script>
 
+<link rel=stylesheet href=thirdParty/codemirror.css>
+<script src=thirdParty/codemirror.js></script>
+<script src=thirdParty/mode/xml/xml.js></script>
+<script src=thirdParty/mode/javascript/javascript.js></script>
+<script src=thirdParty/mode/css/css.js></script>
+<script src=thirdParty/mode/htmlmixed/htmlmixed.js></script>
+
+
 <script>
 
 window.onload=function() {
@@ -146,7 +154,6 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 	</div>
 	<div id="rightCol">
 		<form onsubmit="return onExecuteCode()">
-			<p id="errorBox"></p>
 			<div id="codeArea">
 				<textarea id="code">
 function draw(context){
@@ -158,6 +165,7 @@ function draw(context){
 }
 </textarea>
 			</div>
+			<p id="errorBox"></p>
 
 			<button id="executeCode">execute code</button>
 		</form>
