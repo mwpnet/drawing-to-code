@@ -31,16 +31,18 @@
 // all these things without using a 
 // global like this.
 var state = {
-		codeLineBeingReferenced:0,
-		destArgs:undefined,
-		srcArgs:undefined,
-		type:"line",
+		destArgs:undefined, // - the arguments to change when moving mouse
+		srcArgs:undefined,  // - the arguments to use to compute new coords
+		type:"line",        // - control handle type being held
 		mouseX:0,
 		mouseY:0,
-		mouseInHandle:false,
-		command:"",
-		xOld:0,
-		yOld:0,
+		mouseInHandle:false,// - if mouse is in control handle
+		command:"",         // - the command curantly selected by the buttons
+		xOld:0,             // - land end point x
+		yOld:0,             // -                y
+		arguments:[],       // - node array for the existing arguments
+		code:"",            // - string of the code
+		codeTree:[],        // - the parsed code tree
 		};
 
 ///////////////////////////////////////
@@ -166,9 +168,25 @@ function onExecuteCode(){
     context.strokeStyle = 'red';
 
 	drawCode( code );
+
+	
+	var code = getCode();
+
+	var codeTree = acorn.parse( code);
+
+    /**  -- put in the try/catch later
+    try {
+    	codeTree = esprima.parse(code, options);
+    } catch (e) {
+        str = e.name + ': ' + e.message;
+		document.getElementById('errorBox').innerHTML = str;
+		keepAnimating=false;
+		return;
+   }
+     **/
+	
 	if(showHandles){
-		var codeLines = parseCode(code);
-		drawEditHandles( context, codeLines );
+		drawEditHandles( context, codeTree,mousex,mousey );
 	}
 	return false;
 }

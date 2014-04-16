@@ -22,6 +22,21 @@
  * on mouse position
 **************************************/
 
+
+/**
+ * 
+ * @param code - the original code string
+ * @param newCoords - an array with the new x,y coords
+ * @param info
+			destArgs - array of index on arguments to be change
+			srcArgs - array of index on arguments that values are taken from for computations
+			type - which type of change is to be made
+			arguments - node array with the original arguments
+			xOld - coord of start of this path segment
+			yOld
+ * @returns
+ */
+
 ///////////////////////////////////////
 // given the array of code lines, 
 // updates the arguments of the code 
@@ -31,45 +46,82 @@
 // mouse button is pressed and the 
 // mouse moves.
 //
-function updateCodeLine(codeLines,newCoords,info){
-	var lineIndex = info.codeLineBeingReferenced;
+function updateCodeLine(code,newCoords,info){
+
 	var destArgs = info.destArgs;
 	var srcArgs = info.srcArgs;
 	var type = info.type;
+	var args = info.arguments;
 
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
-		return codeLines;
+		return code;
 	}
 
-	var lineParts = parseCodeLine(codeLines[lineIndex]);
-	var args = lineParts[1];
-	
 	if( type =="rad"){
-		r=distance(newCoords[0],newCoords[1],args[srcArgs[0]],args[srcArgs[1]]);
-		args[destArgs[0]] = Math.round(r); // should be an integer
+		r=distance(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value); 
+		r=Math.round(r);// should be an integer
+		var start = args[destArgs[0]].start;
+		var end = args[destArgs[0]].end;
+		
+		code = code.substring(0,start) + r.toString() + code.substring(end);
 	}
 	else if( type =="ang"){
-		ang = xyToAngle(newCoords[0],newCoords[1],args[srcArgs[0]],args[srcArgs[1]]);
-		args[destArgs[0]] = ang.toFixed(4); // don't want 20 decimal palces
+		ang = xyToAngle(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value);
+		ang = ang.toFixed(4); // don't want 20 decimal places
+
+		var start = args[destArgs[0]].start;
+		var end = args[destArgs[0]].end;
+		
+		code = code.substring(0,start) + ang.toString() + code.substring(end);
 	}
 	else if( type=="rad2"){
+		var x0 = info.xOldMove;
+		var y0 = info.yOldMove;
+		var x1 = args[0].value;
+		var y1 = args[1].value;
+		var x2 = args[2].value;
+		var y2 = args[3].value;
+
+		//destArgs: [4],
+		//srcArgs: [0,1,2,3,4],
 		var startpoint = [info.xOld,info.yOld];
-		var d=distance(args[srcArgs[0]],args[srcArgs[1]],newCoords[0],newCoords[1]);
+		var d=distance(x1,y1,newCoords[0],newCoords[1]);
+		var r=computRad( x0,y0,x1,y1,x2,y2,d);
+
+		r=Math.round(r);// should be an integer
+
+		var start = args[4].start;
+		var end = args[4].end;
 		
-		var r=computRad( startpoint[0],startpoint[1],args[srcArgs[0]],args[srcArgs[1]],args[srcArgs[2]],args[srcArgs[3]],d);
-		args[destArgs[0]] = r;
+		code = code.substring(0,start) + r.toString() + code.substring(end);
 	}
 	else if( type == "line"){
-		for( var i=0,l=destArgs.length,m=newCoords.length; i<l && i<m; i++){
-			args[ destArgs[i] ] = newCoords[ i ];
+		// need to do it in reverse so range doesn't get out of sync with string
+		for( var i=destArgs.length-1; i>=0; i--){ 
+			var start = args[destArgs[i]].start;
+			var end = args[destArgs[i]].end;
+			code = code.substring(0,start) + newCoords[ i ].toString() + code.substring(end);
+			document.getElementById('errorBox').innerHTML = args[destArgs[0]].start+","+args[destArgs[0]].end+"\n";
 		}
 	}
 
-	codeLines[lineIndex] = rejoinCodeLine( lineParts[0], args, lineParts[2]);
-	return codeLines;
+	return code;
 }
 	 
 
+/**
+ * 
+ * @param code
+ * @param newCoords
+ * @param info
+			destArgs - array of index on arguments to be change
+			srcArgs - array of index on arguments that values are taken from for computations
+			type - which type of change is to be made
+			arguments - node array with the original arguments
+
+ * @returns
+ * 		code string with the new args 
+ */
 ///////////////////////////////////////
 //given the array of code lines, 
 //updates the arguments of the code 
@@ -79,23 +131,25 @@ function updateCodeLine(codeLines,newCoords,info){
 // to only be called once when the 
 // mouse button is first pressed.
 //
-function updateCodeLineOnce(codeLines,newCoords,info){
-	var lineIndex = info.codeLineBeingReferenced;
+
+
+function updateCodeLineOnce(code,newCoords,info){
 	var destArgs = info.destArgs;
 	var srcArgs = info.srcArgs;
 	var type = info.type;
+	var args = info.arguments;
+	
 
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
-		return codeLines;
+		return code;
 	}
 
-	var lineParts = parseCodeLine(codeLines[lineIndex]);
-	var args = lineParts[1];
-	
+	var newCode = code;
 	if( type == "truefalse"){
-			args[destArgs[0]] = ! args[srcArgs[0]];
+		var start = args[destArgs[0]].start;
+		var end = args[destArgs[0]].end;
+		var newval = ! args[srcArgs[0]].value;
+		newCode = code.substring(0,start) + newval.toString() + code.substring(end);
 	}
-
-	codeLines[lineIndex] = rejoinCodeLine( lineParts[0], args, lineParts[2]);
-	return codeLines;
+	return newCode;
 }
