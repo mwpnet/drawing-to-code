@@ -35,7 +35,6 @@
 <script type="text/javascript" src="javascript/fillStroke.js"></script>
 
 <script src="thirdParty/acorn.js"></script>
-
 <script src="thirdParty/util/walk.js"></script>
 
 <script>
@@ -43,7 +42,8 @@
 window.onload=function() {
 	init();
 	
-	tabSelect("path");
+	tabSelect("drawItem");
+	subTabSelect('lineStyle');
 };
 </script>
 
@@ -135,10 +135,21 @@ canvas {
 	clear: both;
 	border: solid;
 	border-top: none;
-	height: 300px;
+	//height: 300px;
 	clear: both;
 }
 
+.subTab {
+	float:left;
+	border:solid;
+}
+.subPanel{
+	clear: both;
+	border: solid;
+	border-top: none;
+	//height: 300px;
+	clear: both;
+}
 
 </style>
 
@@ -188,18 +199,25 @@ function draw(context){
 </div>
 	
 <div id="tabPanelGroup">
-<div id="beginPathTab" class="tab" onclick="tabSelect('beginPath')">beginPath</div>
+<div id="drawItemTab" class="tab" onclick="tabSelect('drawItem')">Draw Item</div>
 <div id="pathTab" class="tab" onclick="tabSelect('path')">Path Elements</div>
-<div id="lineStyleTab" class="tab" onclick="tabSelect('lineStyle')">Line Style</div>
-<div id="fillStrokeTab" class="tab" onclick="tabSelect('fillStroke')">Fill and Stroke</div>
+<div id="styleTab" class="tab" onclick="tabSelect('style')">Style</div>
+</div>
 
+<div id="drawItemPanel" class="panels">
+<input type="checkbox" id="addFill" onclick="onClickFill()">fill()<br>
+<input type="checkbox" id="addStroke" onclick="onClickStroke()">stroke()<br>
+<button id="fillRectButton" onclick="addFillRect()">fillRect</button><br>
+<button id="strokeRectButton" onclick="addStrokeRect()">strokeRect</button><br>
+<button id="fillTextButton" onclick="addFillText()">fillText</button><br>
+<button id="strokeTextButton" onclick="addStrokeText()">strokeText</button><br>
 
-<div id="beginPathPanel" class="panels">
-<button id="beginPathButton" onclick="addBeginPath()">BeginPath</button>
 </div>
 
 
+
 <div id="pathPanel" class="panels">
+<button id="beginPathButton" onclick="addBeginPath()">BeginPath</button>
 <canvas id="moveToButton" width="64" height="64" title="moveTo()" onclick="onClickMoveTo()"></canvas>
 <canvas id="lineToButton" width="64" height="64" title="lineTo()" onclick="onClickLineTo()"></canvas>
 <canvas id="bezierCurveToButton" width="64" height="64" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
@@ -210,8 +228,17 @@ function draw(context){
 </div>
 
 
-<div id="lineStylePanel" class="panels">
+<div id="stylePanel" class="panels">
+<div id="subTabPanelGroup">
+
+<div id="lineStyleTab" class="subTab" onclick="subTabSelect('lineStyle')">Line Style</div>
+<div id="colorStyleTab" class="subTab" onclick="subTabSelect('colorStyle')">Color</div>
+<div id="fontStyleTab" class="subTab" onclick="subTabSelect('fontStyle')">Font</div>
+<div id="shadowStyleTab" class="subTab" onclick="subTabSelect('shadowStyle')">Shadow</div>
+</div>
+
 <!--  line properties -->
+<div id="lineStylePanel" class="subPanel">
 <table>
 <tr><th>Line Width</th><td></td><td colspan=4><button id="plusLineWidth" onclick="incDecWidth(1)">+</button><input id="lineWidthInput" type="text" onchange="changeLineWidth()"><button id="minusLineWidth" onclick="incDecWidth(-1)">-</button></td></tr>
 <tr><th>Line Cap</th>
@@ -231,10 +258,49 @@ function draw(context){
 </table>
 </div>
 
+<!--  font properties -->
+<div id="fontStylePanel" class="subPanel">
+<table>
+<tr><th>Font</th><td><input type="text" name="font"></td></tr>
+<tr><th>Text Alignment</th><td>
+	<input type="radio" name="textAlign" value="left">Left<br>
+	<input type="radio" name="textAlign" value="center">Center<br>
+	<input type="radio" name="textAlign" value="right">Right<br>
+	<input type="radio" name="textAlign" value="start">Start<br>
+	<input type="radio" name="textAlign" value="end">End<br>
+	</td></tr>
+<tr><th>BaseLine</th><td>
+	<input type="radio" name="textBaseline" value="alphabetic">Alphabetic<br>
+	<input type="radio" name="textBaseline" value="top">Top<br>
+	<input type="radio" name="textBaseline" value="hanging">Hanging<br>
+	<input type="radio" name="textBaseline" value="middle">Middle<br>
+	<input type="radio" name="textBaseline" value="ideographic">Ideographic<br>
+	<input type="radio" name="textBaseline" value="bottom">Bottom<br>
+	</td></tr>
+</table>
+</div>
 
-<div id="fillStrokePanel" class="panels">
-<input type="checkbox" id="addFill" onclick="onClickFill()">fill()<br>
-<input type="checkbox" id="addStroke" onclick="onClickStroke()">stroke()
+<!--  color properties -->
+<div id="colorStylePanel" class="subPanel">
+<table>
+<tr><th>Color</th><td><input type="text" name="color"></td></tr>
+<tr><th>Red</th><td></td></tr>
+<tr><th>Green</th><td></td></tr>
+<tr><th>Blue</th><td></td></tr>
+</table>
+</div>
+
+<div id="shadowStylePanel" class="subPanel">
+<!--  shadow properties -->
+<table>
+<tr><th>Shadow Color</th><td><input type="text" name="shadow"></td></tr>
+<tr><th>Red</th><td></td></tr>
+<tr><th>Green</th><td></td></tr>
+<tr><th>Blue</th><td></td></tr>
+<tr><th>Shadow off set X</th><td><input type="text" name="shadowOffsetX"></td></tr>
+<tr><th>Shadow off set Y</th><td><input type="text" name="shadowOffsetY"></td></tr>
+<tr><th>Shadow blur</th><td><input type="text" name="shadowBlur"></td></tr>
+</table>
 </div>
 
 </div>
@@ -242,31 +308,22 @@ function draw(context){
 
 <script>
 var tabId = {
-		beginPath: {
-				panel: document.getElementById("beginPathPanel"),
-				tab: document.getElementById("beginPathTab")
+		drawItem: {
+				panel: document.getElementById("drawItemPanel"),
+				tab: document.getElementById("drawItemTab")
 			},
 		path: {
 				panel: document.getElementById("pathPanel"),
 				tab: document.getElementById("pathTab")
 			},
-		lineStyle: {
-			panel: document.getElementById("lineStylePanel"),
-			tab: document.getElementById("lineStyleTab")
-			},
-		fillStroke: {
-			panel: document.getElementById("fillStrokePanel"),
-			tab: document.getElementById("fillStrokeTab")
-			}
+		style: {
+			panel: document.getElementById("stylePanel"),
+			tab: document.getElementById("styleTab")
+		}
 }
-beginPathTab
-pathTab
-lineStyleTab
-fillStrokeTab
 
 function tabSelect(idToOpen){
 	for (var idLoop in tabId) {
-		console.debug(idToOpen,idLoop);
 		if( idLoop == idToOpen){
 			continue;
 		}
@@ -275,6 +332,38 @@ function tabSelect(idToOpen){
 	}
 	tabId[idToOpen].panel.style.display="block";
 	tabId[idToOpen].tab.style.borderBottom="none";
+}
+
+
+var subTabId = {
+		lineStyle: {
+			panel: document.getElementById("lineStylePanel"),
+			tab: document.getElementById("lineStyleTab")
+		},
+		fontStyle: {
+			panel: document.getElementById("fontStylePanel"),
+			tab: document.getElementById("fontStyleTab")
+		},
+		colorStyle: {
+			panel: document.getElementById("colorStylePanel"),
+			tab: document.getElementById("colorStyleTab")
+		},
+		shadowStyle: {
+			panel: document.getElementById("shadowStylePanel"),
+			tab: document.getElementById("shadowStyleTab")
+		}
+}
+
+function subTabSelect(idToOpen){
+	for (var idLoop in subTabId) {
+		if( idLoop == idToOpen){
+			continue;
+		}
+		subTabId[idLoop].panel.style.display="none";
+		subTabId[idLoop].tab.style.border="solid";
+	}
+	subTabId[idToOpen].panel.style.display="block";
+	subTabId[idToOpen].tab.style.borderBottom="none";
 }
 </script>
 
