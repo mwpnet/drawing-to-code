@@ -86,6 +86,7 @@ function init(){
 	
 	initLineProp();
 	initFillStrokeProp();
+	initFontProp();
 }
 
 ///////////////////////////////////////
