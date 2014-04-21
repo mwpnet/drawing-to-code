@@ -4,44 +4,69 @@ var colorBarXrefArray = ["#ff0000","#00ff00","#0000ff"];
 
 // object to handle a color bar. Currently only handles red, green, and blue bars.
 
-function colorBar (elementId,colorIndex,updateColorFunction){
+function colorBars ( width, height ){
 	var that = this;
 	
-	var canvas = document.getElementById(elementId);
-	var context = element.getContext('2d');
-	var width = element.width();
-	var height = element.height();
+	var markerSize = height/5;
 	
-	var intensityX = width;
-	
-	this.colorHex = 0xFF;
-	
-	var animate = false;
-
-	var grad = context.createLinearGradient(0,height/2, width, height/2);
-	grad.addColorStop(0,"#000000");
-	grad.addColorStop(1,colorBarXrefArray[colorIndex]);
-	
-	this.draw = function(){
-		
+	var bar = {
+			red: {
+				color: "red",
+				element: document.createElement('canvase'),
+				ctx:undefined,
+				grd:undefined,
+				value: 128,
+				xPos: width/2
+			},
+			green: {
+				color: "green",
+				element: document.createElement('canvase'),
+				ctx:undefined,
+				grd:undefined,
+				value:128,
+				xPos: width/2
+			},
+			blue: {
+				color: "blue",
+				element: document.createElement('canvase'),
+				ctx:undefined,
+				grd:undefined,
+				value:128,
+				xPos: width/2
+			}
 	};
 	
-	this.drawBars = function (){
-		context.beginPath();
-		context.fillRect(0,0,width,height);
-		context.fillStyle = grad;
-		
-		context.beginPath();
-		context.moveTo(intensityX-height/4, 0);
-		context.lineTo(intensityX, height/4);
-		context.lineTo(intensityX-height/4, 0);
-		context.closePath();
-		context.fillStyle = "#808080";
-		context.fill();
+
+	var drawGrad = function( color ){
+		bar[color].ctx.fillStyle = bar[color].grd;
+		bar[color].ctx.fillRect( markerSize,0, width,height );
+	};
+	
+	var drawMarker = function ( color ){
+		bar[color].ctx.beginPath();
+		bar[color].ctx.moveTo(bar[color].xPos-markerSize, 0);
+		bar[color].ctx.lineTo(bar[color].xPos, markerSize);
+		bar[color].ctx.lineTo(bar[color].xPos+markerSize, 0);
+		bar[color].ctx.closePath();
+		bar[color].ctx.fillStyle = "#808080";
+		bar[color].ctx.fill();
 	};
 
-	this.myMouseDown = function (e){
-		intensityX = e.pageX - that.canvas.offsetLeft;
+
+	///
+	// still need to work on
+	this.myMouseDown = function (e){ //XXX
+		var x = event.clientX, y = event.clientY,
+	    elementMouseIsOver = document.elementFromPoint(x, y);
+		
+		var rect = canvas.getBoundingClientRect();
+
+		return {
+          x: evt.clientX - rect.left,
+          y: evt.clientY - rect.top
+        };
+
+        intensityX = e.pageX - that.canvas.offsetLeft;
 		
 		this.colorHex = xTocolorHex(intensityX);
 		updateColorFunction(color,this.colorHex);
@@ -55,7 +80,7 @@ function colorBar (elementId,colorIndex,updateColorFunction){
 		animate = false;
 	};
 	
-	this.myMouseMove = function(e){
+	this.myMouseMove = function(e){ //XXX
 		if(animate){
 			intensityX = e.pageX - that.canvas.offsetLeft;
 			this.colorHex = xTocolorHex(intensityX);
@@ -65,6 +90,9 @@ function colorBar (elementId,colorIndex,updateColorFunction){
 		}
 	};
 	
+	//
+	///
+	
 	var xTocolorHex = function(x){
 		return (x/width)*0xFF;
 	};
@@ -72,11 +100,25 @@ function colorBar (elementId,colorIndex,updateColorFunction){
 		return (colorHex/0xFF)*width;
 	};
 	
-	
-	canvas.addEventListener('onmousedown',that.myMouseDown,false);
-	canvas.addEventListener('onmouseup',that.myMouseUp,false);
-	canvas.addEventListener('onmousemove',that.myMouseMove,false);
-	
+	for( var color in bar){
+		bar[color].element.width = width;
+		bar[color].element.height=height;
+
+		bar[color].ctx = bar[color].element.getContext('2d');
+
+		bar[color].grd = bar[color].ctx.createLinearGradient(0,height/2, width, height/2);
+		bar[color].grd.addColorStop(0,"#000000");
+		bar[color].grd.addColorStop(1,color);
+
+		drawGrad(name);
+		drawMarker( color );
+
+		bar[color].element.addEventListener('onmousedown',that.myMouseDown,false);
+		bar[color].element.addEventListener('onmouseup',that.myMouseUp,false);
+		bar[color].element.addEventListener('onmousemove',that.myMouseMove,false);
+	}
+
+
 }
 
 

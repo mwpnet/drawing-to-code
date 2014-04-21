@@ -147,14 +147,14 @@ var namesToHex = {
 // rgb six digit hex value
 // rgb array
 
-
+console.debug("here");
 function cssColorToHex(rgbString){
 	var rgbArray = cssColorToArray(rgbString);
 	return rgbArrayToHex(rgbArray);
 }
 
 function cssColorToArray(rgbString){
-	if(rgbStringsubstr(0,1) != "#"){
+	if(rgbString.substr(0,1) != "#"){
 		if( typeof namesToHex[rgbString] == 'undefined') {
 			return [0,0,0];
 		}
@@ -162,9 +162,9 @@ function cssColorToArray(rgbString){
 			return namesToHex[rgbString];
 		}
 	}
-	var r = Number(rgbString.substr(1,2) );
-	var g = Number(rgbString.substr(3,2) );
-	var b = Number(rgbString.substr(5,2) );
+	var r = parseInt(rgbString.substr(1,2), 16 );
+	var g = parseInt(rgbString.substr(3,2), 16 );
+	var b = parseInt(rgbString.substr(5,2), 16 );
 	
 	return [r, g, b];
 }
@@ -175,15 +175,19 @@ function rgbHexToCssColor(rgbHex){
 }
 
 function rgbHexToArray(rgbHex){
-	var r = ( rgbHex & 0xFF0000 )>>4;
-	var g = ( rgbHex & 0x00FF00 )>>2;
+	var r = ( rgbHex & 0xFF0000 )>>>16;
+	var g = ( rgbHex & 0x00FF00 )>>>8;
 	var b = ( rgbHex & 0x0000FF );
 	
 	return [ r, g, b ];
 }
 
 function rgbArrayCssColor(rgbArray){
-	return "#" + rgbArray[0].toString(16) + rgbArray[0].toString(16) + rgbArray[0].toString(16);	
+	var rSt = ( "00"+ rgbArray[0].toString(16).toUpperCase() ).substr(-2);
+	var gSt = ( "00"+ rgbArray[1].toString(16).toUpperCase() ).substr(-2);
+	var bSt = ( "00"+ rgbArray[2].toString(16).toUpperCase() ).substr(-2);
+	
+	return "#" + rSt + gSt + bSt;
 }
 
 function rgbArrayToHex(rgbArray){
