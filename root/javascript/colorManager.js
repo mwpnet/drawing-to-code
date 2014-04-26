@@ -85,10 +85,11 @@ function udateColorCodeLine(codeLines,colorHex){
 	
 }
 
-
+var strokeCB;
+var fillCB;
 function initColor(context, canvas){
-	var strokeCB = new colorBars(500,25,getStrokeStyle(),updateStrokeStyle);
-	var fillCB = new colorBars(500,25,getFillStyle(),updateFillStyle);
+	strokeCB = new colorBars(500,25,getStrokeStyle,updateStrokeStyle);
+	fillCB = new colorBars(500,25,getFillStyle,updateFillStyle);
 
 	document.getElementById('strokeColorInput').appendChild(strokeCB.cssInput);
 	document.getElementById('strokeColorInput').appendChild(strokeCB.previewBoxElement);

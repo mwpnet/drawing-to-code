@@ -75,8 +75,6 @@ function init(){
 	canvas.onmouseup = myOnMouseUp;
 	canvas.onmousemove = myOnMouseMove;
 
-	onExecuteCode();
-	
 	showButton = document.getElementById('showHandls');
 	showButton.onclick = showControlHandles;
 	hideButton = document.getElementById('hideHandls');
@@ -84,6 +82,9 @@ function init(){
 	
 	initColor(context, canvas );
 	initLineProp();
+
+	onExecuteCode();
+	
 }
 
 ///////////////////////////////////////
@@ -159,6 +160,8 @@ function onExecuteCode(){
 		var codeLines = parseCode(code);
 		drawEditHandles( context, codeLines );
 	}
+	strokeCB.rescan();
+	fillCB.rescan();
 	return false;
 }
 

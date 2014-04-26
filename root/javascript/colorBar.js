@@ -1,7 +1,7 @@
 
 // object to handle a color bar. Currently only handles red, green, and blue bars.
 
-function colorBars ( width, height, initColor,callback ){
+function colorBars ( width, height, initColorCallback,codeUpdateCallback ){
 	var that = this;
 	
 	var markerSize = height/3;
@@ -89,7 +89,7 @@ function colorBars ( width, height, initColor,callback ){
 	    updateColorBox(animate);
 	    updatePreviewBox();
         updateCssBox();
-        callback(that.cssInput.value);
+        codeUpdateCallback(that.cssInput.value);
         //requestAnimFrame( animateColorBar);
 	};
 	
@@ -115,20 +115,20 @@ function colorBars ( width, height, initColor,callback ){
 	
 	//////////////////
 	//initalization
-	var initColorArray=[0x80,0x80,0x80];
+	var initColor = initColorCallback();
 	if(typeof(initColor) == "string"){ //css color
-		initColorArray = cssColorToArray(initColor);
+		initColor = cssColorToArray(initColor);
 	}
 	else if(typeof(initColor) == "number"){ // hex color
-		initColorArray = rgbHexToArray(initColor);
+		initColor = rgbHexToArray(initColor);
 	}
-	else if(typeof(initColor) == "array"){ 
-		initColorArray = initColor;
+	else if(typeof(initColor) != "array"){ 
+		initColor=[0x80,0x80,0x80];
 	}
 
-	that.bar.red.value = initColorArray[0];
-    that.bar.green.value = initColorArray[1];
-    that.bar.blue.value = initColorArray[2];
+	that.bar.red.value = initColor[0];
+    that.bar.green.value = initColor[1];
+    that.bar.blue.value = initColor[2];
 
 	for( var colorLoop in this.bar){
 		this.bar[colorLoop].element.width = width;
@@ -170,7 +170,7 @@ function colorBars ( width, height, initColor,callback ){
 						        drawMarker(localColor);
 						    	updatePreviewBox();
 						        updateCssBox(animateColorBar);
-						        callback(that.cssInput.value);
+						        codeUpdateCallback(that.cssInput.value);
 							};
 						})(colorLoop);
 
@@ -197,12 +197,43 @@ function colorBars ( width, height, initColor,callback ){
         drawMarker("green");
         drawMarker("blue");
     	updatePreviewBox();
-        callback(that.cssInput.value);
+        codeUpdateCallback(that.cssInput.value);
         
 	};
+	
+	this.rescan = function(){
+		var newcolor = initColorCallback();
+		if(typeof(newcolor) == "string"){ //css color
+			newcolor = cssColorToArray(newcolor);
+		}
+		else if(typeof(newcolor) == "number"){ // hex color
+			newcolor = rgbHexToArray(newcolor);
+		}
+		else if(typeof(newcolor) != "array"){ 
+			newcolor=[0x80,0x80,0x80];
+		}
+
+
+		that.bar.red.value = newcolor[0];
+        that.bar.green.value = newcolor[1];
+        that.bar.blue.value = newcolor[2];
+        
+        updateColorBox("red");
+        updateColorBox("green");
+        updateColorBox("blue");
+        
+        drawMarker("red");
+        drawMarker("green");
+        drawMarker("blue");
+		updatePreviewBox();
+	    updateCssBox();
+	    codeUpdateCallback(that.cssInput.value);
+		
+	};
+	
 	updatePreviewBox();
     updateCssBox();
-    callback(that.cssInput.value);
+    codeUpdateCallback(that.cssInput.value);
 	
 }
 
