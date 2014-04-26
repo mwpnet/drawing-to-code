@@ -1,10 +1,7 @@
 
-
-var colorBarXrefArray = ["#ff0000","#00ff00","#0000ff"];
-
 // object to handle a color bar. Currently only handles red, green, and blue bars.
 
-function colorBars ( width, height, callback ){
+function colorBars ( width, height, initColor,callback ){
 	var that = this;
 	
 	var markerSize = height/3;
@@ -78,16 +75,12 @@ function colorBars ( width, height, callback ){
 	function updateColorBox(color){
 		that.bar[color].textBox.value = that.bar[color].value.toString(16);
 	}
-	///
-	// still need to work on
-	
-	//this.bar[color].element.addEventListener('onmousedown',that.myMouseDown,false);
-	//this.bar[color].element.addEventListener('onmouseup',that.myMouseUp,false);
-	//this.bar[color].element.addEventListener('onmousemove',that.myMouseMove,false);\
+
+
 	var animate = "";
 
 	function animateColorBar(e){
-	    if( animate !="red" && animate !="green" && animate !="blue"){
+	    if( !( animate in that.bar) ){
 			animate="";
 			return;
 		}
@@ -96,7 +89,7 @@ function colorBars ( width, height, callback ){
 	    updateColorBox(animate);
 	    updatePreviewBox();
         updateCssBox();
-
+        callback(that.cssInput.value);
         //requestAnimFrame( animateColorBar);
 	};
 	
@@ -106,6 +99,36 @@ function colorBars ( width, height, callback ){
 	function colorHexToX(colorHex){
 		return Math.floor( (colorHex/0xFF)*width );
 	};
+
+	function getValLimit(inObj){
+		var val = parseInt(inObj.value,16);
+		if( val > 0xFF ){
+			inObj.value =  (0xFF).toString(16);
+			val=0xFF;
+		}
+		if( val < 0 ){
+			inObj.value =  "0";
+			val=0;
+		}
+		return val;
+	}
+	
+	//////////////////
+	//initalization
+	var initColorArray=[0x80,0x80,0x80];
+	if(typeof(initColor) == "string"){ //css color
+		initColorArray = cssColorToArray(initColor);
+	}
+	else if(typeof(initColor) == "number"){ // hex color
+		initColorArray = rgbHexToArray(initColor);
+	}
+	else if(typeof(initColor) == "array"){ 
+		initColorArray = initColor;
+	}
+
+	that.bar.red.value = initColorArray[0];
+    that.bar.green.value = initColorArray[1];
+    that.bar.blue.value = initColorArray[2];
 
 	for( var colorLoop in this.bar){
 		this.bar[colorLoop].element.width = width;
@@ -117,71 +140,46 @@ function colorBars ( width, height, callback ){
 		this.bar[colorLoop].grd.addColorStop(0,"#000000");
 		this.bar[colorLoop].grd.addColorStop(1,colorLoop);
 
+		this.bar[colorLoop].element.onmousedown = (function(localColor) {
+							return function (e){
+										animate=localColor;
+										var leftSide = that.bar[localColor].element.getBoundingClientRect().left;
+										var localX = e.clientX - leftSide;
+										that.bar[localColor].value = xToColorHex(localX);
+										requestAnimFrame( animateColorBar);
+									};
+						} )(colorLoop);
+		this.bar[colorLoop].element.onmousemove = (function(localColor){
+							return function (e){
+							    if( !( animate in that.bar) ){
+									animate="";
+									return;
+								}
+								var leftSide = that.bar[localColor].element.getBoundingClientRect().left;
+								var localX = e.clientX - leftSide;
+								that.bar[localColor].value = xToColorHex(localX);
+						        requestAnimFrame( animateColorBar);
+							};
+						})(colorLoop);
 		this.bar[colorLoop].element.onmouseup = function (e){ animate=""; };
+
+		
+		this.bar[colorLoop].textBox.onchange=(function(localColor){
+							return function(e){
+								that.bar[localColor].value = getValLimit( that.bar[localColor].textBox );
+						        drawMarker(localColor);
+						    	updatePreviewBox();
+						        updateCssBox(animateColorBar);
+						        callback(that.cssInput.value);
+							};
+						})(colorLoop);
 
 		drawGrad(colorLoop);
 		drawMarker( colorLoop );
 		updateColorBox(colorLoop);
 	}
 
-	///// can't seem to get these working as closures
-	this.bar["red"].element.onmousedown = function (e){
-		animate="red";
-		requestAnimFrame( animateColorBar);
-	};
-	this.bar["red"].element.onmousemove = function (e){
-		var leftSide = that.bar["red"].element.getBoundingClientRect().left;
-		var localX = e.clientX - leftSide;
-		that.bar["red"].value = xToColorHex(localX);
-        requestAnimFrame( animateColorBar);
-	};
-	this.bar["red"].textBox.onchange=function(e){
-		that.bar["red"].value = parseInt(that.bar["red"].textBox.value,16);
-        drawMarker("red");
-    	updatePreviewBox();
-        updateCssBox();
-	};
-
-	
-	
-	this.bar["green"].element.onmousedown = function (e){
-		animate="green";
-		requestAnimFrame( animateColorBar);
-	};
-	this.bar["green"].element.onmousemove = function (e){
-		var leftSide = that.bar["green"].element.getBoundingClientRect().left;
-		var localX = e.clientX - leftSide;
-		that.bar["green"].value = xToColorHex(localX);
-        requestAnimFrame( animateColorBar);
-	};
-	this.bar["green"].textBox.onchange=function(e){
-		that.bar["green"].value = parseInt(that.bar["green"].textBox.value,16);
-        drawMarker("green");
-    	updatePreviewBox();
-        updateCssBox();
-	};
-
-	
-	
-	this.bar["blue"].element.onmousedown = function (e){
-		animate="blue";
-		requestAnimFrame( animateColorBar);
-	};
-	this.bar["blue"].element.onmousemove = function (e){
-		var leftSide = that.bar["blue"].element.getBoundingClientRect().left;
-		var localX = e.clientX - leftSide;
-		that.bar["blue"].value = xToColorHex(localX);
-        requestAnimFrame( animateColorBar);
-	};
-	this.bar["blue"].textBox.onchange=function(e){
-		that.bar["blue"].value = parseInt(that.bar["blue"].textBox.value,16);
-        drawMarker("blue");
-    	updatePreviewBox();
-        updateCssBox();
-	};
-
-	
-	
+		
 	this.previewBoxElement.width = 2*height;
 	this.previewBoxElement.height = height;
 	
@@ -199,10 +197,12 @@ function colorBars ( width, height, callback ){
         drawMarker("green");
         drawMarker("blue");
     	updatePreviewBox();
+        callback(that.cssInput.value);
         
 	};
 	updatePreviewBox();
     updateCssBox();
+    callback(that.cssInput.value);
 	
 }
 
