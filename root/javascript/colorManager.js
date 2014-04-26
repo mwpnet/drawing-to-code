@@ -1,11 +1,16 @@
 
 
 // there are three bars, one square, and text input
-// if one of the bars is clicked, the new valueis retrieved, and the square and text input areupdated.
+// if one of the bars is clicked, the new valueis retrieved, and the square and text input are updated.
 // if the text area has a 
 
 
 // for RGB
+
+function placeholder(){}
+
+var strokeCB = new colorBars(500,25,placeholder);
+var fillCB = new colorBars(500,25,placeholder);
 
 var colorGroup = {
 		red:{
@@ -22,8 +27,27 @@ var colorGroup = {
 		}
 };
 
+console.debug(strokeCB.bar.red);
+
 function initColor(context, canvas){
 	
+	document.getElementById('strokeColorInput').appendChild(strokeCB.cssInput);
+	document.getElementById('strokeColorInput').appendChild(strokeCB.previewBoxElement);
+	document.getElementById('redStroke').appendChild(strokeCB.bar.red.element);
+	document.getElementById('redStroke').appendChild(strokeCB.bar.red.textBox);
+	document.getElementById('greenStroke').appendChild(strokeCB.bar.green.element);
+	document.getElementById('greenStroke').appendChild(strokeCB.bar.green.textBox);
+	document.getElementById('blueStroke').appendChild(strokeCB.bar.blue.element);
+	document.getElementById('blueStroke').appendChild(strokeCB.bar.blue.textBox);
+	
+	document.getElementById('fillColorInput').appendChild(fillCB.cssInput);
+	document.getElementById('fillColorInput').appendChild(fillCB.previewBoxElement);
+	document.getElementById('redFill').appendChild(fillCB.bar.red.element);
+	document.getElementById('redFill').appendChild(fillCB.bar.red.textBox);
+	document.getElementById('greenFill').appendChild(fillCB.bar.green.element);
+	document.getElementById('greenFill').appendChild(fillCB.bar.green.textBox);
+	document.getElementById('blueFill').appendChild(fillCB.bar.blue.element);
+	document.getElementById('blueFill').appendChild(fillCB.bar.blue.textBox);
 }
 
 

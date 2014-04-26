@@ -1,6 +1,6 @@
 
 var namesToHex = {
-	"AliceBlue" : [ 0xF0, 0xF8, 0xFF ],  	
+	"aliceblue" : [ 0xF0, 0xF8, 0xFF ],  	
 	"AntiqueWhite" : [ 0xFA, 0xEB, 0xD7 ],
 	"Aqua" : [ 0x00, 0xFF, 0xFF ],
 	"Aquamarine" : [ 0x7F, 0xFF, 0xD4 ],
@@ -147,7 +147,7 @@ var namesToHex = {
 // rgb six digit hex value
 // rgb array
 
-console.debug("here");
+
 function cssColorToHex(rgbString){
 	var rgbArray = cssColorToArray(rgbString);
 	return rgbArrayToHex(rgbArray);
