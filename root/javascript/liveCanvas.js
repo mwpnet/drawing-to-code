@@ -93,7 +93,10 @@ function init(){
 	hideButton = document.getElementById('hideHandls');
 	hideButton.onclick = hideControlHandles;
 	
-	
+	initColor(context, canvas );
+	initLineProp();
+
+	onExecuteCode();
 }
 
 ///////////////////////////////////////
@@ -169,6 +172,8 @@ function onExecuteCode(){
 		var codeLines = parseCode(code);
 		drawEditHandles( context, codeLines );
 	}
+	strokeCB.rescan();
+	fillCB.rescan();
 	return false;
 }
 

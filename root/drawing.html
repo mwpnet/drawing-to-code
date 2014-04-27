@@ -39,6 +39,11 @@
 <script src=thirdParty/mode/css/css.js></script>
 <script src=thirdParty/mode/htmlmixed/htmlmixed.js></script>
 
+<script type="text/javascript" src="javascript/linePropEvents.js"></script>
+
+<script type="text/javascript" src="javascript/colorBar.js"></script>
+<script type="text/javascript" src="javascript/colorUtils.js"></script>
+<script type="text/javascript" src="javascript/colorManager.js"></script>
 
 <script>
 
@@ -117,6 +122,17 @@ canvas {
 	width: 90%;
 	margin-left: 5%;
 }
+
+.lineStyleBox{
+	width:75px;
+	height:50px;
+	background: #ffffff;
+}
+
+.colorBar {
+	width: 300px;
+	height: 30px;
+}
 </style>
 
 </head>
@@ -171,5 +187,36 @@ function draw(context){
 		</form>
 	</div>
 
+<!--  line properties -->
+<table>
+<tr><th>Line Width</th><td colspan=4><button id="plusLineWidth" onclick="incDecWidth(1)">+</button><input id="lineWidthInput" type="text" onchange="changeLineWidth()"><button id="minusLineWidth" onclick="incDecWidth(-1)">-</button></td>
+<td colspan=3><canvas id="lineWidthDisplay" width=200 height=50 title="line width"></canvas></td></tr>
+<tr><th>Line Cap</th>
+<td><div class = "lineStyleBox" id="lineCapNone" onclick="clearLineStyleLine('cap')">none</div></td>
+<td><canvas class = "lineStyleBox" id="lineCapButt" width=75 height=50 title="line cap butt" onclick="generalLineStyleCode('cap','butt')"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineCapRound" width=75 height=50 title="line cap round" onclick="generalLineStyleCode('cap','round')"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineCapsquare" width=75 height=50 title="line cap square" onclick="generalLineStyleCode('cap','square')"></canvas></td>
+</tr>
+<tr><th>Line Join</th>
+<td><div class = "lineStyleBox" id="lineJoinNone" onclick="clearLineStyleLine('join')">none</div></td>
+<td><canvas class = "lineStyleBox" id="lineJoinBevel" width=75 height=50 title="line cap bevel" onclick="generalLineStyleCode('join','bevel')"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineJoinRound" width=75 height=50 title="line cap round" onclick="generalLineStyleCode('join','round')"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineJoinMiter" width=75 height=50 title="line cap miter" onclick="generalLineStyleCode('join','miter')"></canvas></td>
+</tr>
+<tr><th>Miter Limit</th><td colspan=4><button id="plusLineWidth" onclick="incDecMiter(1)">+</button><input id="miterLimitInput" type="text" value=10 onchange="changeMiterLimit()"><button id="minusLineWidth" onclick="incDecMiter(-1)">-</button></td></tr>
+</table>
+
+<table>
+<tr><td>Stroke Color</td><td id="strokeColorInput"></td></tr>
+<tr><td>Red</td><td id="redStroke"></td></tr>
+<tr><td>Green</td><td id="greenStroke"></td></tr>
+<tr><td>Blue</td><td id="blueStroke"></td></tr>
+</table>
+<table>
+<tr><td>Fill Color</td><td id="fillColorInput"></td></tr>
+<tr><td>Red</td><td id="redFill"></td></tr>
+<tr><td>Green</td><td id="greenFill"></td></tr>
+<tr><td>Blue</td><td id="blueFill"></td></tr>
+</table>
 </body>
 </html>
