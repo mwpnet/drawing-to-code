@@ -84,15 +84,12 @@ function init(){
     editor.on("change", function() {
         clearTimeout(delay);
         delay = setTimeout(onExecuteCode, 500);
-      });
+     });
 
-	onExecuteCode();
-	
 	showButton = document.getElementById('showHandls');
 	showButton.onclick = showControlHandles;
 	hideButton = document.getElementById('hideHandls');
 	hideButton.onclick = hideControlHandles;
-	
 	initColor(context, canvas );
 	initLineProp();
 
@@ -154,6 +151,7 @@ function drawCode( code ){
 		document.getElementById('errorBox').innerHTML = err.message;
 	}
     context.clearRect(0, 0, canvas.width, canvas.height);
+
 	draw(context);
 
 }
@@ -172,8 +170,8 @@ function onExecuteCode(){
 		var codeLines = parseCode(code);
 		drawEditHandles( context, codeLines );
 	}
-	strokeCB.rescan();
-	fillCB.rescan();
+	//strokeCB.rescan();
+	//fillCB.rescan();
 	return false;
 }
 

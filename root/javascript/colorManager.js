@@ -25,7 +25,7 @@ function updateStrokeStyle(color){
 	var code = getCode();
 	var codeLines = parseCode(code);
 	
-	var newCodeLines = updateStyleCodeLine( codeLines, color, strokeRe);
+	var newCodeLines = updateStyleCodeLine( codeLines, "stroke", color, strokeRe);
 
 	var newCode = rejoinCode(newCodeLines);
 	updateCode(newCode);
@@ -52,8 +52,8 @@ function updateFillStyle(color){
 	
 	var code = getCode();
 	var codeLines = parseCode(code);
-	
-	var newCodeLines = updateStyleCodeLine( codeLines, color, fillRe);
+
+	var newCodeLines = updateStyleCodeLine( codeLines, "fill", color, fillRe);
 
 	var newCode = rejoinCode(newCodeLines);
 	updateCode(newCode);
@@ -63,7 +63,7 @@ function updateFillStyle(color){
 
 }
 
-function updateStyleCodeLine( codeLines, newVal, re ){
+function updateStyleCodeLine( codeLines, style, newVal, re ){
 	
 	var pos = codeSearch( codeLines, re);
 	if(pos>=0){
@@ -72,18 +72,12 @@ function updateStyleCodeLine( codeLines, newVal, re ){
 		return codeLines;
 	}
 		
-	codeLines.splice(-pos,0,"\tcontext.strokeStyle = \""+newVal+"\";");
+	codeLines.splice(-pos,0,"\tcontext." + style + "Style = \""+newVal+"\";");
 
 	return codeLines;
 }
 
 
-
-
-
-function udateColorCodeLine(codeLines,colorHex){
-	
-}
 
 var strokeCB;
 var fillCB;
