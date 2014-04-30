@@ -1,7 +1,7 @@
 
 // object to handle a color bar. Currently only handles red, green, and blue bars.
 
-function colorBars ( width, height, initColorCallback,codeUpdateCallback ){
+function colorBars ( width, height, initColorCallback,updateCodeCallback ){
 	var that = this;
 	
 	var markerSize = height/3;
@@ -89,8 +89,7 @@ function colorBars ( width, height, initColorCallback,codeUpdateCallback ){
 	    updateColorBox(animate);
 	    updatePreviewBox();
         updateCssBox();
-        codeUpdateCallback(that.cssInput.value);
-        //requestAnimFrame( animateColorBar);
+        updateCodeCallback(that.cssInput.value);
 	};
 	
 	function xToColorHex(x){
@@ -126,9 +125,9 @@ function colorBars ( width, height, initColorCallback,codeUpdateCallback ){
 		initColor=[0x80,0x80,0x80];
 	}
 
-	that.bar.red.value = initColor[0];
-    that.bar.green.value = initColor[1];
-    that.bar.blue.value = initColor[2];
+	this.bar.red.value = initColor[0];
+	this.bar.green.value = initColor[1];
+	this.bar.blue.value = initColor[2];
 
 	for( var colorLoop in this.bar){
 		this.bar[colorLoop].element.width = width;
@@ -164,19 +163,19 @@ function colorBars ( width, height, initColorCallback,codeUpdateCallback ){
 		this.bar[colorLoop].element.onmouseup = function (e){ animate=""; };
 
 		
+		updateColorBox(colorLoop);
 		this.bar[colorLoop].textBox.onchange=(function(localColor){
 							return function(e){
 								that.bar[localColor].value = getValLimit( that.bar[localColor].textBox );
 						        drawMarker(localColor);
 						    	updatePreviewBox();
-						        updateCssBox(animateColorBar);
-						        codeUpdateCallback(that.cssInput.value);
+						        updateCssBox();
+						        updateCodeCallback(that.cssInput.value);
 							};
 						})(colorLoop);
 
 		drawGrad(colorLoop);
 		drawMarker( colorLoop );
-		updateColorBox(colorLoop);
 	}
 
 		
@@ -197,26 +196,25 @@ function colorBars ( width, height, initColorCallback,codeUpdateCallback ){
         drawMarker("green");
         drawMarker("blue");
     	updatePreviewBox();
-        codeUpdateCallback(that.cssInput.value);
+        updateCodeCallback(that.cssInput.value);
         
 	};
 	
-	this.rescan = function(){
-		var newcolor = initColorCallback();
-		if(typeof(newcolor) == "string"){ //css color
-			newcolor = cssColorToArray(newcolor);
+	this.updateBars = function(newColor){
+		if(typeof(newColor) == "string"){ //css color
+			newColor = cssColorToArray(newColor);
 		}
-		else if(typeof(newcolor) == "number"){ // hex color
-			newcolor = rgbHexToArray(newcolor);
+		else if(typeof(newColor) == "number"){ // hex color
+			newColor = rgbHexToArray(newColor);
 		}
-		else if(typeof(newcolor) != "array"){ 
-			newcolor=[0x80,0x80,0x80];
+		else if(typeof(newColor) != "array"){ 
+			return; // if it's none of these, don't change anything.
 		}
 
 
-		that.bar.red.value = newcolor[0];
-        that.bar.green.value = newcolor[1];
-        that.bar.blue.value = newcolor[2];
+		that.bar.red.value = newColor[0];
+        that.bar.green.value = newColor[1];
+        that.bar.blue.value = newColor[2];
         
         updateColorBox("red");
         updateColorBox("green");
@@ -227,14 +225,8 @@ function colorBars ( width, height, initColorCallback,codeUpdateCallback ){
         drawMarker("blue");
 		updatePreviewBox();
 	    updateCssBox();
-	    codeUpdateCallback(that.cssInput.value);
-		
 	};
 	
 	updatePreviewBox();
     updateCssBox();
-    codeUpdateCallback(that.cssInput.value);
-	
 }
-
-

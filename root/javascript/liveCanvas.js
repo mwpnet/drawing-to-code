@@ -170,8 +170,8 @@ function onExecuteCode(){
 		var codeLines = parseCode(code);
 		drawEditHandles( context, codeLines );
 	}
-	//strokeCB.rescan();
-	//fillCB.rescan();
+	strokeCB.updateBars( getStrokeStyle() );
+	fillCB.updateBars( getFillStyle() );
 	return false;
 }
 

@@ -6,8 +6,33 @@
 
 
 
+var strokeCB;
+var fillCB;
+function initColor(context, canvas){
+	strokeCB = new colorBars(500,25,getStrokeStyle,updateStrokeStyle);
+	fillCB = new colorBars(500,25,getFillStyle,updateFillStyle);
 
-var strokeRe = /^(\s*context\.strokeStyle\s*=\s*\")(#[a-zA-Z0-9]{6})(\"\s*;\s*)$/;
+	document.getElementById('strokeColorInput').appendChild(strokeCB.cssInput);
+	document.getElementById('strokeColorInput').appendChild(strokeCB.previewBoxElement);
+	document.getElementById('redStroke').appendChild(strokeCB.bar.red.element);
+	document.getElementById('redStroke').appendChild(strokeCB.bar.red.textBox);
+	document.getElementById('greenStroke').appendChild(strokeCB.bar.green.element);
+	document.getElementById('greenStroke').appendChild(strokeCB.bar.green.textBox);
+	document.getElementById('blueStroke').appendChild(strokeCB.bar.blue.element);
+	document.getElementById('blueStroke').appendChild(strokeCB.bar.blue.textBox);
+	
+	document.getElementById('fillColorInput').appendChild(fillCB.cssInput);
+	document.getElementById('fillColorInput').appendChild(fillCB.previewBoxElement);
+	document.getElementById('redFill').appendChild(fillCB.bar.red.element);
+	document.getElementById('redFill').appendChild(fillCB.bar.red.textBox);
+	document.getElementById('greenFill').appendChild(fillCB.bar.green.element);
+	document.getElementById('greenFill').appendChild(fillCB.bar.green.textBox);
+	document.getElementById('blueFill').appendChild(fillCB.bar.blue.element);
+	document.getElementById('blueFill').appendChild(fillCB.bar.blue.textBox);
+}
+
+
+var strokeRe = /^(\s*context\.strokeStyle\s*=\s*\")(#[a-zA-Z0-9]{6}|[a-zA-Z]+)(\"\s*;\s*)$/;
 function getStrokeStyle(){
 	var code = getCode();
 	var codeLines = parseCode(code);
@@ -35,7 +60,7 @@ function updateStrokeStyle(color){
 
 }
 
-var fillRe = /^(\s*context\.fillStyle\s*=\s*\")(#[a-zA-Z0-9]{6})(\"\s*;\s*)$/;
+var fillRe = /^(\s*context\.fillStyle\s*=\s*\")(#[a-zA-Z0-9]{6}|[a-zA-Z]+)(\"\s*;\s*)$/;
 function getFillStyle(){
 	var code = getCode();
 	var codeLines = parseCode(code);
@@ -78,29 +103,4 @@ function updateStyleCodeLine( codeLines, style, newVal, re ){
 }
 
 
-
-var strokeCB;
-var fillCB;
-function initColor(context, canvas){
-	strokeCB = new colorBars(500,25,getStrokeStyle,updateStrokeStyle);
-	fillCB = new colorBars(500,25,getFillStyle,updateFillStyle);
-
-	document.getElementById('strokeColorInput').appendChild(strokeCB.cssInput);
-	document.getElementById('strokeColorInput').appendChild(strokeCB.previewBoxElement);
-	document.getElementById('redStroke').appendChild(strokeCB.bar.red.element);
-	document.getElementById('redStroke').appendChild(strokeCB.bar.red.textBox);
-	document.getElementById('greenStroke').appendChild(strokeCB.bar.green.element);
-	document.getElementById('greenStroke').appendChild(strokeCB.bar.green.textBox);
-	document.getElementById('blueStroke').appendChild(strokeCB.bar.blue.element);
-	document.getElementById('blueStroke').appendChild(strokeCB.bar.blue.textBox);
-	
-	document.getElementById('fillColorInput').appendChild(fillCB.cssInput);
-	document.getElementById('fillColorInput').appendChild(fillCB.previewBoxElement);
-	document.getElementById('redFill').appendChild(fillCB.bar.red.element);
-	document.getElementById('redFill').appendChild(fillCB.bar.red.textBox);
-	document.getElementById('greenFill').appendChild(fillCB.bar.green.element);
-	document.getElementById('greenFill').appendChild(fillCB.bar.green.textBox);
-	document.getElementById('blueFill').appendChild(fillCB.bar.blue.element);
-	document.getElementById('blueFill').appendChild(fillCB.bar.blue.textBox);
-}
 
