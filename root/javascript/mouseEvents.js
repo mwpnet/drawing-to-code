@@ -77,31 +77,62 @@ function myOnMouseDown(e) {
 	var mousey = e.pageY - canvas.offsetTop;
 
 	var code = getCode();
-	var codeLines = parseCode(code);
+
+	var codeTree = acorn.parse( code);
+
+    /**  -- put in the try/catch later
+    try {
+    	codeTree = esprima.parse(code, options);
+    } catch (e) {
+        str = e.name + ': ' + e.message;
+		document.getElementById('errorBox').innerHTML = str;
+		keepAnimating=false;
+		return;
+   }
+     **/
 	
 	context.clearRect(0, 0, canvas.width, canvas.height);
 
-	var moveInfo = drawEditHandles( context, codeLines,mousex,mousey );
+	drawCode( code );
+	var moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
+			
+	if( ! moveInfo.mouseGrabed ){ // click not in controle handle
+		var newMoveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state.command);
 
-	if( typeof(moveInfo) == 'undefined' ){ // click not in controle handle
-		moveInfo = addComandToCode(codeLines,state.xOld,state.yOld,mousex,mousey,state);
+		updateCode( newMoveInfo.newCode );
 
-		codeLines.splice(moveInfo.codeLineBeingReferenced,0,moveInfo.newCodeLine);
-		updateCode(rejoinCode(codeLines));
+		code = newMoveInfo.newCode;
+		codeTree = acorn.parse( code);
+
+		context.clearRect(0, 0, canvas.width, canvas.height);
+
+		drawCode( code );
+		moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 	}
 
-	state.codeLineBeingReferenced = moveInfo.codeLineBeingReferenced;
 	state.destArgs = moveInfo.destArgs;
 	state.srcArgs = moveInfo.srcArgs;
 	state.type = moveInfo.type;
 	state.xOld=moveInfo.xOld;
 	state.yOld=moveInfo.yOld;
+	state.xOldMove=moveInfo.xOldMove;
+	state.yOldMove=moveInfo.yOldMove;
+	state.arguments = moveInfo.arguments;
+	state.code = code;
+	state.codeTree = codeTree;
 
-	// 
-	if( moveInfo.type == "truefalse" ){
-		var newCodeLines = updateCodeLineOnce(codeLines,[],state);
-		var newCode = rejoinCode(newCodeLines);
+	if( moveInfo.mouseGrabed && moveInfo.type == "truefalse" ){
+		var newCode = updateCodeLineOnce(code,[],state);
 		updateCode(newCode);
+		code = newCode;
+		codeTree = acorn.parse( code);
+
+		context.clearRect(0, 0, canvas.width, canvas.height);
+
+		drawCode( code );
+		moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
+		keepAnimating=false;
+		return;
 	}
 	
 	requestAnimFrame( myAnimate);
@@ -129,18 +160,15 @@ function myOnMouseMove(e){
 // if it should keep animating.
 function myAnimate(e){
 
-	var code = getCode();
-	var codeLines = parseCode(code);
-	
-	
-	var newCodeLines = updateCodeLine( codeLines, [ mousex, mousey ],state);
-	var newCode = rejoinCode(newCodeLines);
+	var newCode = updateCodeLine( state.code, [ mousex, mousey ],state);
+
 	updateCode(newCode);
+	var newcodeTree = acorn.parse( newCode);
+	
 	drawCode( newCode );
 	
-	drawEditHandles( context, newCodeLines );
-
-
+	drawEditHandles( context, newcodeTree, mousex,mousey);
+	
 	////////////
 	if( keepAnimating){
 		requestAnimFrame( myAnimate);

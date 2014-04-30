@@ -197,7 +197,6 @@ function drawArcDirection(context,cx,cy,r,ang,ccw,mousex,mousey){
 //
 function drawMoveTo(context,x,y,mousex,mousey){
 	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
-
 	return {
 		mouseGrabed: mouseInBox,
 		destArgs: [0,1],
@@ -316,7 +315,6 @@ function drawQuadraticCurveTo(context,xold,yold,cx,cy,x,y,mousex,mousey) {
 //
 function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	var params = computArcToParameters(xold,yold,c1x,c1y,c2x,c2y,r);
-	//localMoveInfo = drawArcTo( context, prevEnd[0], prevEnd[1], args[0], args[1], args[2], args[3], args[4], params[0], params[1], params[2],params[3], params[4],params[5],params[6],mousex,mousey);
 
 	var cx = params[0];
 	var cy = params[1]; 
@@ -326,7 +324,6 @@ function drawArcTo(context,xold,yold,c1x,c1y,c2x,c2y, r, mousex,mousey) {
 	var newEndX = params[5];
 	var newEndY = params[6];
 
-	
 	drawLinesToConrolePoints(context,xold,yold,c1x,c1y);
 	var mouseInHandle1 = drawControlePointHandle(context,c1x,c1y,mousex,mousey);
 
@@ -456,10 +453,12 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	};
 }
 
+
 /**************************************
  * The actual part that parses the code
  * line and draws the controle handles.
 **************************************/
+
 
 
 ///////////////////////////////////////
@@ -471,73 +470,113 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 // information necisary to adjust the 
 // code line accordingly.
 //
-function drawEditHandles( context, codeLines,mousex,mousey){
-	
-	var lineBeingChanged;
+
+function drawEditHandles( context, codeTree,mousex,mousey){
+	var moveInfo = { 
+			mouseGrabed: false,
+			mouseX: mousex,
+			mouseY: mousey,
+			context: context,
+			xOld:0,
+			yOld:0
+			};
+
+	acorn.walk.simple( codeTree, {
+		Expression: drawEditHandlesCallback
+		},undefined,moveInfo);
+
+    return moveInfo;
+}
+    
+/**
+ * 
+ * @param node 
+ * @param moveInfo
+ * 		{
+ * 			mouseX: ???,
+ * 			mouseY: ???
+ * 		}
+ * 
+ * returns nothing
+ * 
+ * posibly updates moveInfo
+ * 		+ mouseGrabed - if mouse is in controle handle
+		+ xOld - for this path sement the beginning coords
+		+ yOld 
+		+ arguments  - node array with the arguments
+
+ * 
+ */
+function drawEditHandlesCallback( node, moveInfo){
+
 	var startCo = [0,0];
-	var endCo = [0,0];
-	var moveInfo = undefined;
-	
-	var anyTrue = false;
-
-	for( var i=0, l=codeLines.length; i<l; i++){
+	var endCo=[0,0];
+	var mousex = moveInfo.mouseX;
+	var mousey = moveInfo.mouseY;
+	var context = moveInfo.context;
 		
+    if( node.type == "CallExpression" && node.callee.object.name == "context" && typeof(node.arguments) != "undefined" ){
+    	
 		var localMoveInfo = { mouseGrabed: false };
-
-		var lineparts = parseCodeLine(codeLines[i]);
-		if( lineparts == null){
-			continue;
-		}
-		var args = lineparts[1];
-		if( args == null){
-			continue;
+   	
+		var name = node.callee.property.name;
+		
+		var args = node.arguments;
+		for(var i=0; i<args.length;i++){
+			if(args[i].type != "Literal"){
+				return;
+			}
 		}
 		
-		if( lineparts[0].match( /\b(?:moveTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawMoveTo( context, args[0], args[1],mousex,mousey );
-			endCo = args;
+		if( name == "moveTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			localMoveInfo = drawMoveTo( context, args[0].value, args[1].value,mousex,mousey );
+			endCo = [ args[0].value,args[1].value ];
 		}
-		else if(lineparts[0].match( /\b(?:lineTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawLineTo( context, args[0], args[1],mousex,mousey );
-			endCo = args;
+		else if( name ==  "lineTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			localMoveInfo = drawLineTo( context, args[0].value, args[1].value,mousex,mousey );
+			endCo = [ args[0].value,args[1].value ];
 		}
-		else if(lineparts[0].match( /\b(?:bezierCurveTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawBezierCurveTo( context, startCo[0],startCo[1],args[0], args[1], args[2], args[3], args[4], args[5],mousex,mousey );
-			endCo = [args[4],args[5]];
+		else if( name ==  "bezierCurveTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			localMoveInfo = drawBezierCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value,mousex,mousey );
+			endCo = [args[4].value,args[5].value];
 		}
-		else if(lineparts[0].match( /\b(?:quadraticCurveTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawQuadraticCurveTo( context, startCo[0],startCo[1],args[0], args[1], args[2], args[3],mousex,mousey );
-			endCo = [args[2],args[3]];
+		else if( name == "quadraticCurveTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			localMoveInfo = drawQuadraticCurveTo( context, startCo[0],startCo[1],args[0].value, args[1].value, args[2].value, args[3].value,mousex,mousey );
+			endCo = [args[2].value,args[3].value];
 		}
-		else if(lineparts[0].match( /\b(?:arcTo)\b/ )){
-			startCo = endCo;
-			localMoveInfo = drawArcTo( context, startCo[0], startCo[1], args[0], args[1], args[2], args[3], args[4], mousex,mousey);
+		else if( name == "arcTo"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			localMoveInfo = drawArcTo( context, startCo[0], startCo[1], args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, mousex,mousey);
 			endCo = localMoveInfo.newEnd;
 		}
-		else if(lineparts[0].match( /\b(?:arc)\b/ )){
-			
-			startCo = endCo;
-			var centerX = args[0];
-			var centerY = args[1];
-			var r = args[2];
-			var ang = args[4]; // end angle
-			var endCo = angleToXY(ang,centerX,centerY,r);
+		else if( name == "arc"){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			var centerX = args[0].value;
+			var centerY = args[1].value;
+			var r = args[2].value;
+			var ang = args[4].value; // end angle
+			endCo = angleToXY(ang,centerX,centerY,r);
 
-			localMoveInfo = drawArc( context, args[0], args[1], args[2], args[3], args[4], args[5], endCo[0], endCo[1],mousex,mousey );
+			localMoveInfo = drawArc( context, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value, endCo[0], endCo[1],mousex,mousey );
 		}
+		
+		moveInfo.xOld=endCo[0];
+		moveInfo.yOld=endCo[1];
 
 		if( localMoveInfo.mouseGrabed ){
-			moveInfo = localMoveInfo;
-			moveInfo.codeLineBeingReferenced = i;
-			moveInfo.xOld=startCo[0];
-			moveInfo.yOld=startCo[1];
+			moveInfo.mouseGrabed = true;
+			moveInfo.xOldMove=startCo[0];
+			moveInfo.yOldMove=startCo[1];
+			moveInfo.destArgs = localMoveInfo.destArgs;
+			moveInfo.srcArgs = localMoveInfo.srcArgs;
+			moveInfo.arguments = node.arguments;
+			moveInfo.type = localMoveInfo.type;
+			
 		}
 	}
-	
-	return moveInfo;
-	
+    return;
 }
