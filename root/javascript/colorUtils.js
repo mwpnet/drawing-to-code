@@ -154,7 +154,16 @@ function cssColorToHex(rgbString){
 }
 
 function cssColorToArray(rgbString){
+	
+	if( rgbString.substr(0,1) == "\"" ){
+		rgbString = rgbString.substr(1);
+		if( rgbString.substr(0,1) == "\"" ){
+			rgbString = rgbString.substr(0,-1);
+		}
+	}
+
 	if(rgbString.substr(0,1) != "#"){
+
 		if( typeof namesToHex[rgbString.toLowerCase()] == 'undefined') {
 			return [0,0,0];
 		}

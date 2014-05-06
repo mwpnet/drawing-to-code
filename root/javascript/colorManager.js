@@ -35,59 +35,44 @@ function initColor(context, canvas){
 var strokeRe = /^(\s*context\.strokeStyle\s*=\s*\")(#[a-zA-Z0-9]{6}|[a-zA-Z]+)(\"\s*;\s*)$/;
 function getStrokeStyle(){
 	var code = getCode();
-	var codeLines = parseCode(code);
+	var codeTree = acorn.parse( code);
 	
-	var pos = codeSearch( codeLines, strokeRe);
-	if(pos>=0){
-		var arr = strokeRe.exec(codeLines[pos]);
-		return arr[2];
+	var position = codeSearch( code, codeTree, "strokeStyle");
+
+	var val = "#000000";
+
+	if( position.start >=0 ){
+		val = code.substring(position.start,position.end);
 	}
+	return val;
 }
 
 
 function updateStrokeStyle(color){
-	
-	var code = getCode();
-	var codeLines = parseCode(code);
-	
-	var newCodeLines = updateStyleCodeLine( codeLines, "stroke", color, strokeRe);
-
-	var newCode = rejoinCode(newCodeLines);
-	updateCode(newCode);
-	drawCode( newCode );
-	
-	drawEditHandles( context, newCodeLines );
-
+	generalLineStyleCode("strokeStyle",color,true);
 }
 
 var fillRe = /^(\s*context\.fillStyle\s*=\s*\")(#[a-zA-Z0-9]{6}|[a-zA-Z]+)(\"\s*;\s*)$/;
+
 function getFillStyle(){
 	var code = getCode();
-	var codeLines = parseCode(code);
+	var codeTree = acorn.parse( code);
 	
-	var pos = codeSearch( codeLines, fillRe);
-	if(pos>=0){
-		var arr = fillRe.exec(codeLines[pos]);
-		return arr[2];
-	}
-}
+	var position = codeSearch( code, codeTree, "fillStyle");
 
+	var val = "#000000";
+
+	if( position.start >=0 ){
+		val = code.substring(position.start,position.end);
+	}
+	return val;
+}
 
 function updateFillStyle(color){
-	
-	var code = getCode();
-	var codeLines = parseCode(code);
-
-	var newCodeLines = updateStyleCodeLine( codeLines, "fill", color, fillRe);
-
-	var newCode = rejoinCode(newCodeLines);
-	updateCode(newCode);
-	drawCode( newCode );
-	
-	drawEditHandles( context, newCodeLines );
-
+	generalLineStyleCode("fillStyle",color,true);
 }
 
+/**
 function updateStyleCodeLine( codeLines, style, newVal, re ){
 	
 	var pos = codeSearch( codeLines, re);
@@ -101,6 +86,6 @@ function updateStyleCodeLine( codeLines, style, newVal, re ){
 
 	return codeLines;
 }
-
+**/
 
 

@@ -95,6 +95,7 @@ function changeLineWidth(){
 }
 
 function incDecWidth(incDec){
+
 	var width = parseInt( lineInfo.lineWidthInput.value );
 	var newWidth = width + incDec;
 	if(newWidth<1){
