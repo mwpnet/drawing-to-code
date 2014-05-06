@@ -127,13 +127,13 @@ function selectButton(button){
 ///////////////////////////////////////
 // moveTo code line
 function codeStringMoveTo(x1,y1,x2,y2){
-	return "\tcontext.moveTo( " + x2 + ", " + y2 + " );";
+	return "\n\tcontext.moveTo( " + x2 + ", " + y2 + " );\n";
 }
 
 ///////////////////////////////////////
 // lineTo code line
 function codeStringLineTo(x1,y1,x2,y2){
-	return "\tcontext.lineTo( " + x2 + ", " + y2 + " );";
+	return "\n\tcontext.lineTo( " + x2 + ", " + y2 + " );\n";
 }
 
 
@@ -153,7 +153,7 @@ function codeStringBezierCurveTo(x1,y1,x2,y2){
 	            y2
 	            ];
 
-	return "\tcontext.bezierCurveTo( " + args.join(", ") +" );";
+	return "\n\tcontext.bezierCurveTo( " + args.join(", ") +" );\n";
 }
 
 ///////////////////////////////////////
@@ -171,7 +171,7 @@ function codeStringQuadraticCurveTo(x1,y1,x2,y2){
 	            y2
 	            ];
 
-	return "\tcontext.quadraticCurveTo( " + args.join(", ") +" );";
+	return "\n\tcontext.quadraticCurveTo( " + args.join(", ") +" );\n";
 }
 
 ///////////////////////////////////////
@@ -192,7 +192,7 @@ function codeStringArcTo(x1,y1,x2,y2){
 	            25
 	            ];
 
-	return "\tcontext.arcTo( " + args.join(", ") +" );";
+	return "\n\tcontext.arcTo( " + args.join(", ") +" );\n";
 }
 
 ///////////////////////////////////////
@@ -202,13 +202,13 @@ function codeStringArcTo(x1,y1,x2,y2){
 // arbitrary radius, start angle and 
 // end angle.
 function codeStringArc(x1,y1,x2,y2){
-	return "\tcontext.arc( " + x2 + ", " + y2 + ", 50, 0, 2.0, false );"; // using 2.0 just to avoid 50 decimal places
+	return "\n\tcontext.arc( " + x2 + ", " + y2 + ", 50, 0, 2.0, false );\n"; // using 2.0 just to avoid 50 decimal places
 }
 
 ///////////////////////////////////////
 // closePath code line
 function codeStringClosePath(x1,y1,x2,y2){
-	return "\tcontext.closePath();";
+	return "\n\tcontext.closePath();\n";
 }
 
 ///////////////////////////////////////
@@ -366,7 +366,7 @@ function addComandToCode(codeTree,code,x1,y1,x2,y2,command){
     var insertAt = getPosToInsertAt(codeTree);
     
     
-	var newcode = code.substring(0,insertAt) + "\n" + myNewCodeLine + "\n" + code.substring(insertAt);
+	var newcode = code.substring(0,insertAt) + myNewCodeLine + code.substring(insertAt);
 	var argsIndex = getArgsToBeChanged(command);
 	var moveInfo = {
 			destArgs: argsIndex,
@@ -375,7 +375,9 @@ function addComandToCode(codeTree,code,x1,y1,x2,y2,command){
 			xOld: x2,
 			yOld: y2,
 			
-			newCode: newcode
+			newCode: newcode,
+			newCodeLine: myNewCodeLine,
+			insertAt: insertAt,
 	};
 	return moveInfo;
 }

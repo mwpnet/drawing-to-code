@@ -139,6 +139,50 @@ function updateCode(newCode){
 	}
 }
 
+function updateCode2(moveInfo){
+	/**var moveInfo = {
+			destArgs: argsIndex,
+			srcArgs: argsIndex,
+			type: "line",
+			xOld: x2,
+			yOld: y2,
+			
+			newCode: newcode,
+			newCodeLine: myNewCodeLine,
+			insertAt: insertAt
+	};**/
+
+	
+	
+	if(moveInfo.newCodeLine != null){
+		var newLinePosPair = editor.posFromIndex( moveInfo.insertAt );
+		
+		editor.replaceRange( moveInfo.newCodeLine, newLinePosPair);
+		//editor.setCursor(newLinePosPair);
+	}
+}
+
+function updateCodeLineOnce(moveInfo){
+	if(moveInfo.newVal != null){
+		var startPair = editor.posFromIndex( moveInfo.start );
+		var endPair = editor.posFromIndex( moveInfo.end );
+
+		editor.replaceRange( moveInfo.newVal.toString(), startPair, endPair );
+	}
+}
+
+function updateCodeLineMulti(moveInfo){
+	console.debug(moveInfo.length);
+	if(moveInfo.length != 0){
+		for(var i=0; i<moveInfo.length; i++){
+			var startPair = editor.posFromIndex( moveInfo[i].start );
+			var endPair = editor.posFromIndex( moveInfo[i].end );
+
+			editor.replaceRange( moveInfo[i].newVal.toString(), startPair, endPair );
+		}
+	}
+}
+
 ///////////////////////////////////////
 // draws the code given in the input 
 // box. Does some basic error catching

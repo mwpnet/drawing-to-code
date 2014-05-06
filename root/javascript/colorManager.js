@@ -32,7 +32,6 @@ function initColor(context, canvas){
 }
 
 
-var strokeRe = /^(\s*context\.strokeStyle\s*=\s*\")(#[a-zA-Z0-9]{6}|[a-zA-Z]+)(\"\s*;\s*)$/;
 function getStrokeStyle(){
 	var code = getCode();
 	var codeTree = acorn.parse( code);
@@ -52,8 +51,6 @@ function updateStrokeStyle(color){
 	generalLineStyleCode("strokeStyle",color,true);
 }
 
-var fillRe = /^(\s*context\.fillStyle\s*=\s*\")(#[a-zA-Z0-9]{6}|[a-zA-Z]+)(\"\s*;\s*)$/;
-
 function getFillStyle(){
 	var code = getCode();
 	var codeTree = acorn.parse( code);
@@ -71,21 +68,5 @@ function getFillStyle(){
 function updateFillStyle(color){
 	generalLineStyleCode("fillStyle",color,true);
 }
-
-/**
-function updateStyleCodeLine( codeLines, style, newVal, re ){
-	
-	var pos = codeSearch( codeLines, re);
-	if(pos>=0){
-		var arr = re.exec(codeLines[pos]);
-		codeLines[pos] = arr[1]+newVal+arr[3];
-		return codeLines;
-	}
-		
-	codeLines.splice(-pos,0,"\tcontext." + style + "Style = \""+newVal+"\";");
-
-	return codeLines;
-}
-**/
 
 

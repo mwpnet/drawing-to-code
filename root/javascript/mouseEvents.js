@@ -99,7 +99,8 @@ function myOnMouseDown(e) {
 	if( ! moveInfo.mouseGrabed ){ // click not in controle handle
 		var newMoveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state.command);
 
-		updateCode( newMoveInfo.newCode );
+		//updateCode( newMoveInfo.newcode );
+		updateCode2( newMoveInfo );
 
 		code = newMoveInfo.newCode;
 		codeTree = acorn.parse( code);
@@ -122,9 +123,15 @@ function myOnMouseDown(e) {
 	state.codeTree = codeTree;
 
 	if( moveInfo.mouseGrabed && moveInfo.type == "truefalse" ){
-		var newCode = updateCodeLineOnce(code,[],state);
-		updateCode(newCode);
-		code = newCode;
+
+		//var newCode = updateCodeLineOnce(code,[],state);
+		//updateCode(newCode);
+		//code = newCode;
+		//codeTree = acorn.parse( code);
+		
+		var moveInfo = updateCodeLineOnce(code,[],state);
+		updateCodeOnce(moveInfo);
+		code = getCode();
 		codeTree = acorn.parse( code);
 
 		context.clearRect(0, 0, canvas.width, canvas.height);
@@ -160,14 +167,14 @@ function myOnMouseMove(e){
 // if it should keep animating.
 function myAnimate(e){
 
-	var newCode = updateCodeLine( state.code, [ mousex, mousey ],state);
-
-	updateCode(newCode);
-	var newcodeTree = acorn.parse( newCode);
+	var moveInfo = updateCodeLine( state.code, [ mousex, mousey ],state);
+	var newParseTree = acorn.parse( code);
 	
+	updateCodeLineMulti(moveInfo);
+	newCode = getCode();
 	drawCode( newCode );
 	
-	drawEditHandles( context, newcodeTree, mousex,mousey);
+	moveInfo = drawEditHandles( context, state.codeTree, mousex,mousey);
 	
 	////////////
 	if( keepAnimating){
@@ -178,5 +185,14 @@ function myAnimate(e){
 		state.srcArgs = undefined;
 		state.type = undefined;
 	}
+}
+
+
+function pseudoUpdateParse(info){
+	for( var i=0; i<info.length; i++){ 
+		info[i].destArgs.value = info[i].newVal;
+	}
+	
+	return info;
 }
 
