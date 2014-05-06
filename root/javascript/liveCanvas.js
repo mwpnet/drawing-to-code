@@ -94,8 +94,8 @@ function init(){
 	hideButton.onclick = hideControlHandles;
 	initColor(context, canvas );
 	initLineProp();
-
-	onExecuteCode();
+	initFillStrokeProp();
+	initFontProp();
 }
 
 ///////////////////////////////////////
