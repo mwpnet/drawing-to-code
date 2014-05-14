@@ -47,6 +47,8 @@
 <script type="text/javascript" src="javascript/colorUtils.js"></script>
 <script type="text/javascript" src="javascript/colorManager.js"></script>
 
+<script type="text/javascript" src="javascript/shadow.js"></script>
+
 <script src="thirdParty/acorn.js"></script>
 <script src="thirdParty/util/walk.js"></script>
 
@@ -317,13 +319,14 @@ function draw(context){
 <div id="shadowStylePanel" class="subPanel">
 <!--  shadow properties -->
 <table>
-<tr><th>Shadow Color</th><td><input type="text" name="shadow"></td></tr>
-<tr><th>Red</th><td><canvas class = "colorBars" id="colorRed" width=200 height=20 title="Red Color" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas></td></tr>
-<tr><th>Green</th><td><canvas class = "colorBars" id="colorRed" width=200 height=20 title="Red Color" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas></td></tr>
-<tr><th>Blue</th><td><canvas class = "colorBars" id="colorRed" width=200 height=20 title="Red Color" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas></td></tr>
-<tr><th>Shadow off set X</th><td><button id="plusLineWidth" onclick="incDecWidth(1)">+</button><input id="lineWidthInput" type="text" onchange="changeLineWidth()"><button id="minusLineWidth" onclick="incDecWidth(-1)">-</button></td></tr>
-<tr><th>Shadow off set Y</th><td><button id="plusLineWidth" onclick="incDecWidth(1)">+</button><input id="lineWidthInput" type="text" onchange="changeLineWidth()"><button id="minusLineWidth" onclick="incDecWidth(-1)">-</button></td></tr>
-<tr><th>Shadow blur</th><td><button id="plusLineWidth" onclick="incDecWidth(1)">+</button><input id="lineWidthInput" type="text" onchange="changeLineWidth()"><button id="minusLineWidth" onclick="incDecWidth(-1)">-</button><canvas width=200 height=40 title="Red Color"></canvas></td></tr>
+<tr><td>Shadow Color</td><td id="shadowColorInput"></td></tr>
+<tr><td>Red</td><td id="redShadow"></td></tr>
+<tr><td>Green</td><td id="greenShadow"></td></tr>
+<tr><td>Blue</td><td id="blueShadow"></td></tr>
+
+<tr><th>Shadow off set X</th><td><button id="plusShadowOffsetX" onclick="incDecShadowX(1)">+</button><input id="shadowOffsetXInput" type="text" onchange="changeShadowOffsetX()"><button id="minusShadowOffsetX" onclick="incDecShadowX(-1)">-</button></td></tr>
+<tr><th>Shadow off set Y</th><td><button id="plusShadowOffsetY" onclick="incDecShadowY(1)">+</button><input id="shadowOffsetYInput" type="text" onchange="changeShadowOffsetY()"><button id="minusShadowOffsetY" onclick="incDecShadowY(-1)">-</button></td></tr>
+<tr><th>Shadow blur</th><td><button id="plusShadowBlur" onclick="incDecShadowBlur(1)">+</button><input id="shadowBlurInput" type="text" onchange="changeShadowBlur()"><button id="minusShadowBlur" onclick="incDecShadowBlur(-1)">-</button></td></tr>
 </table>
 </div>
 

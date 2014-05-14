@@ -243,7 +243,6 @@ function codeSearchCallback(node, position){
 	
 	if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" ){
 		if( node.left.object.name == "context" && node.left.property.name == identifier){
-			console.debug(node.right);
 			if(node.right.type == "Literal"){
 				position.start = node.right.start;
 				position.end = node.right.end;
