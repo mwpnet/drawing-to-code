@@ -171,14 +171,12 @@ function updateCodeLineOnce(moveInfo){
 	}
 }
 
-function updateCodeLineMulti(moveInfo){
-	console.debug(moveInfo.length);
+function updateCodeLineMulti(code, moveInfo){
 	if(moveInfo.length != 0){
 		for(var i=0; i<moveInfo.length; i++){
-			var startPair = editor.posFromIndex( moveInfo[i].start );
-			var endPair = editor.posFromIndex( moveInfo[i].end );
-
-			editor.replaceRange( moveInfo[i].newVal.toString(), startPair, endPair );
+			
+			code = code.substring(0,moveInfo[i].start) + moveInfo[i].newVal.toString() + code.substring(moveInfo[i].end);
+			editor.setValue( code );
 		}
 	}
 }

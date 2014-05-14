@@ -103,7 +103,9 @@ function myOnMouseDown(e) {
 		updateCode2( newMoveInfo );
 
 		code = newMoveInfo.newCode;
+
 		codeTree = acorn.parse( code);
+
 
 		context.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -168,9 +170,9 @@ function myOnMouseMove(e){
 function myAnimate(e){
 
 	var moveInfo = updateCodeLine( state.code, [ mousex, mousey ],state);
-	var newParseTree = acorn.parse( code);
 	
-	updateCodeLineMulti(moveInfo);
+	updateCodeLineMulti(state.code,moveInfo);
+	updatePseudoParse(moveInfo);
 	newCode = getCode();
 	drawCode( newCode );
 	
@@ -188,7 +190,7 @@ function myAnimate(e){
 }
 
 
-function pseudoUpdateParse(info){
+function updatePseudoParse(info){
 	for( var i=0; i<info.length; i++){ 
 		info[i].destArgs.value = info[i].newVal;
 	}
