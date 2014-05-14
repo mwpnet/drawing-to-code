@@ -8,9 +8,12 @@
 
 var strokeCB;
 var fillCB;
+var shadowCB;
+
 function initColor(context, canvas){
 	strokeCB = new colorBars(500,25,getStrokeStyle,updateStrokeStyle);
 	fillCB = new colorBars(500,25,getFillStyle,updateFillStyle);
+	shadowCB = new colorBars(500,25,getFillStyle,updateShadowStyle);
 
 	document.getElementById('strokeColorInput').appendChild(strokeCB.cssInput);
 	document.getElementById('strokeColorInput').appendChild(strokeCB.previewBoxElement);
@@ -29,6 +32,15 @@ function initColor(context, canvas){
 	document.getElementById('greenFill').appendChild(fillCB.bar.green.textBox);
 	document.getElementById('blueFill').appendChild(fillCB.bar.blue.element);
 	document.getElementById('blueFill').appendChild(fillCB.bar.blue.textBox);
+
+	document.getElementById('shadowColorInput').appendChild(shadowCB.cssInput);
+	document.getElementById('shadowColorInput').appendChild(shadowCB.previewBoxElement);
+	document.getElementById('redShadow').appendChild(shadowCB.bar.red.element);
+	document.getElementById('redShadow').appendChild(shadowCB.bar.red.textBox);
+	document.getElementById('greenShadow').appendChild(shadowCB.bar.green.element);
+	document.getElementById('greenShadow').appendChild(shadowCB.bar.green.textBox);
+	document.getElementById('blueShadow').appendChild(shadowCB.bar.blue.element);
+	document.getElementById('blueShadow').appendChild(shadowCB.bar.blue.textBox);
 }
 
 
@@ -67,6 +79,24 @@ function getFillStyle(){
 
 function updateFillStyle(color){
 	generalLineStyleCode("fillStyle",color,true);
+}
+
+function getShadowStyle(){
+	var code = getCode();
+	var codeTree = acorn.parse( code);
+	
+	var position = codeSearch( code, codeTree, "shadowColor");
+
+	var val = "#000000";
+
+	if( position.start >=0 ){
+		val = code.substring(position.start,position.end);
+	}
+	return val;
+}
+
+function updateShadowStyle(color){
+	generalLineStyleCode("shadowColor",color,true);
 }
 
 

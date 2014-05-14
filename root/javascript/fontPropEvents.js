@@ -143,7 +143,7 @@ function drawTextBaseline(canvas,type){
 }
 
 
-/***********************************************/
+/**********************************************
 ///////////////////////
 // line thickness
 function changeLineWidth(){
@@ -325,4 +325,4 @@ function codeExpressionCallback(node, position){
 	}
 }
 
-
+*******************************************/
