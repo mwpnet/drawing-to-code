@@ -48,7 +48,7 @@ function getStrokeStyle(){
 	var code = getCode();
 	var codeTree = acorn.parse( code);
 	
-	var position = codeSearch( code, codeTree, "strokeStyle");
+	var position = findAssignment( code, codeTree, "strokeStyle");
 
 	var val = "#000000";
 
@@ -67,7 +67,7 @@ function getFillStyle(){
 	var code = getCode();
 	var codeTree = acorn.parse( code);
 	
-	var position = codeSearch( code, codeTree, "fillStyle");
+	var position = findAssignment( code, codeTree, "fillStyle");
 
 	var val = "#000000";
 
@@ -85,7 +85,7 @@ function getShadowStyle(){
 	var code = getCode();
 	var codeTree = acorn.parse( code);
 	
-	var position = codeSearch( code, codeTree, "shadowColor");
+	var position = findAssignment( code, codeTree, "shadowColor");
 
 	var val = "#000000";
 

@@ -111,12 +111,11 @@ function getLineWidth(){
 	var code = getCode();
 	var codeTree = acorn.parse( code);
 
-	var position = codeSearch( code, codeTree, "lineWidth");
+	var position = findAssignment( code, codeTree, "lineWidth");
 
 	var val = 5;
-
-	if( position.start >=0 ){
-		val = code.substring(position.start,position.end);
+	if( position.valuePart != undefined ){
+		val = position.value;
 	}
 	return val;
 }
@@ -148,12 +147,12 @@ function getMiterLimit(){
 	var code = getCode();
 	var codeTree = acorn.parse( code);
 
-	var position = codeSearch( code, codeTree,"miterLimit");
+	var position = findAssignment( code, codeTree,"miterLimit");
 
 	var val = 5;
 
-	if( position.start >=0 ){
-		val = code.substring(psition.start,position.end);
+	if( position.valuePart != undefined ){
+		val = position.value;
 	}
 	return val;
 }
@@ -169,18 +168,27 @@ function generalLineStyleCode(type,value,quote){ // type = lineCap, lineJoin, li
 	}
 	
 	var code = getCode();
-	var newCode = code;
 
 	var codeTree = acorn.parse( code);
 
-	var position = codeSearch( code, codeTree, type);
+	var position = findAssignment( code, codeTree, type);
 
 	var newCode = code;
-	if( position.start >=0 ){
-		newCode = code.substring(0,position.start) + newVal + code.substring(position.end);
+	
+	if( position.rawValue != undefined ){
+		newCode = code.substring(0,position.rawValue.start) + newVal + code.substring(position.rawValue.end);
 	}
-	else if(position.lastPathCmd >= 0){
-		newCode = code.substring(0,position.lastPathCmd) + "\tcontext." + type + " = " + newVal + ";\n" + code.substring(position.lastPathCmd);
+	else {
+		var position2 = { 
+				secondToLastDrawItem: undefined,
+				lastDrawItem: undefined,
+				lastNoneDrawItem: undefined
+				};
+
+		acorn.walk.simple( codeTree, {
+			CallExpression: findLastTwoDrawItemsCallback
+			},undefined,position2);
+		newCode = code.substring(0,position2.lastDrawItem.start) + "\tcontext." + type + " = " + newVal + ";\n" + code.substring(position2.lastDrawItem.start);
 	}
 
 	updateCode(newCode);
@@ -193,16 +201,15 @@ function generalLineStyleCode(type,value,quote){ // type = lineCap, lineJoin, li
 function clearLineStyleLine(type){
 
 	var code = getCode();
-	var newCode = code;
 
 	var codeTree = acorn.parse( code);
 
-	var position = codeSearch( code, codeTree, type);
+	var position = findAssignment( code, codeTree, type);
 
 	var newCode = code;
 	if( position.lineStart >=0 ){
 		// the +1 is to try to handle the folowing semi-collen
-		newCode = code.substring(0,position.lineStart) + code.substring(position.lineEnd+1);
+		newCode = code.substring(0,position.assignment.start) + code.substring(position.assignment.end+1);
 	}
 
 	updateCode(newCode);
@@ -213,65 +220,18 @@ function clearLineStyleLine(type){
 
 ///////////////////////////////////////
 //
-function codeSearch( code, codeTree, identifier){
+function findAssignment( code, codeTree, identifier){ //codeSearch
 	
 	var position = { 
-			lastPathCmd:-1, // the end of the last path command
 			identifier: identifier, // the identifier we're looking for
-			start:-1, // the start and end of the value to be replaced
-			end:-1,
-			lineStart:-1,  // the start and end of the line for this identifier
-			lineEnd:-1     // used when deleating a line
+			assignment: undefined,
+			valuePart: undefined,
 			};
 
 	acorn.walk.simple( codeTree, {
-		AssignmentExpression: codeSearchCallback
+		AssignmentExpression: findAssignmentCallBack
 		},undefined,position);
 
-	if(position.start <0){
-		//this is from addPathCommand.js
-		position.lastPathCmd=getPosToInsertAt(codeTree);
-	}
 	return position;
 }
-
-// goes through the tree finding either the last identifier
-// or the position of the last path comand that it should be inserted after.
-function codeSearchCallback(node, position){
-	
-	var identifier = position.identifier;
-	
-	if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" ){
-		if( node.left.object.name == "context" && node.left.property.name == identifier){
-			if(node.right.type == "Literal"){
-				position.start = node.right.start;
-				position.end = node.right.end;
-				
-				position.lineStart = node.start;
-				position.lineEnd = node.end;
-			}
-			else if( node.right.type == "UnaryExpression" && node.right.argument.type == "Literal"){
-				position.start = node.right.start;
-				position.end = node.right.end;
-				
-				position.lineStart = node.start;
-				position.lineEnd = node.end;
-			}
-		}
-	}
-}
-
-function codeExpressionCallback(node, position){
-	//find last path command and use that to insert after,
-	// unless it's a closePath command, in which case it is inserted before it.
-	
-	//XXX need to fix this so it handles semicolons and whitespace properly
-	if( node.type == "CallExpression"){
-		if( node.callee.object.name == "context" && node.callee.property.name != "closePath"){
-			position.lastPathCmd = node.end+1;
-		}
-		
-	}
-}
-
 

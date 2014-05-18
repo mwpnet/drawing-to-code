@@ -278,57 +278,41 @@ function getArgsToBeChanged(command){
 // path command 
 function getPosToInsertAt( codeTree ){
 	
+	//position.secondToLastDrawItem
+	//position.lastDrawItem
+	// position.identifier -- property name
+	// position.assignment
+
 	var position = { 
-			lastPathCmd:-1,
-			lastStroke:-1,
-			lastFill:-1
+			secondToLastDrawItem: undefined,
+			lastDrawItem: undefined,
+			lastNoneDrawItem: undefined
 			};
 
 	acorn.walk.simple( codeTree, {
-		Expression: getPosToInsertAtCallBack
+		CallExpression: findLastTwoDrawItemsCallback
 		},undefined,position);
 
+	return decodePositionToInsertAt(position,codeTree);
+}
+
+//////////////////////////////////////
+// give the position just before node, or if undefined, the position
+// just before the end of the function,
+function decodePositionToInsertAt(position,codeTree){
+	
 	var insertAt = 0;
 	
-	if( position.lastStroke < 0 && position.lastFill <0){
-		insertAt = position.lastPathCmd;
+	if( position.lastDrawItem == undefined ){
+		insertAt = endOfFunctonPosition(codeTree);
 	}
-	if(  position.lastStroke >= 0 && position.lastFill <0){
-		insertAt = position.lastStroke;
+	else {
+		insertAt = position.lastDrawItem.start;
 	}
-	if( position.lastStroke < 0 && position.lastFill >=0){
-		insertAt = position.lastFill;
-	}
-	if( position.lastStroke >= 0 && position.lastFill >=0){
-		if( position.lastStroke < position.lastFill){
-			insertAt = position.lastStroke;
-		}
-		else {
-			insertAt = position.lastFill;			
-		}
-	}	
-	
+
 	return insertAt;
 }
 
-function getPosToInsertAtCallBack(node, position){
-		
-	//find last path command and use that to insert after,
-	// unless it's a closePath command, in which case it is inserted before it.
-	
-	//XXX need to fix this so it handles semicolons and whitespace properly
-	if( node.type == "CallExpression"){
-		if( node.callee.object.name == "context" ){
-			position.lastPathCmd = node.end+1;
-		}
-		if( node.callee.property.name == "stroke"){
-			position.lastStroke = node.start;
-		}
-		else if( node.callee.property.name == "fill"){
-			position.lastFill = node.start;
-		}
-	}
-}
 
 /**
  * 

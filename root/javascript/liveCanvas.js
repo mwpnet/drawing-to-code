@@ -236,11 +236,3 @@ function onExecuteCode(){
 	return false;
 }
 
-function codeAnimate(){
-	var code = getCode();
-	var codeLines = parseCode(code);
-	
-	drawEditHandles( context, codeLines );
-
-
-}

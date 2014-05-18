@@ -16,108 +16,60 @@
 /**    along with drawing-to-code.  If not, see <http://www.gnu.org/licenses/>.	**/
 
 
-/**************************************
- * commands used to parse the given 
- * code and code lines, and reassemble 
- * them into new code
- * 
- * XXX - this whole file should be 
- * replace with a real code parser, or 
- * something else completely.
- *************************************/
 
+// finds the last and second to last drawing item
+//   for acorn.walk.simple( codeTree, {
+//					CallExpression: findLastTwoDrawItemsCallback
+//			},undefined,position);
 
-///////////////////////////////////////
-// parse code into an array of lines
-//
-function parseCode( code ){
-	var trimedCode = code.replace(/\n$/, ''); 
-	return trimedCode.split(/\n/g);
+function findLastTwoDrawItemsCallback(node, position){
+	//position.secondToLastDrawItem
+	//position.lastDrawItem
+	//position.lastNoneDrawItem
+	
+	if( node.type == "CallExpression" && node.callee.object.name == "context" ){
+		if( node.callee.property.name == "stroke" || node.callee.property.name == "fill" ||
+				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||
+				node.callee.property.name == "strokeText" || node.callee.property.name == "fillText"){
+			position.secondToLastDrawItem = position.lastDrawItem;
+			position.lastDrawItem = node;
+		}
+		else {
+			position.lastNoneDrawItem = node;
+		}
+	}
 }
 
-///////////////////////////////////////
-// parse a line of code into the 
-// function part, the args, and the 
-// trailing rest
-//
-function parseCodeLine(codeLine){
+// find last assignment command and returns that node
+//   for acorn.walk.simple( codeTree, {
+//					AssignmentExpression: findAssignmentCallBack
+//			},undefined,position);
 
-	var startParen = codeLine.indexOf("(");
-	var endParen = codeLine.indexOf(")");
+function findAssignmentCallBack(node, position){
 	
-	if( startParen <0){
-		return [ codeLine, [], ""];
-	}
-
-	var functionPart = codeLine.slice(0,startParen+1);
-	var argsPart = codeLine.slice(startParen+1,endParen);
-	var endPart = codeLine.slice(endParen);
-
-	var getArgs = /(?:-?\d*(?:\d\.?|\.?\d)\d*)|(?:\btrue\b)|(?:\bfalse\b)/g;
-	var args = argsPart.match( getArgs );
-
-	if( args){
-		for(var i=0,l=args.length; i<l;i++){
-			if(args[i] == "true"){
-				args[i] = true;
+	// position.identifier -- property name
+	// position.assignment
+	// position.value
+	
+	var identifier = position.identifier;
+	
+	if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" && node.left.object.name == "context" ){
+		if( identifier == undefined || node.left.property.name == identifier ){
+			position.assignment = node;
+			position.rawValue = node.right;
+			
+			if(node.right.type == "Literal"){
+				position.value = node.right.value;
 			}
-			else if( args[i]=="false"){
-				args[i] = false;
-			}
-			else {
-				args[i] = parseFloat( args[i] );
+			else if( node.right.type == "UnaryExpression" && node.right.argument.type == "Literal"){
+				position.value = -node.right.argument.value;
 			}
 		}
 	}
-	else {
-		args = [];
-	}
-	return [ functionPart, args, endPart ];
 }
 
-///////////////////////////////////////
-// takes the parts of a line from 
-// parseCodeLine and rejoins it into 
-// the line again. It should give 
-//approximately the original line back
-//
-function rejoinCodeLine (functionPart, args, endPart ){
-	var argsString = "";
-	
-	if(args.length==0){
-		return functionPart + endPart;
-	}
-
-	argsString = " "+args.join(", ", args)+" ";
-
-	var newLine = functionPart + argsString + endPart;
-	return newLine;
+function endOfFunctonPosition(codeTree){
+	return codeTree.end-1;
 }
-
-///////////////////////////////////////
-function parseCodeLineAssignment(codeLine){
-	var objStart = codeLine.indexOf(".");
-	var startValue = codeLine.indexOf("=");
-	var endValue = codeLine.indexOf(";");
-	
-	var objPart = codeLine.slice(0,objStart);
-	var propertyPart = codeLine.slice(objStart+1,startValue+1);
-	var valuePart = codeLine.slice(startValue+1,endValue);
-	var restPart = codeLine.slice(endParen);
-	
-	return 
-	
-}
-
-///////////////////////////////////////
-// takes an array of code lines and 
-//rejoins them into one string
-//
-function rejoinCode(codeLines){
-	return codeLines.join("\n") +"\n";
-}
-
-
-
 
 
