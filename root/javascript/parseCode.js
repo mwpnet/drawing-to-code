@@ -40,15 +40,107 @@ function findLastTwoDrawItemsCallback(node, position){
 	}
 }
 
-// find last assignment command and returns that node
-//   for acorn.walk.simple( codeTree, {
-//					AssignmentExpression: findAssignmentCallBack
-//			},undefined,position);
+/*********************************
+*************************************/
 
-function findAssignmentCallBack(node, position){
+
+function getProperty( property, defaultValue ){
+
+	var code = getCode();
+	var codeTree = acorn.parse( code);
+
+	var position = findProperty( code, codeTree,property);
+
+	var val = defaultValue;
+	if( position.valuePart != undefined ){
+		val = position.value;
+	}
+	return val;
+}
+
+
+function setCreateProperty(type,value,quote){ // type = lineCap, lineJoin, lilneWidth, miterLimit
+
+	var newVal = value.toString();
+	if(quote){
+		newVal = "\"" + newVal + "\"";
+	}
+	
+	var code = getCode();
+
+	var codeTree = acorn.parse( code);
+
+	var position = findProperty( code, codeTree, type);
+
+	var newCode = code;
+	
+	if( position.rawValue != undefined ){
+		newCode = code.substring(0,position.rawValue.start) + newVal + code.substring(position.rawValue.end);
+	}
+	else {
+		var position2 = { 
+				secondToLastDrawItem: undefined,
+				lastDrawItem: undefined,
+				lastNoneDrawItem: undefined
+				};
+
+		acorn.walk.simple( codeTree, {
+			CallExpression: findLastTwoDrawItemsCallback
+			},undefined,position2);
+		newCode = code.substring(0,position2.lastDrawItem.start) + "\tcontext." + type + " = " + newVal + ";\n" + code.substring(position2.lastDrawItem.start);
+	}
+
+	updateCode(newCode);
+	drawCode( newCode );
+	
+	drawEditHandles( context, codeTree,-1,-1);
+
+}
+
+function removeProperty(type){
+
+	var code = getCode();
+
+	var codeTree = acorn.parse( code);
+
+	var position = findProperty( code, codeTree, type);
+
+	var newCode = code;
+	if( position.lineStart >=0 ){
+		// the +1 is to try to handle the folowing semi-collen
+		newCode = code.substring(0,position.assignment.start) + code.substring(position.assignment.end+1);
+	}
+
+	updateCode(newCode);
+	drawCode( newCode );
+	
+	drawEditHandles( context, codeTree,-1,-1);
+}
+
+
+///////////////////////////////////////
+//
+function findProperty( code, codeTree, property ){ //codeSearch
+	
+	var position = { 
+			identifier: property, // the identifier we're looking for
+			assignment: undefined,
+			valuePart: undefined,
+			};
+
+	acorn.walk.simple( codeTree, {
+		AssignmentExpression: findPropertyCallBack
+		},undefined,position);
+
+	return position;
+}
+
+
+function findPropertyCallBack(node, position){
 	
 	// position.identifier -- property name
 	// position.assignment
+	// position.rawValue
 	// position.value
 	
 	var identifier = position.identifier;

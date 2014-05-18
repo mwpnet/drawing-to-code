@@ -91,7 +91,7 @@ function drawLineJoin(canvas,type,width,limit){
 function changeLineWidth(){
 	var width = lineInfo.lineWidthInput.value;
 
-	generalLineStyleCode("lineWidth",width,false);
+	setCreateProperty("lineWidth",width,false);
 }
 
 function incDecWidth(incDec){
@@ -103,21 +103,11 @@ function incDecWidth(incDec){
 	}
 	lineInfo.lineWidthInput.value = newWidth;
 
-	generalLineStyleCode("lineWidth",newWidth,false);
+	setCreateProperty("lineWidth",newWidth,false);
 }
 
 function getLineWidth(){
-
-	var code = getCode();
-	var codeTree = acorn.parse( code);
-
-	var position = findAssignment( code, codeTree, "lineWidth");
-
-	var val = 5;
-	if( position.valuePart != undefined ){
-		val = position.value;
-	}
-	return val;
+	return getProperty( "lineWidth", 5);
 }
 
 
@@ -127,7 +117,7 @@ function getLineWidth(){
 function changeMiterLimit(){
 	var width = lineInfo.lineMiterLimit.value;
 
-	generalLineStyleCode("miterLimit",width,false);
+	setCreateProperty("miterLimit",width,false);
 }
 
 function incDecMiter(incDec){
@@ -139,99 +129,9 @@ function incDecMiter(incDec){
 	}
 	lineInfo.lineMiterLimit.value = newWidth;
 
-	generalLineStyleCode("miterLimit",newWidth,false);
+	setCreateProperty("miterLimit",newWidth,false);
 }
 
 function getMiterLimit(){
-
-	var code = getCode();
-	var codeTree = acorn.parse( code);
-
-	var position = findAssignment( code, codeTree,"miterLimit");
-
-	var val = 5;
-
-	if( position.valuePart != undefined ){
-		val = position.value;
-	}
-	return val;
+	return getProperty( "miterLimit", 5);
 }
-
-
-///////////////////////////
-//line style
-function generalLineStyleCode(type,value,quote){ // type = lineCap, lineJoin, lilneWidth, miterLimit
-
-	var newVal = value.toString();
-	if(quote){
-		newVal = "\"" + newVal + "\"";
-	}
-	
-	var code = getCode();
-
-	var codeTree = acorn.parse( code);
-
-	var position = findAssignment( code, codeTree, type);
-
-	var newCode = code;
-	
-	if( position.rawValue != undefined ){
-		newCode = code.substring(0,position.rawValue.start) + newVal + code.substring(position.rawValue.end);
-	}
-	else {
-		var position2 = { 
-				secondToLastDrawItem: undefined,
-				lastDrawItem: undefined,
-				lastNoneDrawItem: undefined
-				};
-
-		acorn.walk.simple( codeTree, {
-			CallExpression: findLastTwoDrawItemsCallback
-			},undefined,position2);
-		newCode = code.substring(0,position2.lastDrawItem.start) + "\tcontext." + type + " = " + newVal + ";\n" + code.substring(position2.lastDrawItem.start);
-	}
-
-	updateCode(newCode);
-	drawCode( newCode );
-	
-	drawEditHandles( context, codeTree,-1,-1);
-
-}
-
-function clearLineStyleLine(type){
-
-	var code = getCode();
-
-	var codeTree = acorn.parse( code);
-
-	var position = findAssignment( code, codeTree, type);
-
-	var newCode = code;
-	if( position.lineStart >=0 ){
-		// the +1 is to try to handle the folowing semi-collen
-		newCode = code.substring(0,position.assignment.start) + code.substring(position.assignment.end+1);
-	}
-
-	updateCode(newCode);
-	drawCode( newCode );
-	
-	drawEditHandles( context, codeTree,-1,-1);
-}
-
-///////////////////////////////////////
-//
-function findAssignment( code, codeTree, identifier){ //codeSearch
-	
-	var position = { 
-			identifier: identifier, // the identifier we're looking for
-			assignment: undefined,
-			valuePart: undefined,
-			};
-
-	acorn.walk.simple( codeTree, {
-		AssignmentExpression: findAssignmentCallBack
-		},undefined,position);
-
-	return position;
-}
-
