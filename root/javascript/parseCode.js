@@ -74,8 +74,8 @@ function setCreateProperty(type,value,quote){ // type = lineCap, lineJoin, lilne
 
 	var newCode = code;
 	
-	if( position.rawValue != undefined ){
-		newCode = code.substring(0,position.rawValue.start) + newVal + code.substring(position.rawValue.end);
+	if( position.valuePart != undefined ){
+		newCode = code.substring(0,position.valuePart.start) + newVal + code.substring(position.valuePart.end);
 	}
 	else {
 		var position2 = { 
@@ -140,7 +140,7 @@ function findPropertyCallBack(node, position){
 	
 	// position.identifier -- property name
 	// position.assignment
-	// position.rawValue
+	// position.valuePart
 	// position.value
 	
 	var identifier = position.identifier;
@@ -148,7 +148,7 @@ function findPropertyCallBack(node, position){
 	if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" && node.left.object.name == "context" ){
 		if( identifier == undefined || node.left.property.name == identifier ){
 			position.assignment = node;
-			position.rawValue = node.right;
+			position.valuePart = node.right;
 			
 			if(node.right.type == "Literal"){
 				position.value = node.right.value;

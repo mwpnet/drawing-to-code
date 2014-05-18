@@ -233,6 +233,7 @@ function onExecuteCode(){
 	}
 	strokeCB.updateBars( getStrokeStyle() );
 	fillCB.updateBars( getFillStyle() );
+	shadowCB.updateBars( getShadowStyle() );
 	return false;
 }
 
