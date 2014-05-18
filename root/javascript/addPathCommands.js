@@ -313,7 +313,6 @@ function decodePositionToInsertAt(position,codeTree){
 	return insertAt;
 }
 
-
 /**
  * 
  * @param codeTree
