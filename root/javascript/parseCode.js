@@ -22,6 +22,27 @@
 //					CallExpression: findLastTwoDrawItemsCallback
 //			},undefined,position);
 
+function findLastTwoDrawItems( codeTree ){
+	
+	//position.secondToLastDrawItem
+	//position.lastDrawItem
+	// position.identifier -- property name
+	// position.assignment
+
+	var position = { 
+			secondToLastDrawItem: undefined,
+			lastDrawItem: undefined,
+			lastNoneDrawItem: undefined
+			};
+
+	acorn.walk.simple( codeTree, {
+		CallExpression: findLastTwoDrawItemsCallback
+		},undefined,position);
+
+	return position;
+}
+
+
 function findLastTwoDrawItemsCallback(node, position){
 	//position.secondToLastDrawItem
 	//position.lastDrawItem
@@ -29,7 +50,7 @@ function findLastTwoDrawItemsCallback(node, position){
 	
 	if( node.type == "CallExpression" && node.callee.object.name == "context" ){
 		if( node.callee.property.name == "stroke" || node.callee.property.name == "fill" ||
-				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||
+				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||node.callee.property.name == "clearRect" ||
 				node.callee.property.name == "strokeText" || node.callee.property.name == "fillText"){
 			position.secondToLastDrawItem = position.lastDrawItem;
 			position.lastDrawItem = node;

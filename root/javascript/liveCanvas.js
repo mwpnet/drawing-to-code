@@ -197,7 +197,9 @@ function drawCode( code ){
 	}
     context.clearRect(0, 0, canvas.width, canvas.height);
 
+    context.save();
 	draw(context);
+	context.restore();
 
 }
 
