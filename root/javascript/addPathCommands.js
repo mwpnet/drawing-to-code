@@ -278,43 +278,39 @@ function getArgsToBeChanged(command){
 // path command 
 function getPosToInsertAt( codeTree ){
 	
+	//position.secondToLastDrawItem
+	//position.lastDrawItem
+	// position.identifier -- property name
+	// position.assignment
+
 	var position = { 
-			lastPathCmd:-1, //last path command
-			lastDrawItem:-1 // last path command that a draw item
+			secondToLastDrawItem: undefined,
+			lastDrawItem: undefined,
+			lastNoneDrawItem: undefined
 			};
 
 	acorn.walk.simple( codeTree, {
-		Expression: getPosToInsertAtCallBack
+		CallExpression: findLastTwoDrawItemsCallback
 		},undefined,position);
 
-	var insertAt = 0;
-	
-	if( position.lastDrawItem>=0 ){
-		insertAt = position.lastDrawItem;
-	}
-	else {
-		insertAt = position.lastPathCmd;
-	}	
-	return insertAt;
+	return decodePositionToInsertAt(position,codeTree);
 }
 
-function getPosToInsertAtCallBack(node, position){
-		
-	//find last path command and use that to insert after,
-	// unless it's a closePath command, in which case it is inserted before it.
+//////////////////////////////////////
+// give the position just before node, or if undefined, the position
+// just before the end of the function,
+function decodePositionToInsertAt(position,codeTree){
 	
-	//XXX need to fix this so it handles semicolons and whitespace properly
-	if( node.type == "CallExpression"){
-		if( node.callee.object.name == "context" ){
-			position.lastPathCmd = node.end+1;
-		}
-		
-		if( node.callee.property.name == "stroke" || node.callee.property.name == "fill" ||
-				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||
-				node.callee.property.name == "strokeText" || node.callee.property.name == "fillText"){
-			position.lastDrawItem = node.start;
-		}
+	var insertAt = 0;
+	
+	if( position.lastDrawItem == undefined ){
+		insertAt = endOfFunctonPosition(codeTree);
 	}
+	else {
+		insertAt = position.lastDrawItem.start;
+	}
+
+	return insertAt;
 }
 
 /**

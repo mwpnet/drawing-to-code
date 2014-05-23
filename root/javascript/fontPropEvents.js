@@ -149,7 +149,7 @@ function drawTextBaseline(canvas,type){
 function changeLineWidth(){
 	var width = lineInfo.lineWidthInput.value;
 
-	generalLineStyleCode("lineWidth",width,false);
+	setCreateProperty("lineWidth",width,false);
 }
 
 function incDecWidth(incDec){
@@ -161,7 +161,7 @@ function incDecWidth(incDec){
 	}
 	lineInfo.lineWidthInput.value = newWidth;
 
-	generalLineStyleCode("lineWidth",newWidth,false);
+	setCreateProperty("lineWidth",newWidth,false);
 }
 
 function getLineWidth(){
@@ -186,7 +186,7 @@ function getLineWidth(){
 function changeMiterLimit(){
 	var width = lineInfo.lineMiterLimit.value;
 
-	generalLineStyleCode("miterLimit",width,false);
+	setCreateProperty("miterLimit",width,false);
 }
 
 function incDecMiter(incDec){
@@ -198,7 +198,7 @@ function incDecMiter(incDec){
 	}
 	lineInfo.lineMiterLimit.value = newWidth;
 
-	generalLineStyleCode("miterLimit",newWidth,false);
+	setCreateProperty("miterLimit",newWidth,false);
 }
 
 function getMiterLimit(){
@@ -219,7 +219,7 @@ function getMiterLimit(){
 
 ///////////////////////////
 //line style
-function generalLineStyleCode(type,value,quote){ // type = lineCap, lineJoin, lilneWidth, miterLimit
+function setCreateProperty(type,value,quote){ // type = lineCap, lineJoin, lilneWidth, miterLimit
 
 	var newVal = value.toString();
 	if(quote){
@@ -248,7 +248,7 @@ function generalLineStyleCode(type,value,quote){ // type = lineCap, lineJoin, li
 
 }
 
-function clearLineStyleLine(type){
+function removeProperty(type){
 
 	var code = getCode();
 	var newCode = code;

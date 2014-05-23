@@ -123,58 +123,27 @@ function initColor(context, canvas){
 }
 
 function getStrokeStyle(){
-	var code = getCode();
-	var codeTree = acorn.parse( code);
-	
-	var position = codeSearch( code, codeTree, "strokeStyle");
-
-	var val = "#000000";
-
-	if( position.start >=0 ){
-		val = code.substring(position.start,position.end);
-	}
-	return val;
+	return getProperty( "strokeStyle", "#000000" );
 }
 
-
 function updateStrokeStyle(color){
-	generalLineStyleCode("strokeStyle",color,true);
+	setCreateProperty("strokeStyle",color,true);
 }
 
 function getFillStyle(){
-	var code = getCode();
-	var codeTree = acorn.parse( code);
-	
-	var position = codeSearch( code, codeTree, "fillStyle");
-
-	var val = "#000000";
-
-	if( position.start >=0 ){
-		val = code.substring(position.start,position.end);
-	}
-	return val;
+	return getProperty( "fillStyle", "#000000" );
 }
 
 function updateFillStyle(color){
-	generalLineStyleCode("fillStyle",color,true);
+	setCreateProperty("fillStyle",color,true);
 }
 
 function getShadowStyle(){
-	var code = getCode();
-	var codeTree = acorn.parse( code);
-	
-	var position = codeSearch( code, codeTree, "shadowColor");
-
-	var val = "#000000";
-
-	if( position.start >=0 ){
-		val = code.substring(position.start,position.end);
-	}
-	return val;
+	return getProperty( "shadowColor", "#000000" );
 }
 
 function updateShadowStyle(color){
-	generalLineStyleCode("shadowColor",color,true);
+	setCreateProperty("shadowColor",color,true);
 }
 
 

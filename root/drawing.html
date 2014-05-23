@@ -256,18 +256,18 @@ function draw(context){
 <table>
 <tr><th>Line Width</th><td></td><td colspan=4><button id="plusLineWidth" onclick="incDecWidth(1)">+</button><input id="lineWidthInput" type="text" onchange="changeLineWidth()"><button id="minusLineWidth" onclick="incDecWidth(-1)">-</button></td></tr>
 <tr><th>Line Cap</th>
-<td><div class = "lineStyleBox" id="lineCapNone" onclick="clearLineStyleLine('lineCap')">none</div></td>
-<td><canvas class = "lineStyleBox" id="lineCapButt" width=75 height=50 title="line cap butt" onclick="generalLineStyleCode('lineCap','butt',true)"></canvas></td>
-<td><canvas class = "lineStyleBox" id="lineCapRound" width=75 height=50 title="line cap round" onclick="generalLineStyleCode('lineCap','round',true)"></canvas></td>
-<td><canvas class = "lineStyleBox" id="lineCapsquare" width=75 height=50 title="line cap square" onclick="generalLineStyleCode('lineCap','square',true)"></canvas></td>
+<td><div class = "lineStyleBox" id="lineCapNone" onclick="removeProperty('lineCap')">none</div></td>
+<td><canvas class = "lineStyleBox" id="lineCapButt" width=75 height=50 title="line cap butt" onclick="setCreateProperty('lineCap','butt',true)"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineCapRound" width=75 height=50 title="line cap round" onclick="setCreateProperty('lineCap','round',true)"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineCapsquare" width=75 height=50 title="line cap square" onclick="setCreateProperty('lineCap','square',true)"></canvas></td>
 </tr>
 <tr><th>Line Join</th>
-<td><div class = "lineStyleBox" id="lineJoinNone" onclick="clearLineStyleLine('lineJoin')">none</div></td>
-<td><canvas class = "lineStyleBox" id="lineJoinBevel" width=75 height=50 title="line cap bevel" onclick="generalLineStyleCode('lineJoin','bevel',true)"></canvas></td>
-<td><canvas class = "lineStyleBox" id="lineJoinRound" width=75 height=50 title="line cap round" onclick="generalLineStyleCode('lineJoin','round',true)"></canvas></td>
-<td><canvas class = "lineStyleBox" id="lineJoinMiter" width=75 height=50 title="line cap miter" onclick="generalLineStyleCode('lineJoin','miter',true)"></canvas></td>
+<td><div class = "lineStyleBox" id="lineJoinNone" onclick="removeProperty('lineJoin')">none</div></td>
+<td><canvas class = "lineStyleBox" id="lineJoinBevel" width=75 height=50 title="line cap bevel" onclick="setCreateProperty('lineJoin','bevel',true)"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineJoinRound" width=75 height=50 title="line cap round" onclick="setCreateProperty('lineJoin','round',true)"></canvas></td>
+<td><canvas class = "lineStyleBox" id="lineJoinMiter" width=75 height=50 title="line cap miter" onclick="setCreateProperty('lineJoin','miter',true)"></canvas></td>
 </tr>
-<tr><th>Miter Limit</th><td><div class = "lineStyleBox" id="miterLimitNone" onclick="clearLineStyleLine('miterLimit')">none</div></td>
+<tr><th>Miter Limit</th><td><div class = "lineStyleBox" id="miterLimitNone" onclick="removeProperty('miterLimit')">none</div></td>
 <td colspan=4><button id="plusMiterLimit" onclick="incDecMiter(1)">+</button><input id="miterLimitInput" type="text" value=10 onchange="changeMiterLimit()"><button id="minusMiterLimit" onclick="incDecMiter(-1)">-</button></td></tr>
 </table>
 </div>
