@@ -171,7 +171,7 @@ function myAnimate(e){
 
 	var moveInfo = updateCodeLine( state.code, [ mousex, mousey ],state);
 	
-	updateCodeLineMulti(state.code,moveInfo);
+	updateCodeMulti(state.code,moveInfo);
 	updatePseudoParse(moveInfo);
 	newCode = getCode();
 	drawCode( newCode );

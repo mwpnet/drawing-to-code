@@ -279,9 +279,8 @@ function getArgsToBeChanged(command){
 function getPosToInsertAt( codeTree ){
 	
 	var position = { 
-			lastPathCmd:-1,
-			lastStroke:-1,
-			lastFill:-1
+			lastPathCmd:-1, //last path command
+			lastDrawItem:-1 // last path command that a draw item
 			};
 
 	acorn.walk.simple( codeTree, {
@@ -290,24 +289,12 @@ function getPosToInsertAt( codeTree ){
 
 	var insertAt = 0;
 	
-	if( position.lastStroke < 0 && position.lastFill <0){
+	if( position.lastDrawItem>=0 ){
+		insertAt = position.lastDrawItem;
+	}
+	else {
 		insertAt = position.lastPathCmd;
-	}
-	if(  position.lastStroke >= 0 && position.lastFill <0){
-		insertAt = position.lastStroke;
-	}
-	if( position.lastStroke < 0 && position.lastFill >=0){
-		insertAt = position.lastFill;
-	}
-	if( position.lastStroke >= 0 && position.lastFill >=0){
-		if( position.lastStroke < position.lastFill){
-			insertAt = position.lastStroke;
-		}
-		else {
-			insertAt = position.lastFill;			
-		}
 	}	
-	
 	return insertAt;
 }
 
@@ -321,11 +308,11 @@ function getPosToInsertAtCallBack(node, position){
 		if( node.callee.object.name == "context" ){
 			position.lastPathCmd = node.end+1;
 		}
-		if( node.callee.property.name == "stroke"){
-			position.lastStroke = node.start;
-		}
-		else if( node.callee.property.name == "fill"){
-			position.lastFill = node.start;
+		
+		if( node.callee.property.name == "stroke" || node.callee.property.name == "fill" ||
+				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||
+				node.callee.property.name == "strokeText" || node.callee.property.name == "fillText"){
+			position.lastDrawItem = node.start;
 		}
 	}
 }

@@ -84,8 +84,6 @@ function init(){
 	
 	initColor(context, canvas );
 	initLineProp();
-
-	initFillStrokeProp();
 	initFontProp();
 	initShadowProp();
 }
@@ -154,7 +152,7 @@ function updateCode2(moveInfo){
 	}
 }
 
-function updateCodeLineOnce(moveInfo){
+function updateCodeOnce(moveInfo){
 	if(moveInfo.newVal != null){
 		var startPair = editor.posFromIndex( moveInfo.start );
 		var endPair = editor.posFromIndex( moveInfo.end );
@@ -163,7 +161,7 @@ function updateCodeLineOnce(moveInfo){
 	}
 }
 
-function updateCodeLineMulti(code, moveInfo){
+function updateCodeMulti(code, moveInfo){
 	if(moveInfo.length != 0){
 		for(var i=0; i<moveInfo.length; i++){
 			
