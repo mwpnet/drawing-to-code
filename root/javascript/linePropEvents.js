@@ -95,7 +95,6 @@ function changeLineWidth(){
 }
 
 function incDecWidth(incDec){
-
 	var width = parseInt( lineInfo.lineWidthInput.value );
 	var newWidth = width + incDec;
 	if(newWidth<1){
@@ -210,6 +209,141 @@ function clearLineStyleLine(type){
 	
 	drawEditHandles( context, codeTree,-1,-1);
 }
+
+function changeMiterLimit(){
+	var limit = lineInfo.lineMiterLimit.value;
+		
+	var code = getCode();
+	var codeLines = parseCode(code);
+	
+	var newCodeLines=codeLines;
+	
+	newCodeLines = updateMiterLimit(codeLines,limit);
+	var newCode = rejoinCode(newCodeLines);
+
+	updateCode(newCode);
+	drawCode( newCode );
+	
+	drawEditHandles( context, newCodeLines );
+	//drawLineJoin(lineInfo.lineJoinMiterCanvas,"miter",10,limit);
+
+}
+
+function incDecMiter(incDec){
+	var code = getCode();
+	var codeLines = parseCode(code);
+	
+	var limit = parseInt( lineInfo.lineMiterLimit.value );
+	var newlimit = limit + incDec;
+	if(newlimit<1){
+		newlimit=1;
+	}
+	lineInfo.lineMiterLimit.value = newlimit;
+
+	var newCodeLines=updateMiterLimit(codeLines,newlimit);
+	var newCode = rejoinCode(newCodeLines);
+
+	updateCode(newCode);
+	drawCode( newCode );
+	
+	drawEditHandles( context, newCodeLines );
+	//drawLineThickness(width);
+}
+
+///////////////////////////////////////
+//finds the line number of the last 
+//line width 
+/*function updateLineWidth( codeLines, newVal  ){
+	for( var i=codeLines.length-1; i>-1; i-- ){
+		var pos = codeLines[i].search( /(context\.lineWidth\s+=\s+")([a-zA-Z]+)("\s*;/ );
+
+		if( pos > -1 ){
+			codeLines[i].replace(/(\s*=\s*")([a-zA-Z]+)("\s*;)/, $1+newval+$3 );
+			return codeLines;
+		}		
+	}
+	return codeLines;
+}*/
+
+///////////////////////////////////////
+//finds the line number of the last 
+//line cap style 
+function updateLineCap( codeLines, newVal ){
+	var re = /^(\s*context\.lineCap\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
+	
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		codeLines[pos] = arr[1]+newVal+arr[3];
+		return codeLines;
+	}
+		
+	codeLines.splice(-pos,0,"\tcontext.lineCap = \""+newVal+"\";");
+
+	return codeLines;
+}
+
+///////////////////////////////////////
+//finds the line number of the last 
+//join syle 
+function updateLineJoin( codeLines, newVal){
+	var re = /^(\s*context\.lineJoin\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
+	
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		codeLines[pos] = arr[1]+newVal+arr[3];
+		return codeLines;
+	}
+
+	codeLines.splice(-pos,0,"\tcontext.lineJoin = \""+newVal+"\";");
+
+	return codeLines;
+}
+
+
+///////////////////////////////////////
+//finds the line number of the last 
+//join syle 
+function clearLineCap( codeLines){
+	var re = /^(\s*context\.lineCap\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
+	
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		codeLines.splice(pos,1);
+	}
+	return codeLines;
+}
+
+function clearLineJoin( codeLines){
+	var re = /^(\s*context\.lineJoin\s*=\s*\")([a-zA-Z0-9]+)(\"\s*;\s*)$/;
+	
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		codeLines.splice(pos,1);
+	}
+	return codeLines;
+}
+
+///////////////////////////////////////
+//finds the line number of the last 
+//miter limit 
+function updateMiterLimit( codeLines, newVal){
+	var re = /^(\s*context\.miterLimit\s*=\s*\"?)([0-9]+)(\"?\s*;\s*)$/;
+	
+	var pos = codeSearch( codeLines, re);
+	if(pos>=0){
+		var arr = re.exec(codeLines[pos]);
+		codeLines[pos] = arr[1]+newVal+arr[3];
+		return codeLines;
+	}
+
+	codeLines.splice(-pos,0,"\tcontext.miterLimit = "+newVal+";");
+
+	return codeLines;
+}
+
+
 
 ///////////////////////////////////////
 //
