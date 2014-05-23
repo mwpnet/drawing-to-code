@@ -278,21 +278,7 @@ function getArgsToBeChanged(command){
 // path command 
 function getPosToInsertAt( codeTree ){
 	
-	//position.secondToLastDrawItem
-	//position.lastDrawItem
-	// position.identifier -- property name
-	// position.assignment
-
-	var position = { 
-			secondToLastDrawItem: undefined,
-			lastDrawItem: undefined,
-			lastNoneDrawItem: undefined
-			};
-
-	acorn.walk.simple( codeTree, {
-		CallExpression: findLastTwoDrawItemsCallback
-		},undefined,position);
-
+	var position = findLastTwoDrawItems(codeTree);
 	return decodePositionToInsertAt(position,codeTree);
 }
 

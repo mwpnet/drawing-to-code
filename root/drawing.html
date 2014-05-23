@@ -32,8 +32,16 @@
 <script type="text/javascript" src="javascript/moveHandle.js"></script>
 <script type="text/javascript" src="javascript/addPathCommands.js"></script>
 
+<link rel=stylesheet href=thirdParty/codemirror.css>
+<script src=thirdParty/codemirror.js></script>
+<script src=thirdParty/mode/xml/xml.js></script>
+<script src=thirdParty/mode/javascript/javascript.js></script>
+<script src=thirdParty/mode/css/css.js></script>
+<script src=thirdParty/mode/htmlmixed/htmlmixed.js></script>
+
+<script type="text/javascript" src="javascript/drawItem.js"></script>
+
 <script type="text/javascript" src="javascript/linePropEvents.js"></script>
-<script type="text/javascript" src="javascript/fillStroke.js"></script>
 <script type="text/javascript" src="javascript/fontPropEvents.js"></script>
 
 <script type="text/javascript" src="javascript/colorBar.js"></script>
@@ -219,8 +227,8 @@ function draw(context){
 </div>
 
 <div id="drawItemPanel" class="panels">
-<button id="fill" onclick="addFill()">fillRect</button><br>
-<button id="stroke" onclick="addStroke()">strokeRect</button><br>
+<button id="fill" onclick="addFill()">fill</button><br>
+<button id="stroke" onclick="addStroke()">stroke</button><br>
 <button id="fillRectButton" onclick="addFillRect()">fillRect</button><br>
 <button id="strokeRectButton" onclick="addStrokeRect()">strokeRect</button><br>
 <button id="fillTextButton" onclick="addFillText()">fillText</button><br>
@@ -289,24 +297,27 @@ function draw(context){
 </div>
 
 <!--  font properties -->
-<div id="fontStylePanel" class="subPanel">
+<div id="fontStylePanel" class="subPanel" onchange="changeFont()">
+Font:<input id="fontInput" type="text" name="font">
 <table>
-<tr><th>Font</th><td><input type="text" name="font"></td></tr>
-<tr><th>Text Alignment</th><td>
-	<input type="radio" name="textAlign" value="left"><canvas class = "textAlignStyleBox" id="textAlignLeft" width=200 height=20 title="Text Alignment Left" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas>Left<br>
-	<input type="radio" name="textAlign" value="center"><canvas class = "textAlignStyleBox" id="textAlignCenter" width=200 height=20 title="Text Alignment Center" onclick="generalFontStyleCode('textAlignStyleBox','center',true)"></canvas>Center<br>
-	<input type="radio" name="textAlign" value="right"><canvas class = "textAlignStyleBox" id="textAlignRight" width=200 height=20 title="Text Alignment Right" onclick="generalFontStyleCode('textAlignStyleBox','right',true)"></canvas>Right<br>
-	<input type="radio" name="textAlign" value="start"><canvas class = "textAlignStyleBox" id="textAlignStart" width=200 height=20 title="Text Alignment Start" onclick="generalFontStyleCode('textAlignStyleBox','start',true)"></canvas>Start<br>
-	<input type="radio" name="textAlign" value="end"><canvas class = "textAlignStyleBox" id="textAlignEnd" width=200 height=20 title="Text Alignment End" onclick="generalFontStyleCode('textAlignStyleBox','end',true)"></canvas>End<br>
-	</td></tr>
-<tr><th>BaseLine</th><td>
-	<input type="radio" name="textBaseline" value="alphabetic"><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxAlphabetic" width=200 height=40 title="Text BaseLine Alphabetic" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas>Alphabetic<br>
-	<input type="radio" name="textBaseline" value="top"><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxTop" width=200 height=40 title="Text BaseLine Top" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas>Top<br>
-	<input type="radio" name="textBaseline" value="hanging"><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxHanging" width=200 height=40 title="Text BaseLine Hanging" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas>Hanging<br>
-	<input type="radio" name="textBaseline" value="middle"><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxMiddle" width=200 height=40 title="Text BaseLine Middle" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas>Middle<br>
-	<input type="radio" name="textBaseline" value="ideographic"><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxIdeographic" width=200 height=40 title="Text BaseLine Ideographic" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas>Ideographic<br>
-	<input type="radio" name="textBaseline" value="bottom"><canvas class = "textBaselineStyleBox" id="textAligtextBaselineStyleBoxBottom" width=200 height=40 title="Text BaseLine Bottom" onclick="generalFontStyleCode('textAlignStyleBox','left',true)"></canvas>Bottom<br>
-	</td></tr>
+
+<tr><th>Text Alignment</th></tr>
+	<tr><td><div class = "textAlignStyleBox" id="textAlignNone" onclick="removeProperty('textAlign')">none</div></td></tr>
+	<tr><td><canvas class = "textAlignStyleBox" id="textAlignLeft" width=200 height=20 title="Text Alignment Left" onclick="setCreateProperty('textAlign','left',true)"></canvas>Left</td></tr>
+	<tr><td><canvas class = "textAlignStyleBox" id="textAlignCenter" width=200 height=20 title="Text Alignment Center" onclick="setCreateProperty('textAlign','center',true)"></canvas>Center</td></tr>
+	<tr><td><canvas class = "textAlignStyleBox" id="textAlignRight" width=200 height=20 title="Text Alignment Right" onclick="setCreateProperty('textAlign','right',true)"></canvas>Right</td></tr>
+	<tr><td><canvas class = "textAlignStyleBox" id="textAlignStart" width=200 height=20 title="Text Alignment Start" onclick="setCreateProperty('textAlign','start',true)"></canvas>Start</td></tr>
+	<tr><td><canvas class = "textAlignStyleBox" id="textAlignEnd" width=200 height=20 title="Text Alignment End" onclick="setCreateProperty('textAlign','end',true)"></canvas>End</td></tr>
+</table>
+<table>
+<tr><th>BaseLine</th></tr>
+	<tr><td><div class = "textBaselineStyleBox" id="textBaselineStyleBoxNone" onclick="removeProperty('textBaseline')">none</div></td></tr>
+	<tr><td><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxBottom" width=200 height=40 title="Text BaseLine Bottom" onclick="setCreateProperty('textBaseline','bottom',true)"></canvas>Bottom</td></tr>
+	<tr><td><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxIdeographic" width=200 height=40 title="Text BaseLine Ideographic" onclick="setCreateProperty('textBaseline','ideographic',true)"></canvas>Ideographic</td></tr>
+	<tr><td><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxAlphabetic" width=200 height=40 title="Text BaseLine Alphabetic" onclick="setCreateProperty('textBaseline','alphabetic',true)"></canvas>Alphabetic</td></tr>
+	<tr><td><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxMiddle" width=200 height=40 title="Text BaseLine Middle" onclick="setCreateProperty('textBaseline','middle',true)"></canvas>Middle</td></tr>
+	<tr><td><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxHanging" width=200 height=40 title="Text BaseLine Hanging" onclick="setCreateProperty('textBaseline','hanging',true)"></canvas>Hanging</td></tr>
+	<tr><td><canvas class = "textBaselineStyleBox" id="textBaselineStyleBoxTop" width=200 height=40 title="Text BaseLine Top" onclick="setCreateProperty('textBaseline','top',true)"></canvas>Top</td></tr>
 </table>
 </div>
 

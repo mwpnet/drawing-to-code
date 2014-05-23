@@ -186,6 +186,11 @@ function drawCode( code ){
 	catch(err){
 		document.getElementById('errorBox').innerHTML = err.message;
 	}
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    context.save();
+	draw(context);
+	context.restore();
 
 }
 
@@ -219,8 +224,9 @@ function onExecuteCode(){
 	if(showHandles){
 		drawEditHandles( context, codeTree,mousex,mousey );
 	}
-	strokeCB.rescan();
-	fillCB.rescan();
+	strokeCB.updateBars( getStrokeStyle() );
+	fillCB.updateBars( getFillStyle() );
+	shadowCB.updateBars( getShadowStyle() );
 	return false;
 }
 

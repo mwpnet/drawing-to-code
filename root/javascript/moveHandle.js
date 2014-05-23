@@ -107,6 +107,17 @@ function updateCodeLine(code,newCoords,info){
 			destArgs: args[4]
 		}];
 	}
+	else if( type == "widthHeight"){
+		// need to do it in reverse so range doesn't get out of sync with string
+		for( var i=destArgs.length-1; i>=0; i--){ 
+			newCodeInfoList.push({
+				start: args[destArgs[i]].start,
+				end: args[destArgs[i]].end,
+				newVal: newCoords[i] - args[srcArgs[i]].value,
+				destArgs: args[destArgs[ i ]]
+			});
+		}
+	}
 	else if( type == "line"){
 		// need to do it in reverse so range doesn't get out of sync with string
 		for( var i=destArgs.length-1; i>=0; i--){ 
