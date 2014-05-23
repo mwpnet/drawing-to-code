@@ -54,25 +54,36 @@ function updateCodeLine(code,newCoords,info){
 	var args = info.arguments;
 
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
-		return code;
+		return [];
 	}
 
+	//var startPair = editor.posFromIndex( moveInfo.start );
+	//var endPair = editor.posFromIndex( moveInfo.end );
+
+	//editor.replaceRange( moveInfo.newVal.toString(), startPair, endPair );
+	var newCodeInfoList=[];
+	
 	if( type =="rad"){
 		r=distance(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value); 
 		r=Math.round(r);// should be an integer
-		var start = args[destArgs[0]].start;
-		var end = args[destArgs[0]].end;
-		
-		code = code.substring(0,start) + r.toString() + code.substring(end);
+
+		newCodeInfoList = [ {
+			start: args[destArgs[0]].start,
+			end: args[destArgs[0]].end,
+			newVal: r,
+			destArgs: args[destArgs[0]]
+		}];
 	}
 	else if( type =="ang"){
 		ang = xyToAngle(newCoords[0],newCoords[1],args[srcArgs[0]].value,args[srcArgs[1]].value);
 		ang = ang.toFixed(4); // don't want 20 decimal places
 
-		var start = args[destArgs[0]].start;
-		var end = args[destArgs[0]].end;
-		
-		code = code.substring(0,start) + ang.toString() + code.substring(end);
+		newCodeInfoList = [ {
+			start: args[destArgs[0]].start,
+			end: args[destArgs[0]].end,
+			newVal: ang,
+			destArgs: args[destArgs[0]]
+		}];
 	}
 	else if( type=="rad2"){
 		var x0 = info.xOldMove;
@@ -84,28 +95,31 @@ function updateCodeLine(code,newCoords,info){
 
 		//destArgs: [4],
 		//srcArgs: [0,1,2,3,4],
-		var startpoint = [info.xOld,info.yOld];
 		var d=distance(x1,y1,newCoords[0],newCoords[1]);
 		var r=computRad( x0,y0,x1,y1,x2,y2,d);
 
 		r=Math.round(r);// should be an integer
 
-		var start = args[4].start;
-		var end = args[4].end;
-		
-		code = code.substring(0,start) + r.toString() + code.substring(end);
+		newCodeInfoList = [ {
+			start: args[4].start,
+			end: args[4].end,
+			newVal: r,
+			destArgs: args[4]
+		}];
 	}
 	else if( type == "line"){
 		// need to do it in reverse so range doesn't get out of sync with string
 		for( var i=destArgs.length-1; i>=0; i--){ 
-			var start = args[destArgs[i]].start;
-			var end = args[destArgs[i]].end;
-			code = code.substring(0,start) + newCoords[ i ].toString() + code.substring(end);
-			document.getElementById('errorBox').innerHTML = args[destArgs[0]].start+","+args[destArgs[0]].end+"\n";
+			newCodeInfoList.push({
+				start: args[destArgs[i]].start,
+				end: args[destArgs[i]].end,
+				newVal: newCoords[ i ],
+				destArgs: args[destArgs[ i ]]
+			});
 		}
 	}
 
-	return code;
+	return newCodeInfoList;
 }
 	 
 
@@ -141,15 +155,17 @@ function updateCodeLineOnce(code,newCoords,info){
 	
 
 	if( typeof(destArgs) == "undefined" || destArgs.length ==0){
-		return code;
+		return undefined;
 	}
 
-	var newCode = code;
+	var newCodeInfo={};
+
 	if( type == "truefalse"){
-		var start = args[destArgs[0]].start;
-		var end = args[destArgs[0]].end;
-		var newval = ! args[srcArgs[0]].value;
-		newCode = code.substring(0,start) + newval.toString() + code.substring(end);
+		newCodeInfo = {
+				start: args[destArgs[0]].start,
+				end: args[destArgs[0]].end,
+				newVal: ! args[srcArgs[0]].value
+		};
 	}
-	return newCode;
+	return newCodeInfo;
 }

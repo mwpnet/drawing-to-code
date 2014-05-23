@@ -85,8 +85,9 @@ function init(){
 	initColor(context, canvas );
 	initLineProp();
 
-	onExecuteCode();
-	
+	initFillStrokeProp();
+	initFontProp();
+	initShadowProp();
 }
 
 ///////////////////////////////////////
@@ -127,6 +128,48 @@ function getCode(){
 function updateCode(newCode){
 	if(newCode != null){
 		codeBlock.value = newCode;
+	}
+}
+
+function updateCode2(moveInfo){
+	/**var moveInfo = {
+			destArgs: argsIndex,
+			srcArgs: argsIndex,
+			type: "line",
+			xOld: x2,
+			yOld: y2,
+			
+			newCode: newcode,
+			newCodeLine: myNewCodeLine,
+			insertAt: insertAt
+	};**/
+
+	
+	
+	if(moveInfo.newCodeLine != null){
+		var newLinePosPair = editor.posFromIndex( moveInfo.insertAt );
+		
+		editor.replaceRange( moveInfo.newCodeLine, newLinePosPair);
+		//editor.setCursor(newLinePosPair);
+	}
+}
+
+function updateCodeLineOnce(moveInfo){
+	if(moveInfo.newVal != null){
+		var startPair = editor.posFromIndex( moveInfo.start );
+		var endPair = editor.posFromIndex( moveInfo.end );
+
+		editor.replaceRange( moveInfo.newVal.toString(), startPair, endPair );
+	}
+}
+
+function updateCodeLineMulti(code, moveInfo){
+	if(moveInfo.length != 0){
+		for(var i=0; i<moveInfo.length; i++){
+			
+			code = code.substring(0,moveInfo[i].start) + moveInfo[i].newVal.toString() + code.substring(moveInfo[i].end);
+			editor.setValue( code );
+		}
 	}
 }
 
