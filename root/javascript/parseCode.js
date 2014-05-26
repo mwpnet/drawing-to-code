@@ -22,6 +22,27 @@
 //					CallExpression: findLastTwoDrawItemsCallback
 //			},undefined,position);
 
+function findLastTwoDrawItems( codeTree ){
+	
+	//position.secondToLastDrawItem
+	//position.lastDrawItem
+	// position.identifier -- property name
+	// position.assignment
+
+	var position = { 
+			secondToLastDrawItem: undefined,
+			lastDrawItem: undefined,
+			lastNoneDrawItem: undefined
+			};
+
+	acorn.walk.simple( codeTree, {
+		CallExpression: findLastTwoDrawItemsCallback
+		},undefined,position);
+
+	return position;
+}
+
+
 function findLastTwoDrawItemsCallback(node, position){
 	//position.secondToLastDrawItem
 	//position.lastDrawItem
@@ -29,7 +50,7 @@ function findLastTwoDrawItemsCallback(node, position){
 	
 	if( node.type == "CallExpression" && node.callee.object.name == "context" ){
 		if( node.callee.property.name == "stroke" || node.callee.property.name == "fill" ||
-				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||
+				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||node.callee.property.name == "clearRect" ||
 				node.callee.property.name == "strokeText" || node.callee.property.name == "fillText"){
 			position.secondToLastDrawItem = position.lastDrawItem;
 			position.lastDrawItem = node;
@@ -74,8 +95,8 @@ function setCreateProperty(type,value,quote){ // type = lineCap, lineJoin, lilne
 
 	var newCode = code;
 	
-	if( position.rawValue != undefined ){
-		newCode = code.substring(0,position.rawValue.start) + newVal + code.substring(position.rawValue.end);
+	if( position.valuePart != undefined ){
+		newCode = code.substring(0,position.valuePart.start) + newVal + code.substring(position.valuePart.end);
 	}
 	else {
 		var position2 = { 
@@ -140,7 +161,7 @@ function findPropertyCallBack(node, position){
 	
 	// position.identifier -- property name
 	// position.assignment
-	// position.rawValue
+	// position.valuePart
 	// position.value
 	
 	var identifier = position.identifier;
@@ -148,7 +169,7 @@ function findPropertyCallBack(node, position){
 	if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" && node.left.object.name == "context" ){
 		if( identifier == undefined || node.left.property.name == identifier ){
 			position.assignment = node;
-			position.rawValue = node.right;
+			position.valuePart = node.right;
 			
 			if(node.right.type == "Literal"){
 				position.value = node.right.value;

@@ -453,6 +453,71 @@ function drawArc(context, cx,cy,r, startAngle, endAngle, ccw, newEndX,newEndY,mo
 	};
 }
 
+///////////////////////////////////////
+//draw the handles from fillRect() and strokeRect()
+//if the mouse is in a control handle,
+//returns the information needed to 
+//change the the corresponding 
+//arguments.
+//
+function drawFillStrokeRect(context,x,y,w,h,mousex,mousey){
+	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
+	var mouseInWidthHeight  = drawControlePointHandle( context,x+w,y+h,mousex,mousey );
+	
+	if( mouseInBox ){
+		return {
+			mouseGrabed: true,
+			destArgs: [0,1],
+			srcArgs: [0,1],
+			type:"line"
+		};
+		
+	}
+	else if( mouseInWidthHeight ){
+		return {
+			mouseGrabed: true,
+			destArgs: [2,3],
+			srcArgs: [0,1],
+			type:"widthHeight"
+		};
+		
+	}
+	
+	return {
+		mouseGrabed: false,
+	};
+}
+
+
+///////////////////////////////////////
+//draw the handles from fillText() and StrokeText()
+//if the mouse is in a control handle,
+//returns the information needed to 
+//change the the corresponding 
+//arguments.
+//
+function drawFillStrokeText(context,text,x,y,mousex,mousey){
+	var mouseInBox = drawPathBox(context,x,y,mousex,mousey);
+
+	var h = 20;
+	var w = 50; //replace with measureText() eventually
+	drawLinesToConrolePoints(context,x,y,x+w,y);
+	drawLinesToConrolePoints(context,x,y+h,x,y-h);
+	
+	if( mouseInBox ){
+		return {
+			mouseGrabed: true,
+			destArgs: [1,2],
+			srcArgs: [1,2],
+			type:"line"
+		};
+		
+	}
+
+	return {
+		mouseGrabed: false,
+	};
+}
 
 /**************************************
  * The actual part that parses the code
@@ -562,6 +627,16 @@ function drawEditHandlesCallback( node, moveInfo){
 			endCo = angleToXY(ang,centerX,centerY,r);
 
 			localMoveInfo = drawArc( context, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value, endCo[0], endCo[1],mousex,mousey );
+		}
+		else if( name == "fillRect" || name == "strokeRect" || name == "clearRect" ){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			localMoveInfo = drawFillStrokeRect(context,args[0].value, args[1].value, args[2].value, args[3].value,mousex,mousey);
+			endCo = [ args[0].value,args[1].value ];
+		}
+		else if( name == "fillText" || name == "strokeText" ){
+			startCo = [ moveInfo.xOld, moveInfo.yOld ];
+			localMoveInfo = drawFillStrokeText(context,args[0].value, args[1].value, args[2].value,mousex,mousey);
+			endCo = [ args[0].value,args[1].value ];
 		}
 		
 		moveInfo.xOld=endCo[0];
