@@ -17,10 +17,60 @@
 
 
 
-// finds the last and second to last drawing item
-//   for acorn.walk.simple( codeTree, {
-//					CallExpression: findLastTwoDrawItemsCallback
-//			},undefined,position);
+function findTwoDrawItemsAroundPos( codeTree, pos ){
+	
+	//position.secondToLastDrawItem
+	//position.lastDrawItem
+	// position.identifier -- property name
+	// position.assignment
+
+	var pair = { 
+			position: pos,
+			start: undefined,
+			end: undefined,
+			prevDrawItem: undefined,
+			drawItem: undefined,
+			found: false
+			};
+
+	acorn.walk.simple( codeTree, {
+		CallExpression: findLastTwoDrawItemsCallback
+		},undefined,pair);
+
+	return pair;
+}
+
+function findTwoDrawItemsAroundPosCallback(node, pair){
+	if( position.found ){
+		return;
+	}
+	
+	if( node.type == "CallExpression" && node.callee.object.name == "context" ){
+		if( node.callee.property.name == "stroke" || node.callee.property.name == "fill" ||
+				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||node.callee.property.name == "clearRect" ||
+				node.callee.property.name == "strokeText" || node.callee.property.name == "fillText"){
+
+			if( position.ps <= node.callee.property.end ){
+				position.drawItem = node;
+				position.end = node.callee.end;
+				position.found = true;
+			}
+			else {
+				position.prevDrawItem = node;
+				position.start = node.callee.end;
+			}
+			
+			position.secondToLastDrawItem = position.lastDrawItem;
+			position.lastDrawItem = node;
+		}
+	}
+}
+
+
+//finds the last and second to last drawing item
+//for acorn.walk.simple( codeTree, {
+//				CallExpression: findLastTwoDrawItemsCallback
+//		},undefined,position);
 
 function findLastTwoDrawItems( codeTree ){
 	
@@ -181,6 +231,49 @@ function findPropertyCallBack(node, position){
 	}
 }
 
+////////////////////////////////
+//
+function findAllPropertyFromTo( codeTree, fromTo ){ //codeSearch
+	
+	var position = { 
+			identifiers: [],
+			start: fromTo.start,
+			end: fromTo.end,
+			};
+
+	acorn.walk.simple( codeTree, {
+		AssignmentExpression: findAllPropertyFromToCallBack
+		},undefined,position);
+
+	return position;
+}
+
+function findAllPropertyFromToCallBack(node, position){
+	
+	if( node.end < position.start || position.end < node.start ){
+		return;
+	}
+
+	if(node.type == "AssignmentExpression" && node.operator== "=" && node.left.type == "MemberExpression" && node.left.object.name == "context" ){
+		var val;
+
+		if( node.right.type == "Literal"){
+			val = node.right.value;
+		}
+		else if( node.right.type == "UnaryExpression" && node.right.argument.type == "Literal"){
+			val = -node.right.argument.value;
+		}
+		else {
+			// not a literal value. don't store it
+			return;
+		}
+
+		position.identifiers.push( [ node.left.property.name, val, node ] );
+	}
+}
+
+//////////////////////////////////////
+//
 function endOfFunctonPosition(codeTree){
 	return codeTree.end-1;
 }

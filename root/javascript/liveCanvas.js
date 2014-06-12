@@ -87,6 +87,7 @@ function init(){
         clearTimeout(delay);
         delay = setTimeout(onExecuteCode, 500);
      });
+    //editor.on("cursorActivity",getproperties);
 
 	showButton = document.getElementById('showHandls');
 	showButton.onclick = showControlHandles;
@@ -233,9 +234,46 @@ function onExecuteCode(){
 	if(showHandles){
 		drawEditHandles( context, codeTree,mousex,mousey );
 	}
+
+	updateLineWidth();
+	updateMiterLimit();
+	updateShadowOffsetX();
+	updateShadowOffsetY();
+	
 	strokeCB.updateBars( getStrokeStyle() );
 	fillCB.updateBars( getFillStyle() );
 	shadowCB.updateBars( getShadowStyle() );
 	return false;
 }
+
+/*
+function getproperties(){
+	var code = getCode();
+
+	var codeTree = acorn.parse( code);
+	var pos = editor.indexFromPos( editor.getCursor() );
+	//position: pos,
+	//start: undefined,
+	//end: undefined,
+	//prevDrawItem: undefined,
+	//drawItem: undefined,
+	//found: false
+
+	// there's probably a more compace way of doing this.
+	var pair = findTwoDrawItemsAroundPos( codeTree, pos );
+	var findAllPropertyFromTo( code, codeTree, pair );
+	
+	
+}
+*/
+
+
+
+
+
+
+
+
+
+
 

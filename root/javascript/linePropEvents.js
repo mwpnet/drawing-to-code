@@ -110,7 +110,9 @@ function getLineWidth(){
 	return getProperty( "lineWidth", 5);
 }
 
-
+function updateLineWidth(){
+	lineInfo.lineWidthInput.value = getLineWidth();
+}
 
 ////////////////
 //miter limit
@@ -134,4 +136,8 @@ function incDecMiter(incDec){
 
 function getMiterLimit(){
 	return getProperty( "miterLimit", 5);
+}
+
+function updateMiterLimit(){
+	lineInfo.lineMiterLimit.value = getMiterLimit();
 }

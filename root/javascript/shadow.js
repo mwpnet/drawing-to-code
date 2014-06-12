@@ -71,3 +71,15 @@ function getShadowOffset( property ){
 	return getProperty( property, 0);
 }
 
+function updateShadowOffsetX(){
+	shadowInfo.shadowOffsetX.value = getShadowOffset("shadowOffsetX");
+}
+
+function updateShadowOffsetY(){
+	shadowInfo.shadowOffsetY.value = getShadowOffset("shadowOffsetY");
+}
+
+function updateShadowOffsetY(){
+	shadowInfo.shadowBlur.value = getShadowOffset("shadowBlur");
+}
+
