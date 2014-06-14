@@ -58,8 +58,8 @@ function incDecShadowBlur(incDec){
 
 	var blur = parseInt( shadowInfo.shadowBlur.value );
 	var newBlur = blur + incDec;
-	if(newBlur<1){
-		newBlur=1;
+	if(newBlur<0){
+		newBlur=0;
 	}
 	shadowInfo.shadowBlur.value = newBlur;
 

@@ -18,12 +18,6 @@
 
 
 function findTwoDrawItemsAroundPos( codeTree, pos ){
-	
-	//position.secondToLastDrawItem
-	//position.lastDrawItem
-	// position.identifier -- property name
-	// position.assignment
-
 	var pair = { 
 			position: pos,
 			start: undefined,
@@ -34,14 +28,14 @@ function findTwoDrawItemsAroundPos( codeTree, pos ){
 			};
 
 	acorn.walk.simple( codeTree, {
-		CallExpression: findLastTwoDrawItemsCallback
+		CallExpression: findTwoDrawItemsAroundPosCallback
 		},undefined,pair);
 
 	return pair;
 }
 
 function findTwoDrawItemsAroundPosCallback(node, pair){
-	if( position.found ){
+	if( pair.found ){
 		return;
 	}
 	
@@ -50,18 +44,16 @@ function findTwoDrawItemsAroundPosCallback(node, pair){
 				node.callee.property.name == "strokeRect" || node.callee.property.name == "fillRect" ||node.callee.property.name == "clearRect" ||
 				node.callee.property.name == "strokeText" || node.callee.property.name == "fillText"){
 
-			if( position.ps <= node.callee.property.end ){
-				position.drawItem = node;
-				position.end = node.callee.end;
-				position.found = true;
+			if( pair.position <= node.callee.property.end ){
+				pair.drawItem = node;
+				pair.end = node.callee.end;
+				pair.found = true;
 			}
 			else {
-				position.prevDrawItem = node;
-				position.start = node.callee.end;
+				pair.prevDrawItem = node;
+				pair.start = node.callee.end;
 			}
 			
-			position.secondToLastDrawItem = position.lastDrawItem;
-			position.lastDrawItem = node;
 		}
 	}
 }
@@ -114,13 +106,18 @@ function findLastTwoDrawItemsCallback(node, position){
 /*********************************
 *************************************/
 
-
-function getProperty( property, defaultValue ){
+function getProperty( property, defaultValue, pos ){
 
 	var code = getCode();
 	var codeTree = acorn.parse( code);
 
-	var position = findProperty( code, codeTree,property);
+	if( typeof pos == 'undefined' ){
+		pos = editor.indexFromPos( editor.getCursor() );
+	}
+
+	var fromTo = findTwoDrawItemsAroundPos(codeTree, pos );
+	
+	var position = findProperty( code, codeTree,property, fromTo);
 
 	var val = defaultValue;
 	if( position.valuePart != undefined ){
@@ -130,7 +127,7 @@ function getProperty( property, defaultValue ){
 }
 
 
-function setCreateProperty(type,value,quote){ // type = lineCap, lineJoin, lilneWidth, miterLimit
+function setCreateProperty(type,value,quote, pos){ // type = lineCap, lineJoin, lilneWidth, miterLimit
 
 	var newVal = value.toString();
 	if(quote){
@@ -141,7 +138,14 @@ function setCreateProperty(type,value,quote){ // type = lineCap, lineJoin, lilne
 
 	var codeTree = acorn.parse( code);
 
-	var position = findProperty( code, codeTree, type);
+	var cursor = editor.getCursor();
+	if( typeof pos == 'undefined' ){
+		pos = editor.indexFromPos( cursor );
+	}
+
+	var fromTo = findTwoDrawItemsAroundPos(codeTree, pos );
+
+	var position = findProperty( code, codeTree, type, fromTo);
 
 	var newCode = code;
 	
@@ -149,40 +153,44 @@ function setCreateProperty(type,value,quote){ // type = lineCap, lineJoin, lilne
 		newCode = code.substring(0,position.valuePart.start) + newVal + code.substring(position.valuePart.end);
 	}
 	else {
-		var position2 = { 
-				secondToLastDrawItem: undefined,
-				lastDrawItem: undefined,
-				lastNoneDrawItem: undefined
-				};
-
-		acorn.walk.simple( codeTree, {
-			CallExpression: findLastTwoDrawItemsCallback
-			},undefined,position2);
-		newCode = code.substring(0,position2.lastDrawItem.start) + "\tcontext." + type + " = " + newVal + ";\n" + code.substring(position2.lastDrawItem.start);
-	}
+		newCode = code.substring(0,fromTo.drawItem.start) + "context." + type + " = " + newVal + ";\n" + code.substring(fromTo.drawItem.start);
+		var lineCh = editor.posFromIndex(fromTo.drawItem.start+1);
+		editor.indentLine( lineCh.line, "prev");
+		}
 
 	updateCode(newCode);
+	editor.setCursor(cursor);
+
 	drawCode( newCode );
 	
 	drawEditHandles( context, codeTree,-1,-1);
 
 }
 
-function removeProperty(type){
+function removeProperty( type, pos ){
 
 	var code = getCode();
 
 	var codeTree = acorn.parse( code);
 
-	var position = findProperty( code, codeTree, type);
+	var cursor = editor.getCursor();
+	if( typeof pos == 'undefined' ){
+		pos = editor.indexFromPos( cursor );
+	}
+
+	var fromTo = findTwoDrawItemsAroundPos(codeTree, pos );
+
+	var position = findProperty( code, codeTree, type, fromTo);
 
 	var newCode = code;
-	if( position.lineStart >=0 ){
+	if( position.assignment.start >=0 ){
 		// the +1 is to try to handle the folowing semi-collen
 		newCode = code.substring(0,position.assignment.start) + code.substring(position.assignment.end+1);
 	}
 
 	updateCode(newCode);
+	editor.setCursor(editor.posFromIndex(position.assignment.start));
+
 	drawCode( newCode );
 	
 	drawEditHandles( context, codeTree,-1,-1);
@@ -191,12 +199,14 @@ function removeProperty(type){
 
 ///////////////////////////////////////
 //
-function findProperty( code, codeTree, property ){ //codeSearch
+function findProperty( code, codeTree, property, fromTo ){ //codeSearch
 	
 	var position = { 
 			identifier: property, // the identifier we're looking for
 			assignment: undefined,
 			valuePart: undefined,
+			start: fromTo.start,
+			end: fromTo.end
 			};
 
 	acorn.walk.simple( codeTree, {
@@ -209,10 +219,9 @@ function findProperty( code, codeTree, property ){ //codeSearch
 
 function findPropertyCallBack(node, position){
 	
-	// position.identifier -- property name
-	// position.assignment
-	// position.valuePart
-	// position.value
+	if( node.end < position.start || position.end < node.start ){
+		return;
+	}
 	
 	var identifier = position.identifier;
 	
@@ -234,9 +243,10 @@ function findPropertyCallBack(node, position){
 ////////////////////////////////
 //
 function findAllPropertyFromTo( codeTree, fromTo ){ //codeSearch
+	console.log(fromTo);
 	
 	var position = { 
-			identifiers: [],
+			properties: [],
 			start: fromTo.start,
 			end: fromTo.end,
 			};
@@ -268,7 +278,7 @@ function findAllPropertyFromToCallBack(node, position){
 			return;
 		}
 
-		position.identifiers.push( [ node.left.property.name, val, node ] );
+		position.properties.push( [ node.left.property.name, val, node ] );
 	}
 }
 
