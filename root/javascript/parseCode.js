@@ -288,4 +288,58 @@ function endOfFunctonPosition(codeTree){
 	return codeTree.end-1;
 }
 
+//////////////////////////////////////
+//
+function findStatementStart(codeTree, pos){
+	
+	var start = { 
+			position: pos,
+			start: undefined,
+			node:undefined,
+			found: false,
+			lastStart: undefined,
+			lastEnd:undefined,
+			};
+
+
+	acorn.walk.simple( codeTree, {
+		ExpressionStatement: findStatementStartCallback,
+		FunctionDeclaration: findStatementFirstStart
+		},undefined,start);
+	return start;
+}
+
+function findStatementStartCallback(node, start){
+	if( start.found ){
+		return;
+	}
+	
+	if( start.lastEnd<= start.position && start.position <=node.end ){
+		start.start = start.lastEnd+1;
+		start.node=node;
+		start.found = true;
+	}
+	start.lastEnd = node.end;
+	start.lastStart = node.start;
+}
+
+function findStatementFirstStart(node, start){
+	console.debug(node);
+	if( !start.found && node.id.name == "draw"){
+		if( node.body.body[0].start<= start.position && start.position <= node.body.end-1 ){
+			start.start = node.body.body[0].start;
+			start.found = true;
+		}
+		else {
+			start.start = node.body.end-1;
+			start.found = true;
+		}
+	}
+}
+
+
+
+
+
+
 

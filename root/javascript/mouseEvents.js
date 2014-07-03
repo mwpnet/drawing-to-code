@@ -97,11 +97,15 @@ function myOnMouseDown(e) {
 	var moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 			
 	if( ! moveInfo.mouseGrabed ){ // click not in controle handle
-		var newMoveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state.command);
+		var cursor = editor.getCursor();
+		cursor.ch=0;
+		var pos = editor.indexFromPos( cursor );
+
+		var newMoveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state.command,pos);
 
 		//updateCode( newMoveInfo.newcode );
 		updateCode2( newMoveInfo );
-
+		editor.setCursor( { line: cursor.line, ch:0 });
 		code = newMoveInfo.newCode;
 
 		codeTree = acorn.parse( code);
@@ -123,6 +127,7 @@ function myOnMouseDown(e) {
 	state.arguments = moveInfo.arguments;
 	state.code = code;
 	state.codeTree = codeTree;
+	state.cursor = editor.getCursor();
 
 	if( moveInfo.mouseGrabed && moveInfo.type == "truefalse" ){
 
@@ -152,6 +157,9 @@ function myOnMouseDown(e) {
 // stop animating when mouse released
 function myOnMouseUp(e){
 	keepAnimating = false;
+	editor.focus();
+	editor.setCursor(state.cursor);
+	console.log(state.cursor);
 }
 
 ///////////////////////////////////////
@@ -169,6 +177,13 @@ function myOnMouseMove(e){
 // if it should keep animating.
 function myAnimate(e){
 
+	if( !keepAnimating){
+		state.destArgs = undefined;
+		state.srcArgs = undefined;
+		state.type = undefined;
+		return;
+	}
+
 	var moveInfo = updateCodeLine( state.code, [ mousex, mousey ],state);
 	
 	updateCodeMulti(state.code,moveInfo);
@@ -179,14 +194,7 @@ function myAnimate(e){
 	moveInfo = drawEditHandles( context, state.codeTree, mousex,mousey);
 	
 	////////////
-	if( keepAnimating){
-		requestAnimFrame( myAnimate);
-	}
-	else {
-		state.destArgs = undefined;
-		state.srcArgs = undefined;
-		state.type = undefined;
-	}
+	requestAnimFrame( myAnimate);
 }
 
 

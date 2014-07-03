@@ -167,11 +167,13 @@ function updateCode2(moveInfo){
 }
 
 function updateCodeOnce(moveInfo){
+	var cursor = editor.getCursor();
 	if(moveInfo.newVal != null){
 		var startPair = editor.posFromIndex( moveInfo.start );
 		var endPair = editor.posFromIndex( moveInfo.end );
 
 		editor.replaceRange( moveInfo.newVal.toString(), startPair, endPair );
+		editor.setCursor( cusor );
 	}
 }
 

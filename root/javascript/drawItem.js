@@ -4,10 +4,18 @@ function addDrawItem(codeLine){
 
 	var codeTree = acorn.parse( code);
 
-	var insertAt = codeTree.body[0].end-1;
+	//var insertAt = codeTree.body[0].end-1;
 	
-	var newLinePosPair = editor.posFromIndex( insertAt );
+	var cursor = editor.getCursor();
+	var index = editor.indexFromPos( cursor );
+	
+	var insertAt = findStatementStart(codeTree, index);
+	
+	var newLinePosPair = editor.posFromIndex( insertAt.start );
 	editor.replaceRange( codeLine, newLinePosPair);
+	cursor.line++;
+	editor.setCursor(cursor);
+	editor.focus();
 
 	var code = getCode();
 	codeTree = acorn.parse( code);

@@ -276,10 +276,12 @@ function getArgsToBeChanged(command){
 ///////////////////////////////////////
 // finds the line number of the last 
 // path command 
-function getPosToInsertAt( codeTree ){
+function getPosToInsertAt( codeTree, pos ){
 	
-	var position = findLastTwoDrawItems(codeTree);
+	var position = findTwoDrawItemsAroundPos( codeTree, pos );
 	return decodePositionToInsertAt(position,codeTree);
+	
+	//
 }
 
 //////////////////////////////////////
@@ -289,11 +291,11 @@ function decodePositionToInsertAt(position,codeTree){
 	
 	var insertAt = 0;
 	
-	if( position.lastDrawItem == undefined ){
+	if( typeof position.drawItem == "undefined" ){
 		insertAt = endOfFunctonPosition(codeTree);
 	}
 	else {
-		insertAt = position.lastDrawItem.start;
+		insertAt = position.drawItem.start;
 	}
 
 	return insertAt;
@@ -324,7 +326,11 @@ function decodePositionToInsertAt(position,codeTree){
 // end points, and the command selected
 // and returns the information needed 
 // to update the code.
-function addComandToCode(codeTree,code,x1,y1,x2,y2,command){
+function addComandToCode(codeTree,code,x1,y1,x2,y2,command,pos){
+
+	if( typeof pos == 'undefined' ){
+		pos = editor.indexFromPos( editor.getCursor() );
+	}
 
 	if( typeof(command) == 'undefined' || command == ""){
 		return {};
@@ -332,7 +338,7 @@ function addComandToCode(codeTree,code,x1,y1,x2,y2,command){
 
 	var myNewCodeLine = makeCodeLine(command,x1,y1,x2,y2);
 	
-    var insertAt = getPosToInsertAt(codeTree);
+    var insertAt = getPosToInsertAt(codeTree, pos);
     
     
 	var newcode = code.substring(0,insertAt) + myNewCodeLine + code.substring(insertAt);
