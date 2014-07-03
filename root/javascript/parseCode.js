@@ -301,45 +301,34 @@ function findStatementStart(codeTree, pos){
 			lastEnd:undefined,
 			};
 
-
-	acorn.walk.simple( codeTree, {
-		ExpressionStatement: findStatementStartCallback,
-		FunctionDeclaration: findStatementFirstStart
-		},undefined,start);
-	return start;
-}
-
-function findStatementStartCallback(node, start){
-	if( start.found ){
-		return;
+	var found = acorn.walk.findNodeAround( codeTree, pos, 'ExpressionStatement' );
+	if( typeof found != 'undefined'){
+		start.node = found.node;
+		start.start = found.node.start;
+		console.debug("aaa",start.start);
 	}
-	
-	if( start.lastEnd<= start.position && start.position <=node.end ){
-		start.start = start.lastEnd+1;
-		start.node=node;
-		start.found = true;
-	}
-	start.lastEnd = node.end;
-	start.lastStart = node.start;
-}
-
-function findStatementFirstStart(node, start){
-	console.debug(node);
-	if( !start.found && node.id.name == "draw"){
-		if( node.body.body[0].start<= start.position && start.position <= node.body.end-1 ){
-			start.start = node.body.body[0].start;
-			start.found = true;
+	else {
+		found =  acorn.walk.findNodeBefore(codeTree, pos, 'ExpressionStatement' );
+		if( typeof found != 'undefined'){
+			start.node = found.node;
+			start.start = found.node.end;
+			console.debug("bbb",start.start);
 		}
 		else {
-			start.start = node.body.end-1;
-			start.found = true;
+			found =  acorn.walk.findNodeAfter(codeTree, pos, 'ExpressionStatement' );
+			if( typeof found != 'undefined'){
+				start.node = found.node;
+				start.start = found.node.start;
+				console.debug("ccc",start.start);
+			}
+			else {
+				found = acorn.walk.findNodeAround( codeTree, pos, 'FunctionDeclaration' );
+				start.node = found.node;
+				start.start = found.node.body.body[ found.node.body.body.length-1  ].end;
+				console.debug("ddd",start.start);
+			}
 		}
 	}
+	return start;
 }
-
-
-
-
-
-
 
