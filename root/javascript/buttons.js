@@ -31,36 +31,14 @@
 // exactly like what's drawn
 //
 function buttonSetUp(){
-	var button = document.getElementById("moveToButton");
-	var buttonContext = button.getContext('2d');
-	moveToButton(buttonContext);
-
-	button = document.getElementById("lineToButton");
-	buttonContext = button.getContext('2d');
-	lineToButton(buttonContext);
-
-	button = document.getElementById("bezierCurveToButton");
-	buttonContext = button.getContext('2d');
-	bezierCurveToButton(buttonContext);
-
-	button = document.getElementById("quadraticCurveToButton");
-	buttonContext = button.getContext('2d');
-	quadraticCurveToButton(buttonContext);
-
-	button = document.getElementById("arcToButton");
-	buttonContext = button.getContext('2d');
-	arcToButton(buttonContext);
-
-	button = document.getElementById("arcButton");
-	buttonContext = button.getContext('2d');
-	arcButton(buttonContext);
-
-	button = document.getElementById("closePathButton");
-	buttonContext = button.getContext('2d');
-	closePathButton(buttonContext);
-
-	// set up initial button press
-	onClickMoveTo();
+	beginPathButton();
+	moveToButton();
+	lineToButton();
+	bezierCurveToButton();
+	quadraticCurveToButton();
+	arcToButton();
+	arcButton();
+	closePathButton();
 }
 
 ///////////////////////////////////////
@@ -73,9 +51,21 @@ function pathSetup(context){
 }
 
 ///////////////////////////////////////
+//draws the beginPath button 
+//
+function beginPathButton(context){
+	var button = document.getElementById("beginPathButton");
+	var context = button.getContext('2d');
+	context.fillText("beginPath()",10,10);
+}
+
+///////////////////////////////////////
 // draws the moveTo button 
 //
-function moveToButton(context){
+function moveToButton(){
+	var button = document.getElementById("moveToButton");
+	var context = button.getContext('2d');
+
 	var startX = 32;
 	var startY = 32;
 
@@ -102,7 +92,9 @@ function moveToButton(context){
 ///////////////////////////////////////
 // draws lilneTo button
 //
-function lineToButton(context){
+function lineToButton(){
+	var button = document.getElementById("lineToButton");
+	var context = button.getContext('2d');
 	var startX = 13;
 	var startY = 50;
 	var endX = 43;
@@ -124,7 +116,9 @@ function lineToButton(context){
 ///////////////////////////////////////
 // draws bezierCurveTo button
 //
-function bezierCurveToButton(context){
+function bezierCurveToButton(){
+	var button = document.getElementById("bezierCurveToButton");
+	var context = button.getContext('2d');
 	var startX = 13;
 	var startY = 50;
 	var c1X = 19;
@@ -150,7 +144,9 @@ function bezierCurveToButton(context){
 ///////////////////////////////////////
 //draws quadraticCurveTo button
 //
-function quadraticCurveToButton(context){
+function quadraticCurveToButton(){
+	var button = document.getElementById("quadraticCurveToButton");
+	var context = button.getContext('2d');
 	var startX = 13;
 	var startY = 50;
 	var c1X = 25;
@@ -172,7 +168,9 @@ function quadraticCurveToButton(context){
 ///////////////////////////////////////
 //draws closePath button
 //
-function closePathButton(context){
+function closePathButton(){
+	var button = document.getElementById("closePathButton");
+	var context = button.getContext('2d');
 	var startX = 16;
 	var startY = 50;
 	var endX = 49;
@@ -200,7 +198,10 @@ function closePathButton(context){
 ///////////////////////////////////////
 //draws arcTo button
 //
-function arcToButton(context){
+function arcToButton(){
+	var button = document.getElementById("arcToButton");
+	var context = button.getContext('2d');
+
 	context.beginPath();
 	pathSetup(context);
 	
@@ -219,7 +220,9 @@ function arcToButton(context){
 ///////////////////////////////////////
 //draws arc button
 //
-function arcButton(context){
+function arcButton(){
+	var button = document.getElementById("arcButton");
+	var context = button.getContext('2d');
 
 	var centerX = 40;
 	var centerY = 31;

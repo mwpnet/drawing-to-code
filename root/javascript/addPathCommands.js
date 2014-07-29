@@ -25,92 +25,32 @@
 // mouse callbacks for when a button is
 // clicked
 
-function onClickMoveTo(){
-	state.command = "moveTo";
-	selectButton("moveToButton");
-}
-
-function onClickLineTo(){
-	state.command="lineTo";
-	selectButton("lineToButton");
-}
-
-function onClickBezierCurveTo(){
-	state.command="bezierCurveTo";
-	selectButton("bezierCurveToButton");
-}
-
-function onClickQuadraticCurveTo(){
-	state.command="quadraticCurveTo";
-	selectButton("quadraticCurveToButton");
-}
-
-function onClickArcTo(){
-	state.command="arcTo";
-	selectButton("arcToButton");
-}
-function onClickArc(){
-	state.command="arc";
-	selectButton("arcButton");
-}
-
-function onClickClosePath(){
-	state.command="closePath";
-	selectButton("closePathButton");
-}
-
-///////////////////////////////////////
-// changes the look of the buttons so 
-// one looks pressed and the rest look 
-// unpressed
-function selectButton(button){
-	if(button == "moveToButton"){
-		$("#moveToButton").css("border-style","inset");
-	}
-	else {
-		$("#moveToButton").css("border-style","outset");
-	}
+function pathButtonSelected( event, ui ){
+	var button = $('.ui-selected',this).attr('id');
 	
-	if(button == "lineToButton"){
-		$("#lineToButton").css("border-style","inset");
+	if( button == "beginPathButton"){
+		state.command = "beginPath";
 	}
-	else {
-		$("#lineToButton").css("border-style","outset");
+	if( button == "moveToButton"){
+		state.command = "moveTo";
 	}
-	
-	if(button == "bezierCurveToButton"){
-		$("#bezierCurveToButton").css("border-style","inset");
+	if( button == "lineToButton"){
+		state.command = "lineTo";
 	}
-	else {
-		$("#bezierCurveToButton").css("border-style","outset");
+	if( button == "bezierCurveToButton"){
+		state.command = "bezierCurveTo";
 	}
-	
-	if(button == "quadraticCurveToButton"){
-		$("#quadraticCurveToButton").css("border-style","inset");
+	if( button == "quadraticCurveToButton"){
+		state.command = "quadraticCurveTo";
 	}
-	else {
-		$("#quadraticCurveToButton").css("border-style","outset");
+	if( button == "arcToButton"){
+		state.command = "arcTo";
 	}
-	
-	if(button == "arcToButton"){
-		$("#arcToButton").css("border-style","inset");
+	if( button == "arcButton"){
+		state.command = "arc";
 	}
-	else {
-		$("#arcToButton").css("border-style","outset");
-	}
-	
-	if(button == "arcButton"){
-		$("#arcButton").css("border-style","inset");
-	}
-	else {
-		$("#arcButton").css("border-style","outset");
-	}
-	
-	if(button == "closePathButton"){
-		$("#closePathButton").css("border-style","inset");
-	}
-	else {
-		$("#closePathButton").css("border-style","outset");
+	if( button == "closePathButton"){
+		state.command = "closePath";
 	}
 }
 

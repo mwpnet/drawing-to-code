@@ -75,9 +75,14 @@ window.onload=function() {
 };
 
 $(function() {
-	 $( "#tabs" ).tabs({ heightStyle: "auto" });
-	 $( "#subTabPanelGroup").tabs({ heightStyle: "auto" });
-	 });
+	$( "#tabs" ).tabs({ heightStyle: "auto" });
+	$( "#subTabPanelGroup").tabs({ heightStyle: "auto" });
+
+	$( "#pathPanel" ).selectable({
+		filter: "canvas",
+		stop: pathButtonSelected
+	})
+});
 
 </script>
 
@@ -173,6 +178,27 @@ canvas {
 	left: 0;
 	width: 100%;
 }
+/** path element buttons pathPanel**/
+#pathPanel { 
+	list-style-type: none; 
+	margin: 10px; 
+	padding: 10px; 
+}
+/**#selectable .ui-selecting { 
+	background: white;
+}
+**/
+#pathPanel .ui-selected { 
+	border-style: inset;
+	background: white; 
+	color: black; 
+}
+
+#pathPanel canvas { 
+	border-style: outset;
+	float: left; 
+}
+
 /*
 .tab {
 	float:left;
@@ -267,17 +293,19 @@ function draw(context){
 
 
 <div id="pathPanel" class="panels">
-<button id="beginPathButton" onclick="addBeginPath()">BeginPath</button>
-<canvas id="moveToButton" width="64" height="64" title="moveTo()" onclick="onClickMoveTo()"></canvas>
-<canvas id="lineToButton" width="64" height="64" title="lineTo()" onclick="onClickLineTo()"></canvas>
-<canvas id="bezierCurveToButton" width="64" height="64" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
-<canvas id="quadraticCurveToButton" width="64" height="64" title="quadraticCurveTo()" onclick="onClickQuadraticCurveTo()"></canvas>
-<canvas id="arcToButton" width="64" height="64" title="arcTo()" onclick="onClickArcTo()"></canvas>
-<canvas id="arcButton" width="64" height="64" title="arc()" onclick="onClickArc()"></canvas>
-<canvas id="closePathButton" width="64" height="64" title="closePath()" onclick="onClickClosePath()"></canvas>
+
+<canvas id="beginPathButton" width="64" height="64" title="beginPath()"></canvas>
+<canvas id="moveToButton" width="64" height="64" title="moveTo()"></canvas>
+<canvas id="lineToButton" width="64" height="64" title="lineTo()"></canvas>
+<canvas id="bezierCurveToButton" width="64" height="64" title="bezierCurveTo()"></canvas>
+<canvas id="quadraticCurveToButton" width="64" height="64" title="quadraticCurveTo()"></canvas>
+<canvas id="arcToButton" width="64" height="64" title="arcTo()"></canvas>
+<canvas id="arcButton" width="64" height="64" title="arc()"></canvas>
+<canvas id="closePathButton" width="64" height="64" title="closePath()"></canvas>
+
 </div>
 
-
+ 
 <div id="stylePanel" class="panels">
 <div id="subTabPanelGroup">
 <ul>
