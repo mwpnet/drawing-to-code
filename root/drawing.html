@@ -20,9 +20,32 @@
 <!--    You should have received a copy of the GNU General Public License			-->
 <!--    along with drawing-to-code.  If not, see <http://www.gnu.org/licenses/>.	-->
 
+<!--  remote third party stuff -->
+<!-- <script type="text/javascript" src="jquery/jquery.min.js" ></script>
+<script src="external/jquery/jquery.js"></script>
+<script src="jquery/jquery-ui.min.js"></script>
+ -->
+<!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" /> -->
+<link href="jquery/jquery-ui-1.11.0.custom/jquery-ui.css" rel="stylesheet">
 
 <script type="text/javascript" src="jquery/jquery.min.js" ></script>
+<!-- <script src="http://code.jquery.com/jquery-1.9.1.js"></script> -->
+<script type="text/javascript" src="jquery/jquery-ui-1.11.0.custom/jquery-ui.js" ></script>
+<!-- <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
+ 
 
+<!-- local third party stuff -->
+<link rel=stylesheet href="thirdParty/codemirror.css">
+<script src="thirdParty/codemirror.js"></script>
+<script src="thirdParty/mode/xml/xml.js"></script>
+<script src="thirdParty/mode/javascript/javascript.js"></script>
+<script src="thirdParty/mode/css/css.js"></script>
+<script src="thirdParty/mode/htmlmixed/htmlmixed.js"></script>
+
+<script src="thirdParty/acorn.js"></script>
+<script src="thirdParty/util/walk.js"></script>
+
+<!-- local Stuff -->
 <script type="text/javascript" src="javascript/geometry.js"></script>
 <script type="text/javascript" src="javascript/buttons.js"></script>
 <script type="text/javascript" src="javascript/parseCode.js"></script>
@@ -31,13 +54,6 @@
 <script type="text/javascript" src="javascript/liveCanvas.js"></script>
 <script type="text/javascript" src="javascript/moveHandle.js"></script>
 <script type="text/javascript" src="javascript/addPathCommands.js"></script>
-
-<link rel=stylesheet href=thirdParty/codemirror.css>
-<script src=thirdParty/codemirror.js></script>
-<script src=thirdParty/mode/xml/xml.js></script>
-<script src=thirdParty/mode/javascript/javascript.js></script>
-<script src=thirdParty/mode/css/css.js></script>
-<script src=thirdParty/mode/htmlmixed/htmlmixed.js></script>
 
 <script type="text/javascript" src="javascript/drawItem.js"></script>
 
@@ -50,17 +66,19 @@
 
 <script type="text/javascript" src="javascript/shadow.js"></script>
 
-<script src="thirdParty/acorn.js"></script>
-<script src="thirdParty/util/walk.js"></script>
-
 <script>
 
 window.onload=function() {
 	init();
-	
-	tabSelect("drawItem");
-	subTabSelect('lineStyle');
+	//tabSelect("drawItem");
+	//subTabSelect('strokeStyle');
 };
+
+$(function() {
+	 $( "#tabs" ).tabs({ heightStyle: "auto" });
+	 $( "#subTabPanelGroup").tabs({ heightStyle: "auto" });
+	 });
+
 </script>
 
 <style>
@@ -84,6 +102,7 @@ canvas {
 }
 
 #columns{
+	overflow: auto;
 	clear:right;
 	width: 100%;
 }
@@ -148,6 +167,13 @@ canvas {
 	height: 30px;
 }
 
+#tabBox {
+	position: relative;
+	top: 0;
+	left: 0;
+	width: 100%;
+}
+/*
 .tab {
 	float:left;
 	border:solid;
@@ -171,11 +197,13 @@ canvas {
 	//height: 300px;
 	clear: both;
 }
-
+*/
 </style>
 
 </head>
 <body>
+
+<div id="noneTabStuff">
 <div id="headerText">
 <h1>Drawing to Code</h1>
 <p>Basic vector drawing program, that give you back the javascript code needed to recreate the image drawn.
@@ -204,8 +232,6 @@ Your browser does not support the HTML5 canvas tag.</canvas>
 			<div id="codeArea">
 				<textarea id="code">
 function draw(context){
-	context.beginPath();
-
 	context.lineWidth=5;
 	context.strokeStyle="#123456";
 	context.stroke();
@@ -218,20 +244,23 @@ function draw(context){
 		</form>
 	</div>
 </div>
+	</div>
 	
-<div id="tabPanelGroup">
-<div id="drawItemTab" class="tab" onclick="tabSelect('drawItem')">Draw Item</div>
-<div id="pathTab" class="tab" onclick="tabSelect('path')">Path Elements</div>
-<div id="styleTab" class="tab" onclick="tabSelect('style')">Style</div>
-</div>
+<div id="tabBox">
+<div id="tabs">
+<ul>
+<li><a href="#drawItemPanel">Draw Item</a></li>
+<li><a href="#pathPanel">Path Elements</a></li>
+<li><a href="#stylePanel">Style</a></li>
+</ul>
 
 <div id="drawItemPanel" class="panels">
-<button id="fill" onclick="addFill()">fill</button><br>
 <button id="stroke" onclick="addStroke()">stroke</button><br>
-<button id="fillRectButton" onclick="addFillRect()">fillRect</button><br>
+<button id="fill" onclick="addFill()">fill</button><br>
 <button id="strokeRectButton" onclick="addStrokeRect()">strokeRect</button><br>
-<button id="fillTextButton" onclick="addFillText()">fillText</button><br>
+<button id="fillRectButton" onclick="addFillRect()">fillRect</button><br>
 <button id="strokeTextButton" onclick="addStrokeText()">strokeText</button><br>
+<button id="fillTextButton" onclick="addFillText()">fillText</button><br>
 
 </div>
 
@@ -251,11 +280,32 @@ function draw(context){
 
 <div id="stylePanel" class="panels">
 <div id="subTabPanelGroup">
+<ul>
+<li><a href="#strokeStylePanel">Stroke Color</a></li>
+<li><a href="#fillStylePanel">Fill Color</a></li>
+<li><a href="#lineStylePanel">Line Style</a></li>
+<li><a href="#fontStylePanel">Font</a></li>
+<li><a href="#shadowStylePanel">Shadow</a></li>
+</ul>
 
-<div id="lineStyleTab" class="subTab" onclick="subTabSelect('lineStyle')">Line Style</div>
-<div id="colorStyleTab" class="subTab" onclick="subTabSelect('colorStyle')">Color</div>
-<div id="fontStyleTab" class="subTab" onclick="subTabSelect('fontStyle')">Font</div>
-<div id="shadowStyleTab" class="subTab" onclick="subTabSelect('shadowStyle')">Shadow</div>
+<!--  stroke properties -->
+<div id="strokeStylePanel" class="subPanel">
+<table>
+<tr><td>Stroke Color</td><td id="strokeColorInput"></td></tr>
+<tr><td>Red</td><td id="redStroke"></td></tr>
+<tr><td>Green</td><td id="greenStroke"></td></tr>
+<tr><td>Blue</td><td id="blueStroke"></td></tr>
+</table>
+</div>
+
+<!--  fill properties -->
+<div id="fillStylePanel" class="subPanel">
+<table>
+<tr><td>Fill Color</td><td id="fillColorInput"></td></tr>
+<tr><td>Red</td><td id="redFill"></td></tr>
+<tr><td>Green</td><td id="greenFill"></td></tr>
+<tr><td>Blue</td><td id="blueFill"></td></tr>
+</table>
 </div>
 
 <!--  line properties -->
@@ -276,22 +326,6 @@ function draw(context){
 </tr>
 <tr><th>Miter Limit</th><td><div class = "lineStyleBox" id="miterLimitNone" onclick="removeProperty('miterLimit')">none</div></td>
 <td colspan=4><button id="plusMiterLimit" onclick="incDecMiter(1)">+</button><input id="miterLimitInput" type="text" value=10 onchange="changeMiterLimit()"><button id="minusMiterLimit" onclick="incDecMiter(-1)">-</button></td></tr>
-</table>
-</div>
-
-<!--  color properties -->
-<div id="colorStylePanel" class="subPanel">
-<table>
-<tr><td>Stroke Color</td><td id="strokeColorInput"></td></tr>
-<tr><td>Red</td><td id="redStroke"></td></tr>
-<tr><td>Green</td><td id="greenStroke"></td></tr>
-<tr><td>Blue</td><td id="blueStroke"></td></tr>
-</table>
-<table>
-<tr><td>Fill Color</td><td id="fillColorInput"></td></tr>
-<tr><td>Red</td><td id="redFill"></td></tr>
-<tr><td>Green</td><td id="greenFill"></td></tr>
-<tr><td>Blue</td><td id="blueFill"></td></tr>
 </table>
 </div>
 
@@ -335,9 +369,15 @@ Font:<input id="fontInput" type="text" name="font">
 </div>
 
 </div>
+
+</div>
+</div>
+</div>
 </body>
 
 <script>
+
+/*
 var tabId = {
 		drawItem: {
 				panel: document.getElementById("drawItemPanel"),
@@ -375,9 +415,13 @@ var subTabId = {
 			panel: document.getElementById("fontStylePanel"),
 			tab: document.getElementById("fontStyleTab")
 		},
-		colorStyle: {
-			panel: document.getElementById("colorStylePanel"),
-			tab: document.getElementById("colorStyleTab")
+		strokeStyle: {
+			panel: document.getElementById("strokeStylePanel"),
+			tab: document.getElementById("strokeStyleTab")
+		},
+		fillStyle: {
+			panel: document.getElementById("fillStylePanel"),
+			tab: document.getElementById("fillStyleTab")
 		},
 		shadowStyle: {
 			panel: document.getElementById("shadowStylePanel"),
@@ -396,6 +440,7 @@ function subTabSelect(idToOpen){
 	subTabId[idToOpen].panel.style.display="block";
 	subTabId[idToOpen].tab.style.borderBottom="none";
 }
+*/
 </script>
 
 </html>
