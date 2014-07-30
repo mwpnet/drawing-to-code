@@ -31,6 +31,13 @@
 // exactly like what's drawn
 //
 function buttonSetUp(){
+	strokebutton();
+	fillButton();
+	strokeRectButton();
+	fillRectButton();
+	strokeTextButton();
+	fillTextButton();
+	
 	beginPathButton();
 	moveToButton();
 	lineToButton();
@@ -42,13 +49,82 @@ function buttonSetUp(){
 }
 
 ///////////////////////////////////////
-// common path properties so all the 
-// buttons have the same look
+//common path properties so all the 
+//buttons have the same look
 //
 function pathSetup(context){
 	context.lineWidth = 2;
 	context.strokeStyle = 'black';
+	context.textAlign = "center";
+	context.textBaseline = "middle";
+	context.font="40px ariel";
 }
+
+
+////////////////////////////
+//draw method buttons
+
+function strokebutton(){
+	var button = document.getElementById("strokebutton");
+	var context = button.getContext('2d');
+	
+	pathSetup(context);
+	context.moveTo( 14, 34 );
+	context.lineTo( 44, 25 );
+	context.lineTo( 30, 52 );
+	context.stroke();
+}
+
+function fillButton(){
+	var button = document.getElementById("fillButton");
+	var context = button.getContext('2d');
+	
+	pathSetup(context);
+	context.moveTo( 14, 34 );
+	context.lineTo( 44, 25 );
+	context.lineTo( 30, 52 );
+	context.fill();
+}
+
+function strokeRectButton(){
+	var button = document.getElementById("strokeRectButton");
+	var context = button.getContext('2d');
+	
+	pathSetup(context);
+	context.strokeRect(14,17,32,26);
+
+}
+
+function fillRectButton(){
+	var button = document.getElementById("fillRectButton");
+	var context = button.getContext('2d');
+	
+	pathSetup(context);
+	context.fillRect(14,17,32,26);
+
+}
+
+function strokeTextButton(){
+	var button = document.getElementById("strokeTextButton");
+	var context = button.getContext('2d');
+	
+	pathSetup(context);
+	context.strokeText("A",29,32);
+
+}
+
+function fillTextButton(){
+	var button = document.getElementById("fillTextButton");
+	var context = button.getContext('2d');
+	
+	pathSetup(context);
+	context.fillText("A",29,32);
+
+}
+
+//////////////////////
+// path buttons
+
 
 ///////////////////////////////////////
 //draws the beginPath button 

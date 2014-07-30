@@ -82,6 +82,10 @@ $(function() {
 		filter: "canvas",
 		stop: pathButtonSelected
 	})
+	
+	$("drawItemPanel canvas").click( function() {
+		$(this).css( "border-style", "inset" );
+	});
 });
 
 </script>
@@ -178,16 +182,20 @@ canvas {
 	left: 0;
 	width: 100%;
 }
-/** path element buttons pathPanel**/
+
+/** draw item buttons **/
+#drawItemPanel canvas {
+	border-style: outset;
+	float: left; 
+}
+
+
+/** path element buttons **/
 #pathPanel { 
 	list-style-type: none; 
 	margin: 10px; 
 	padding: 10px; 
 }
-/**#selectable .ui-selecting { 
-	background: white;
-}
-**/
 #pathPanel .ui-selected { 
 	border-style: inset;
 	background: white; 
@@ -281,13 +289,12 @@ function draw(context){
 </ul>
 
 <div id="drawItemPanel" class="panels">
-<button id="stroke" onclick="addStroke()">stroke</button><br>
-<button id="fill" onclick="addFill()">fill</button><br>
-<button id="strokeRectButton" onclick="addStrokeRect()">strokeRect</button><br>
-<button id="fillRectButton" onclick="addFillRect()">fillRect</button><br>
-<button id="strokeTextButton" onclick="addStrokeText()">strokeText</button><br>
-<button id="fillTextButton" onclick="addFillText()">fillText</button><br>
-
+<canvas id="strokebutton" width="64" height="64" title="stroke()" onclick="addStroke()"></canvas>
+<canvas id="fillButton" width="64" height="64" title="fill()" onclick="addFill()"></canvas>
+<canvas id="strokeRectButton" width="64" height="64" title="strokeRect()" onclick="addStrokeRect()"></canvas>
+<canvas id="fillRectButton" width="64" height="64" title="fillRect()" onclick="addFillRect()"></canvas>
+<canvas id="strokeTextButton" width="64" height="64" title="strokeText()" onclick="addStrokeText()"></canvas>
+<canvas id="fillTextButton" width="64" height="64" title="fillText()" onclick="addFillText()"></canvas>
 </div>
 
 
