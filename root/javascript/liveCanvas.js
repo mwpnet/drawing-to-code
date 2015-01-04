@@ -38,6 +38,7 @@ var state = {
 		mouseY:0,
 		mouseInHandle:false,// - if mouse is in control handle
 		command:"",         // - the command curantly selected by the buttons
+		prevCommand:"moveTo",// - 
 		xOld:0,             // - land end point x
 		yOld:0,             // -                y
 		arguments:[],       // - node array for the existing arguments
@@ -130,7 +131,20 @@ function showControlHandles(e){
 }
 
 ///////////////////////////////////////
-// gets the code from the input box
+// store last path command
+function disablePathCommand(){
+	state.prevCommand = state.command;
+	state.command = "";
+}
+
+///////////////////////////////////////
+// retrieve path command
+function enablePathCommand(){
+	state.command = state.prevCommand;
+}
+
+///////////////////////////////////////
+//gets the code from the input box
 function getCode(){
 	return editor.getValue();
 }
@@ -143,21 +157,10 @@ function updateCode(newCode){
 	}
 }
 
-function updateCode2(moveInfo){
-	/**var moveInfo = {
-			destArgs: argsIndex,
-			srcArgs: argsIndex,
-			type: "line",
-			xOld: x2,
-			yOld: y2,
-			
-			newCode: newcode,
-			newCodeLine: myNewCodeLine,
-			insertAt: insertAt
-	};**/
-
-	
-	
+function updateCodePart(moveInfo){
+	if(!moveInfo.hasOwnProperty("newCodeLine")){
+		return;
+	}
 	if(moveInfo.newCodeLine != null){
 		var newLinePosPair = editor.posFromIndex( moveInfo.insertAt );
 		
@@ -193,17 +196,21 @@ function updateCodeMulti(code, moveInfo){
 function drawCode( code ){
 	delete draw;
 
-	document.getElementById('errorBox').innerHTML = "";
 	try {
 		eval( code );
-		   context.clearRect(0, 0, canvas.width, canvas.height);
-
-		    context.save();
-			draw(context);
-			context.restore();
+		// XXX
+		canvas.width = canvas.width;                              // need to figure out why this works...
+		// context.clearRect(0, 0, canvas.width, canvas.height);  // ... but this doesn't
+	    context.save();
+		draw(context);
+		context.restore();
+		document.getElementById('errorBox').innerHTML = "";
 	}
 	catch(err){
 		document.getElementById('errorBox').innerHTML = err.message;
+		console.log(err.message);
+		console.log(code);
+		debugger;
 	}
  
 }
@@ -214,7 +221,6 @@ function drawCode( code ){
 function onExecuteCode(){
 	var code = getCode();
 	
-    context.clearRect(0, 0, canvas.width, canvas.height);
     context.strokeStyle = 'red';
 
 	drawCode( code );

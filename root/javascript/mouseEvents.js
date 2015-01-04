@@ -90,13 +90,10 @@ function myOnMouseDown(e) {
 		return;
    }
      **/
-	
-	context.clearRect(0, 0, canvas.width, canvas.height);
-
 	drawCode( code );
 	var moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 			
-	if( ! moveInfo.mouseGrabed ){ // click not in controle handle
+	if( ! moveInfo.mouseGrabed && state.command !=""){ // click not in controle handle
 		var cursor = editor.getCursor();
 		cursor.ch=0;
 		var pos = editor.indexFromPos( cursor );
@@ -104,15 +101,11 @@ function myOnMouseDown(e) {
 		var newMoveInfo = addComandToCode(codeTree,code,state.xOld,state.yOld,mousex,mousey,state.command,pos);
 
 		//updateCode( newMoveInfo.newcode );
-		updateCode2( newMoveInfo );
+		moveInfo = updateCodePart( newMoveInfo );
 		editor.setCursor( { line: cursor.line, ch:0 });
 		code = newMoveInfo.newCode;
 
 		codeTree = acorn.parse( code);
-
-
-		context.clearRect(0, 0, canvas.width, canvas.height);
-
 		drawCode( code );
 		moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 	}
@@ -140,9 +133,6 @@ function myOnMouseDown(e) {
 		updateCodeOnce(moveInfo);
 		code = getCode();
 		codeTree = acorn.parse( code);
-
-		context.clearRect(0, 0, canvas.width, canvas.height);
-
 		drawCode( code );
 		moveInfo = drawEditHandles( context, codeTree,mousex,mousey );
 		keepAnimating=false;
@@ -159,7 +149,6 @@ function myOnMouseUp(e){
 	keepAnimating = false;
 	editor.focus();
 	editor.setCursor(state.cursor);
-	console.log(state.cursor);
 }
 
 ///////////////////////////////////////

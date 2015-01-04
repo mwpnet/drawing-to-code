@@ -20,18 +20,12 @@
 <!--    You should have received a copy of the GNU General Public License			-->
 <!--    along with drawing-to-code.  If not, see <http://www.gnu.org/licenses/>.	-->
 
-<!--  remote third party stuff -->
-<!-- <script type="text/javascript" src="jquery/jquery.min.js" ></script>
-<script src="external/jquery/jquery.js"></script>
-<script src="jquery/jquery-ui.min.js"></script>
- -->
-<!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" /> -->
-<link href="jquery/jquery-ui-1.11.0.custom/jquery-ui.css" rel="stylesheet">
+<link href="jquery/jquery-ui-1.11.2.custom/jquery-ui.css" rel="stylesheet">
+<link href="jquery/jquery-ui-1.11.2.custom/jquery-ui.structure.css" rel="stylesheet">
+<link href="jquery/jquery-ui-1.11.2.custom/jquery-ui.theme.css" rel="stylesheet">
 
-<script type="text/javascript" src="jquery/jquery.min.js" ></script>
-<!-- <script src="http://code.jquery.com/jquery-1.9.1.js"></script> -->
-<script type="text/javascript" src="jquery/jquery-ui-1.11.0.custom/jquery-ui.js" ></script>
-<!-- <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script> -->
+<script type="text/javascript" src="jquery/jquery.js" ></script>
+<script type="text/javascript" src="jquery/jquery-ui-1.11.2.custom/jquery-ui.js" ></script>
  
 
 <!-- local third party stuff -->
@@ -66,20 +60,6 @@
 
 <script type="text/javascript" src="javascript/shadow.js"></script>
 
-<script>
-
-window.onload=function() {
-	init();
-	//tabSelect("drawItem");
-	//subTabSelect('strokeStyle');
-};
-
-$(function() {
-	 $( "#tabs" ).tabs({ heightStyle: "auto" });
-	 $( "#subTabPanelGroup").tabs({ heightStyle: "auto" });
-	 });
-
-</script>
 
 <style>
 body {
@@ -205,7 +185,8 @@ canvas {
 
 <div id="noneTabStuff">
 <div id="headerText">
-<h1>Drawing to Code</h1>
+<h1 id="warningTitle">Drawing to Code</h1>
+<div id="warning">
 <p>Basic vector drawing program, that give you back the javascript code needed to recreate the image drawn.
 It's designed so that you can paste code in from elsewhere and edit it here.</p>
 <p>There are some caveats when using this program:</p>
@@ -215,6 +196,7 @@ It's designed so that you can paste code in from elsewhere and edit it here.</p>
 	<li>Since the drawing part manipulates the arguments of the code itself, the path methods can only have literal numerical values. No variables.</li>
 	<li>Currently the program does not handle transformations properly. It turns out this is exceptionally complicated, and will have to wait until the next version.</li>
 	</ul>
+</div>
 </div>
 
 <div id="columns">
@@ -249,18 +231,19 @@ function draw(context){
 <div id="tabBox">
 <div id="tabs">
 <ul>
-<li><a href="#drawItemPanel">Draw Item</a></li>
-<li><a href="#pathPanel">Path Elements</a></li>
-<li><a href="#stylePanel">Style</a></li>
+<li><a id="drawItemPanelButton" href="#drawItemPanel">Draw Item</a></li>
+<li><a id="pathPanelButton" href="#pathPanel">Path Elements</a></li>
+<li><a id="stylePanelButton" href="#stylePanel">Style</a></li>
 </ul>
 
 <div id="drawItemPanel" class="panels">
-<button id="stroke" onclick="addStroke()">stroke</button><br>
-<button id="fill" onclick="addFill()">fill</button><br>
-<button id="strokeRectButton" onclick="addStrokeRect()">strokeRect</button><br>
-<button id="fillRectButton" onclick="addFillRect()">fillRect</button><br>
-<button id="strokeTextButton" onclick="addStrokeText()">strokeText</button><br>
-<button id="fillTextButton" onclick="addFillText()">fillText</button><br>
+<button id="stroke" onclick="addStroke()">stroke</button>
+<button id="fill" onclick="addFill()">fill</button>
+<button id="strokeRectButton" onclick="addStrokeRect()">strokeRect</button>
+<button id="fillRectButton" onclick="addFillRect()">fillRect</button>
+<button id="strokeTextButton" onclick="addStrokeText()">strokeText</button>
+<button id="fillTextButton" onclick="addFillText()">fillText</button>
+<button id="clearRectButton" onclick="addClearRect()">clearRect</button>
 
 </div>
 
@@ -274,6 +257,7 @@ function draw(context){
 <canvas id="quadraticCurveToButton" width="64" height="64" title="quadraticCurveTo()" onclick="onClickQuadraticCurveTo()"></canvas>
 <canvas id="arcToButton" width="64" height="64" title="arcTo()" onclick="onClickArcTo()"></canvas>
 <canvas id="arcButton" width="64" height="64" title="arc()" onclick="onClickArc()"></canvas>
+<canvas id="rectButton" width="64" height="64" title="rec()" onclick="onClickRect()"></canvas>
 <canvas id="closePathButton" width="64" height="64" title="closePath()" onclick="onClickClosePath()"></canvas>
 </div>
 
@@ -376,71 +360,27 @@ Font:<input id="fontInput" type="text" name="font">
 </body>
 
 <script>
+window.onload=function() {
+	init();
+	//tabSelect("drawItem");
+	//subTabSelect('strokeStyle');
+};
 
-/*
-var tabId = {
-		drawItem: {
-				panel: document.getElementById("drawItemPanel"),
-				tab: document.getElementById("drawItemTab")
-			},
-		path: {
-				panel: document.getElementById("pathPanel"),
-				tab: document.getElementById("pathTab")
-			},
-		style: {
-			panel: document.getElementById("stylePanel"),
-			tab: document.getElementById("styleTab")
-		}
-}
+$( "#warningTitle" ).click(function(){$("#warning").slideToggle()})
+$( "#tabs" ).tabs({heightStyle: "fill"});
+$( "#subTabPanelGroup").tabs();
+$( "#stroke").button();
+$( "#fill").button();
+$( "#strokeRectButton").button();
+$( "#fillRectButton").button();
+$( "#strokeTextButton").button();
+$( "#fillTextButton").button();
+$( "#clearRectButton").button();
 
-function tabSelect(idToOpen){
-	for (var idLoop in tabId) {
-		if( idLoop == idToOpen){
-			continue;
-		}
-		tabId[idLoop].panel.style.display="none";
-		tabId[idLoop].tab.style.border="solid";
-	}
-	tabId[idToOpen].panel.style.display="block";
-	tabId[idToOpen].tab.style.borderBottom="none";
-}
+$( "#drawItemPanelButton").click( function(){disablePathCommand();});
+$( "#pathPanelButton").click( function(){enablePathCommand();});
+$( "#stylePanelButton").click( function(){disablePathCommand();});
 
-
-var subTabId = {
-		lineStyle: {
-			panel: document.getElementById("lineStylePanel"),
-			tab: document.getElementById("lineStyleTab")
-		},
-		fontStyle: {
-			panel: document.getElementById("fontStylePanel"),
-			tab: document.getElementById("fontStyleTab")
-		},
-		strokeStyle: {
-			panel: document.getElementById("strokeStylePanel"),
-			tab: document.getElementById("strokeStyleTab")
-		},
-		fillStyle: {
-			panel: document.getElementById("fillStylePanel"),
-			tab: document.getElementById("fillStyleTab")
-		},
-		shadowStyle: {
-			panel: document.getElementById("shadowStylePanel"),
-			tab: document.getElementById("shadowStyleTab")
-		}
-}
-
-function subTabSelect(idToOpen){
-	for (var idLoop in subTabId) {
-		if( idLoop == idToOpen){
-			continue;
-		}
-		subTabId[idLoop].panel.style.display="none";
-		subTabId[idLoop].tab.style.border="solid";
-	}
-	subTabId[idToOpen].panel.style.display="block";
-	subTabId[idToOpen].tab.style.borderBottom="none";
-}
-*/
 </script>
 
 </html>

@@ -51,8 +51,8 @@
 }
 .CodeMirror.cm-keymap-fat-cursor div.CodeMirror-cursor {
   width: auto;
-  border: 0;
-  background: #7e7;
+  border: 10px;
+  background: #008800;
 }
 /* Can style cursor different in overwrite (non-insert) mode */
 div.CodeMirror-overwrite div.CodeMirror-cursor {}
@@ -237,11 +237,11 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {color: #f22;}
 .CodeMirror div.CodeMirror-cursor {
   position: absolute;
   border-right: none;
-  width: 0;
+  width: 5px;
 }
 
 div.CodeMirror-cursors {
-  visibility: hidden;
+  visibility: visible;
   position: relative;
   z-index: 1;
 }

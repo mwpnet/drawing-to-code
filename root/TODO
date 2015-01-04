@@ -1,0 +1,52 @@
+=======================
+For this release
+*UI
+ - get graphical representations of fill, stroke, fillRect, etc buttons
+ - set beginPath and closePath buttons so they're more visibly seperate from other path buttons
+
+*code editor
+ - get proper indentation and new lines working
+ - highlight cursor even when focus not in editor
+
+*internal
+ - get begin path working
+ - remove the sluggishness of the drawing
+ - get adding code to work with empty function
+ - fix extra drawing of last edit handle
+ 
+ 
+=======================
+For next release
+*UI
+ - handle gradiants and paterns
+ - other color discripters (rgb,hsl,etc)
+ - resize canvas
+ - select and move multiple points at once
+ - make the code editor style and menu ui uniform
+ - add line dash editing
+ - better font ui
+ - add text entering
+ 
+*code editor
+ - get undo/redo working
+ - make the "function draw" part uneditable, but make the "context" part changable 
+ 
+*internal
+ - refactor most of this
+
+=======================
+Sometime Soon
+*UI
+ - include drawImage method, data method, toData method, *ImageData methods
+ - add composition and alpha
+ - transformations
+ - save/restore
+ - zoom/pan
+ 
+*code editor
+ - highlight code that affects selected draw method
+ -
+
+*internal
+ -
+

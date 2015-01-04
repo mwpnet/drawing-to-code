@@ -19,10 +19,7 @@ function addDrawItem(codeLine){
 
 	var code = getCode();
 	codeTree = acorn.parse( code);
-
-
-	context.clearRect(0, 0, canvas.width, canvas.height);
-
+console.log(code);
 	drawCode( code );
 	drawEditHandles( context, codeTree,mousex,mousey );
 	
@@ -50,6 +47,10 @@ function addFillText(){
 
 function addStrokeText(){
 	addDrawItem( "\tcontext.strokeText(\"Text goes here\",50,50);\n");
+}
+
+function addClearRect(){
+	addDrawItem( "\tcontext.clearRect(50,50,50,50);\n");
 }
 
 

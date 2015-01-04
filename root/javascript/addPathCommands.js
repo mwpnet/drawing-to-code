@@ -54,10 +54,16 @@ function onClickArc(){
 	selectButton("arcButton");
 }
 
+function onClickRect(){
+	state.command="rect";
+	selectButton("rectButton");
+}
+
 function onClickClosePath(){
 	state.command="closePath";
 	selectButton("closePathButton");
 }
+
 
 ///////////////////////////////////////
 // changes the look of the buttons so 
@@ -111,6 +117,13 @@ function selectButton(button){
 	}
 	else {
 		$("#closePathButton").css("border-style","outset");
+	}
+	
+	if(button == "rectButton"){
+		$("#rectButton").css("border-style","inset");
+	}
+	else {
+		$("#rectButton").css("border-style","outset");
 	}
 }
 
@@ -206,6 +219,13 @@ function codeStringArc(x1,y1,x2,y2){
 }
 
 ///////////////////////////////////////
+// rect command line
+// 
+function codeStringRect(x1,y1,x2,y2){
+	return "\n\tcontext.rect( "+x2+","+y2+",50,50 );\n";
+}
+
+///////////////////////////////////////
 // closePath code line
 function codeStringClosePath(x1,y1,x2,y2){
 	return "\n\tcontext.closePath();\n";
@@ -234,6 +254,9 @@ function makeCodeLine(command,x1,y1,x2,y2){
 	}
 	else if(command == "arc"){
 		codePart = codeStringArc(x1,y1,x2,y2);
+	}
+	else if(command == "rect"){
+		codePart = codeStringRect(x1,y1,x2,y2);
 	}
 	else if(command == "closePath"){
 		codePart = codeStringClosePath(x1,y1,x2,y2);
@@ -264,6 +287,9 @@ function getArgsToBeChanged(command){
 		return [2,3];
 	}
 	else if(command == "arc"){
+		return [0,1];
+	}
+	else if(command == "rect"){
 		return [0,1];
 	}
 	else if(command == "closePath"){

@@ -628,7 +628,7 @@ function drawEditHandlesCallback( node, moveInfo){
 
 			localMoveInfo = drawArc( context, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, args[5].value, endCo[0], endCo[1],mousex,mousey );
 		}
-		else if( name == "fillRect" || name == "strokeRect" || name == "clearRect" ){
+		else if( name == "fillRect" || name == "strokeRect" || name == "clearRect" || name == "rect") {
 			startCo = [ moveInfo.xOld, moveInfo.yOld ];
 			localMoveInfo = drawFillStrokeRect(context,args[0].value, args[1].value, args[2].value, args[3].value,mousex,mousey);
 			endCo = [ args[0].value,args[1].value ];

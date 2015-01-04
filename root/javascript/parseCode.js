@@ -160,7 +160,6 @@ function setCreateProperty(type,value,quote, pos){ // type = lineCap, lineJoin, 
 
 	updateCode(newCode);
 	editor.setCursor(cursor);
-
 	drawCode( newCode );
 	
 	drawEditHandles( context, codeTree,-1,-1);

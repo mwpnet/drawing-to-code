@@ -50,6 +50,7 @@ function onClickFill(){
 	}
 	
 	updateCode(newCode);
+
 	drawCode( newCode );
 	
 	drawEditHandles( context, codeTree,-1,-1);

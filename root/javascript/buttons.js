@@ -55,6 +55,10 @@ function buttonSetUp(){
 	buttonContext = button.getContext('2d');
 	arcButton(buttonContext);
 
+	button = document.getElementById("rectButton");
+	buttonContext = button.getContext('2d');
+	rectButton(buttonContext);
+
 	button = document.getElementById("closePathButton");
 	buttonContext = button.getContext('2d');
 	closePathButton(buttonContext);
@@ -239,6 +243,25 @@ function arcButton(context){
 
 	drawMoveTo(context,13, 49 );
 	drawArc(context, centerX, centerY, r, startAng, endAng, false, prevEndX,prevEndY);
+}
+
+//////////////////////
+// draw rect button
+//
+function rectButton(context){
+	context.beginPath();
+	pathSetup(context);
+	context.rect( 27,33,29,27 );
+	context.stroke();
+
+	context.beginPath();
+	context.rect( 8,10,29,26 );
+	context.fill();
+
+	drawPathBox(context,27,33,0,0);
+	drawControlePointHandle( context,27+29,33+27,0,0 );
+	drawPathBox(context,8,10,0,0);
+	drawControlePointHandle( context,8+29,10+26,0,0 );
 }
 
 ///////////////////////////////////////
