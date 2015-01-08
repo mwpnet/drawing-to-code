@@ -82,7 +82,8 @@ function init(){
 	canvas.onmousemove = myOnMouseMove;
 
     editor = CodeMirror.fromTextArea(document.getElementById('code'), {
-        mode: 'text/javascript'
+        mode: 'text/javascript',
+        cursorBlinkRate: 0
       });
     editor.on("change", function() {
         clearTimeout(delay);
@@ -209,8 +210,6 @@ function drawCode( code ){
 	catch(err){
 		document.getElementById('errorBox').innerHTML = err.message;
 		console.log(err.message);
-		console.log(code);
-		debugger;
 	}
  
 }

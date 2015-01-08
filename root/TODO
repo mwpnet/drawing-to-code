@@ -6,13 +6,12 @@ For this release
 
 *code editor
  - get proper indentation and new lines working
- - highlight cursor even when focus not in editor
 
 *internal
- - get begin path working
  - remove the sluggishness of the drawing
  - get adding code to work with empty function
  - fix extra drawing of last edit handle
+ - clean up code a bit
  
  
 =======================
@@ -33,6 +32,7 @@ For next release
  
 *internal
  - refactor most of this
+ - try to work with only one parser
 
 =======================
 Sometime Soon
@@ -48,5 +48,7 @@ Sometime Soon
  -
 
 *internal
- -
+ - work on the literal arguments even when others are variables
+ - work on variables arguments as well.
+
 

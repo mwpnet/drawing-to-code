@@ -24,6 +24,10 @@
 ///////////////////////////////////////
 // mouse callbacks for when a button is
 // clicked
+function onClickBeginPath(){
+	state.command = "beginPath";
+	selectButton("beginPathButton");
+}
 
 function onClickMoveTo(){
 	state.command = "moveTo";
@@ -70,6 +74,13 @@ function onClickClosePath(){
 // one looks pressed and the rest look 
 // unpressed
 function selectButton(button){
+	if(button == "beginPathButton"){
+		$("#beginPathButton").css("border-style","inset");
+	}
+	else {
+		$("#beginPathButton").css("border-style","outset");
+	}
+
 	if(button == "moveToButton"){
 		$("#moveToButton").css("border-style","inset");
 	}
@@ -136,17 +147,22 @@ function selectButton(button){
  * pair are the new end point.
  */
 
+///////////////////////////////////////
+//moveTo code line
+function codeStringBeginPath(x1,y1,x2,y2){
+	return "context.beginPath();";
+}
 
 ///////////////////////////////////////
 // moveTo code line
 function codeStringMoveTo(x1,y1,x2,y2){
-	return "\n\tcontext.moveTo( " + x2 + ", " + y2 + " );\n";
+	return "context.moveTo( " + x2 + ", " + y2 + " );";
 }
 
 ///////////////////////////////////////
 // lineTo code line
 function codeStringLineTo(x1,y1,x2,y2){
-	return "\n\tcontext.lineTo( " + x2 + ", " + y2 + " );\n";
+	return "context.lineTo( " + x2 + ", " + y2 + " );";
 }
 
 
@@ -166,7 +182,7 @@ function codeStringBezierCurveTo(x1,y1,x2,y2){
 	            y2
 	            ];
 
-	return "\n\tcontext.bezierCurveTo( " + args.join(", ") +" );\n";
+	return "context.bezierCurveTo( " + args.join(", ") +" );";
 }
 
 ///////////////////////////////////////
@@ -184,7 +200,7 @@ function codeStringQuadraticCurveTo(x1,y1,x2,y2){
 	            y2
 	            ];
 
-	return "\n\tcontext.quadraticCurveTo( " + args.join(", ") +" );\n";
+	return "context.quadraticCurveTo( " + args.join(", ") +" );";
 }
 
 ///////////////////////////////////////
@@ -205,7 +221,7 @@ function codeStringArcTo(x1,y1,x2,y2){
 	            25
 	            ];
 
-	return "\n\tcontext.arcTo( " + args.join(", ") +" );\n";
+	return "context.arcTo( " + args.join(", ") +" );";
 }
 
 ///////////////////////////////////////
@@ -215,20 +231,20 @@ function codeStringArcTo(x1,y1,x2,y2){
 // arbitrary radius, start angle and 
 // end angle.
 function codeStringArc(x1,y1,x2,y2){
-	return "\n\tcontext.arc( " + x2 + ", " + y2 + ", 50, 0, 2.0, false );\n"; // using 2.0 just to avoid 50 decimal places
+	return "context.arc( " + x2 + ", " + y2 + ", 50, 0, 2.0, false );"; // using 2.0 just to avoid 50 decimal places
 }
 
 ///////////////////////////////////////
 // rect command line
 // 
 function codeStringRect(x1,y1,x2,y2){
-	return "\n\tcontext.rect( "+x2+","+y2+",50,50 );\n";
+	return "context.rect( "+x2+","+y2+",50,50 );";
 }
 
 ///////////////////////////////////////
 // closePath code line
 function codeStringClosePath(x1,y1,x2,y2){
-	return "\n\tcontext.closePath();\n";
+	return "context.closePath();";
 }
 
 ///////////////////////////////////////
@@ -236,32 +252,36 @@ function codeStringClosePath(x1,y1,x2,y2){
 // fill or stroke
 function makeCodeLine(command,x1,y1,x2,y2){
 	
-	var codePart = "";
-	if(command == "moveTo"){
-		codePart = codeStringMoveTo(x1,y1,x2,y2);
+	var codePart = "\n\t";
+	if(command == "beginPath"){
+		codePart += codeStringBeginPath(x1,y1,x2,y2);
+	}
+	else if(command == "moveTo"){
+		codePart += codeStringMoveTo(x1,y1,x2,y2);
 	}
 	else if(command == "lineTo"){
-		codePart = codeStringLineTo(x1,y1,x2,y2);
+		codePart += codeStringLineTo(x1,y1,x2,y2);
 	}
 	else if(command == "bezierCurveTo"){
-		codePart = codeStringBezierCurveTo(x1,y1,x2,y2);
+		codePart += codeStringBezierCurveTo(x1,y1,x2,y2);
 	}
 	else if(command == "quadraticCurveTo"){
-		codePart = codeStringQuadraticCurveTo(x1,y1,x2,y2);
+		codePart += codeStringQuadraticCurveTo(x1,y1,x2,y2);
 	}
 	else if(command == "arcTo"){
-		codePart = codeStringArcTo(x1,y1,x2,y2);
+		codePart += codeStringArcTo(x1,y1,x2,y2);
 	}
 	else if(command == "arc"){
-		codePart = codeStringArc(x1,y1,x2,y2);
+		codePart += codeStringArc(x1,y1,x2,y2);
 	}
 	else if(command == "rect"){
-		codePart = codeStringRect(x1,y1,x2,y2);
+		codePart += codeStringRect(x1,y1,x2,y2);
 	}
 	else if(command == "closePath"){
-		codePart = codeStringClosePath(x1,y1,x2,y2);
+		codePart += codeStringClosePath(x1,y1,x2,y2);
 	}
 
+	codePart += "\n";
 	return codePart;
 }
 
@@ -271,7 +291,10 @@ function makeCodeLine(command,x1,y1,x2,y2){
 // drag it around before releasing it.
 function getArgsToBeChanged(command){
 
-	if(command == "moveTo"){
+	if(command == "beginPath"){
+		return [];
+	}
+	else if(command == "moveTo"){
 		return [0,1];
 	}
 	else if(command == "lineTo"){

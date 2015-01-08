@@ -242,7 +242,6 @@ function findPropertyCallBack(node, position){
 ////////////////////////////////
 //
 function findAllPropertyFromTo( codeTree, fromTo ){ //codeSearch
-	console.log(fromTo);
 	
 	var position = { 
 			properties: [],
@@ -304,27 +303,23 @@ function findStatementStart(codeTree, pos){
 	if( typeof found != 'undefined'){
 		start.node = found.node;
 		start.start = found.node.start;
-		console.debug("aaa",start.start);
 	}
 	else {
 		found =  acorn.walk.findNodeBefore(codeTree, pos, 'ExpressionStatement' );
 		if( typeof found != 'undefined'){
 			start.node = found.node;
 			start.start = found.node.end;
-			console.debug("bbb",start.start);
 		}
 		else {
 			found =  acorn.walk.findNodeAfter(codeTree, pos, 'ExpressionStatement' );
 			if( typeof found != 'undefined'){
 				start.node = found.node;
 				start.start = found.node.start;
-				console.debug("ccc",start.start);
 			}
 			else {
 				found = acorn.walk.findNodeAround( codeTree, pos, 'FunctionDeclaration' );
 				start.node = found.node;
 				start.start = found.node.body.body[ found.node.body.body.length-1  ].end;
-				console.debug("ddd",start.start);
 			}
 		}
 	}

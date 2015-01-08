@@ -19,8 +19,7 @@ function addDrawItem(codeLine){
 
 	var code = getCode();
 	codeTree = acorn.parse( code);
-console.log(code);
-	drawCode( code );
+
 	drawEditHandles( context, codeTree,mousex,mousey );
 	
 }

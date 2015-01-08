@@ -29,12 +29,12 @@
  
 
 <!-- local third party stuff -->
-<link rel=stylesheet href="thirdParty/codemirror.css">
+<link rel="styleSheet" href="thirdParty/codemirror.css">
 <script src="thirdParty/codemirror.js"></script>
-<script src="thirdParty/mode/xml/xml.js"></script>
+<!-- script src="thirdParty/mode/xml/xml.js"></script  -->
 <script src="thirdParty/mode/javascript/javascript.js"></script>
-<script src="thirdParty/mode/css/css.js"></script>
-<script src="thirdParty/mode/htmlmixed/htmlmixed.js"></script>
+<!-- script src="thirdParty/mode/css/css.js"></script -->
+<!-- script src="thirdParty/mode/htmlmixed/htmlmixed.js"></script -->
 
 <script src="thirdParty/acorn.js"></script>
 <script src="thirdParty/util/walk.js"></script>
@@ -115,7 +115,7 @@ canvas {
 	border: 1px solid black;
 }
 
-#precode,#code,#postcode {
+#code {
 	font-family: monospace;
 	border: none;
 }
@@ -126,9 +126,6 @@ canvas {
 	width: 100%;
 }
 
-#precode,#postcode {
-	color: #888888;
-}
 
 #headerText {
 	background: #dddddd;
@@ -153,6 +150,18 @@ canvas {
 	left: 0;
 	width: 100%;
 }
+
+/*===== code mirror =====*/
+/* experimenting */
+
+.CodeMirror div.CodeMirror-cursor {
+  border-left: 1px solid red;
+  border-bottom: 5px solid red;
+}
+CodeMirror-gutters {
+  visibility: visible;
+}
+
 /*
 .tab {
 	float:left;
@@ -250,7 +259,7 @@ function draw(context){
 
 
 <div id="pathPanel" class="panels">
-<button id="beginPathButton" onclick="addBeginPath()">BeginPath</button>
+<canvas id="beginPathButton" width="64" height="64" title="beginPath()" onclick="onClickBeginPath()"></canvas>
 <canvas id="moveToButton" width="64" height="64" title="moveTo()" onclick="onClickMoveTo()"></canvas>
 <canvas id="lineToButton" width="64" height="64" title="lineTo()" onclick="onClickLineTo()"></canvas>
 <canvas id="bezierCurveToButton" width="64" height="64" title="bezierCurveTo()" onclick="onClickBezierCurveTo()"></canvas>
